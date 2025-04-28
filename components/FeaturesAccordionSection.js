@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { AtSign, CreditCard, UserCircle2, Paintbrush } from "lucide-react";
+
 import CaroselItem from "./CaroselItem";
 import ExpertSection from "./ExpertSection";
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { Trash2 } from "lucide-react";
+
 import { ReservationListProps } from "./types";
 
 export function ReservationList({

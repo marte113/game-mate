@@ -2,6 +2,7 @@
 
 import { create } from 'zustand'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+
 import { Database } from '@/types/database.types'
 
 // 클라이언트 컴포넌트용 Supabase 인스턴스 생성 (쿠키 자동 처리)

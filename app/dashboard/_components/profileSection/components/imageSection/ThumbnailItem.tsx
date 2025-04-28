@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { Plus, X, Star, Loader2 } from 'lucide-react';
+
 import { AlbumImage } from './AlbumGalleryCard';
 
 interface ThumbnailItemProps {

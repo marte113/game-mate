@@ -1,10 +1,8 @@
 import { Suspense } from "react";
+
 import ProfileSection from "./_components/profileSection";
 import TokenSection from "./_components/tokenSection/TokenSection";
-import TabNav from "./_components/TabNav";
 import ClientTabNav from "./_components/ClientTabNav";
-import { Button } from "@/components/ui";
-import EditButton from "./_components/EditButton";
 // searchParams는 서버 컴포넌트의 props로 자동으로 전달됩니다
 export default function DashboardPage({
   searchParams,

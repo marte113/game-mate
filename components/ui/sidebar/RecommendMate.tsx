@@ -1,11 +1,11 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import MateRow from './MateRow'
-import { fetchRecommendedMates } from './mateApi'
 import { AlertTriangle, Loader2, RefreshCw, ChevronUp } from 'lucide-react'
 import React from 'react'
-import Link from 'next/link'
+
+import { fetchRecommendedMates } from './mateApi'
+import MateRow from './MateRow'
 
 const RecommendMate = React.memo(() => {
   const { data: mates, isLoading, isError, error, refetch } = useQuery({

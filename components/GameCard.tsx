@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { Star } from 'lucide-react';
+
 import ReservationModal from '@/app/dashboard/chat/_components/reserveModal/ReservationModal';
 
 interface GameCardProps {

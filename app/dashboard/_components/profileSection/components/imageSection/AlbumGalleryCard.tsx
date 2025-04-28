@@ -1,8 +1,10 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+
 import { fetchAlbumImages } from '@/app/dashboard/_api/profileSectionApi';
 import MainCarousel from '@/components/MainCarousel';
+
 import ThumbnailGrid from './ThumbnailGrid';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';

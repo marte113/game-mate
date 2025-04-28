@@ -3,6 +3,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { Fragment } from "react";
+
 import CategoryCard from "./_components/CategoryCard";
 import { fetchGames, GamesApiResponse } from "./_api/CategoryApi";
 import LoadingSpinner from "./_components/LoadingSpinner";

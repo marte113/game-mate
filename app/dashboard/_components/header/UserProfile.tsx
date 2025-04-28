@@ -2,9 +2,11 @@
 
 import { useState, useCallback, memo } from "react";
 import Image from "next/image";
-import ProfileDropdown from '../ProfileDropdown';
-import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from "next/navigation";
+
+import { useAuthStore } from '@/stores/authStore';
+
+import ProfileDropdown from '../ProfileDropdown';
 import AlarmDropdown from '../AlarmDropdown';
 
 // 메모이제이션을 통한 불필요한 리렌더링 방지

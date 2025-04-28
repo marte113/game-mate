@@ -1,7 +1,8 @@
-import { logger } from "@/logger";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
+
+import { logger } from "@/logger";
 
 export async function getSupabaseClient() {
   const supabase = createClient(

@@ -1,10 +1,10 @@
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+
 import type {
   MatesApiResponse,
   MateCardData,
-  ProfileWithUserAndGameIcon,
 } from "@/app/category/_types/categoryPage.types";
 import type { ProfilesRow } from "@/types/database.table.types"; // ProfilesRow 타입 임포트
 import { Database } from "@/types/database.types";

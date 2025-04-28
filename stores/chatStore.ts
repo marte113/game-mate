@@ -1,6 +1,7 @@
 'use client'
 
 import { create } from 'zustand'
+
 import { ChatState } from '@/app/dashboard/chat/_types'
 
 export const useChatStore = create<ChatState>((set) => ({

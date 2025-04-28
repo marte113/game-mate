@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect, ChangeEvent, MouseEvent } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { X, Star, StarHalf } from "lucide-react";
-import Image from "next/image";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { reviewApi } from "@/app/dashboard/_api/reviewApi";
-import { useTaskStore } from "../store/useTaskStore";
 import { useAuthStore } from "@/stores/authStore";
+
+import { useTaskStore } from "../store/useTaskStore";
 
 // 별점 텍스트 데이터 (기존 정의 사용)
 const StarRatingTexts = [

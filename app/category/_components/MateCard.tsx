@@ -2,6 +2,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { Star } from 'lucide-react' // 아이콘 라이브러리 확인
+
 import type { MateCardData } from '../_types/categoryPage.types' // MateCard 데이터 타입 임포트
 
 interface MateCardProps {

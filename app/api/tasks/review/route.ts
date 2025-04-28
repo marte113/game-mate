@@ -1,8 +1,9 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
-import { Database } from '@/types/database.types'
 import sanitizeHtml from 'sanitize-html' // 새니타이즈 라이브러리 임포트
+
+import { Database } from '@/types/database.types'
 
 type Review = Database['public']['Tables']['reviews']['Row']
 

@@ -1,6 +1,7 @@
 import { useRef, useEffect } from "react";
 import Link from "next/link";
 import { User, FileText, ClipboardList, LogOut, HandCoins } from "lucide-react";
+
 import ProfileDropdownInfo from "./ProfileDropdownInfo";
 
 interface ProfileDropdownProps {

@@ -2,7 +2,9 @@
 //
 
 import type { QueryFunctionContext } from '@tanstack/react-query' // QueryFunctionContext 임포트
+
 import type { GamesRow } from '@/types/database.table.types' // 테이블 타입 경로 확인
+
 import { GameHeader } from '../_types/categoryPage.types'
 
 export interface GamesApiResponse {

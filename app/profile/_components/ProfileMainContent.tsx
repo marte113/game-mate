@@ -1,8 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+
+import {
+  PrefetchedProfileData,
+  ProfileMainContentProps,
+} from "@/app/profile/_types/profile.types";
+import { useAuthStore } from "@/stores/authStore"; // isOwner 확인용
+import { Database } from "@/types/database.types"; // 추가
+
 import ProfileTabNav from "./ProfileTabNav";
 import ProfileAlbumCarousel from "./ProfileAlbumCarousel";
 import ProfileTags from "./ProfileTags";
@@ -10,12 +17,6 @@ import ProfileGameList from "./ProfileGameList";
 import ProfileInfoSection from "./ProfileInfoSection";
 import ProfileVideoSection from "./ProfileVideoSection";
 import ProfileReviewSection from "./ProfileReviewSection";
-import {
-  PrefetchedProfileData,
-  ProfileMainContentProps,
-} from "@/app/profile/_types/profile.types";
-import { useAuthStore } from "@/stores/authStore"; // isOwner 확인용
-import { Database } from "@/types/database.types"; // 추가
 
 // 탭 종류 정의
 export type ProfileTabType = "profile"; // | 'videos' | 'reviews'; // 추후 확장

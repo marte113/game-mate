@@ -3,12 +3,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm, UseFormReturn, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'react-hot-toast';
+import isEqual from 'lodash/isEqual';
+import { ZodError } from 'zod';
+
 import { profileSchema, ProfileDataSchema } from '@/libs/schemas/profile.schema';
 import { fetchProfileInfo, updateProfileInfo } from '@/app/dashboard/_api/profileSectionApi';
 import { queryKeys } from '@/constants/queryKeys';
 import { parseApiError, setFormErrors } from '@/utils/errorUtils';
-import isEqual from 'lodash/isEqual';
-import { ZodError } from 'zod';
 
 // Custom hook return type
 interface UseProfileFormReturn {

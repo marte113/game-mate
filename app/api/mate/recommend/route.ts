@@ -3,6 +3,7 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+
 import { Database } from '@/types/database.types'
 
 // 추천 메이트 데이터 타입 정의 (필요한 필드만 선택)

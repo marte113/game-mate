@@ -3,6 +3,7 @@
 import { NextResponse, NextRequest } from 'next/server'
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
+
 import { Database } from '@/types/database.types'
 import { ReviewsRow, UsersRow } from '@/types/database.table.types' // 필요한 테이블 타입 임포트
 

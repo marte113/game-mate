@@ -2,14 +2,19 @@
 
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
+
+import { useAuthStore } from '@/stores/authStore'
+import { useChatStore } from '@/stores/chatStore'
+import { useNotificationStore } from '@/stores/notificationStore'
+
+import { useChatRoom } from '../_hooks/useChatRoom'
+
 import ReservationModal from './reserveModal/ReservationModal'
 import ChatHeader from './ChatHeader'
 import MessageList from './MessageList'
 import ChatInput from './ChatInput'
-import { useAuthStore } from '@/stores/authStore'
-import { useChatStore } from '@/stores/chatStore'
-import { useChatRoom } from '../_hooks/useChatRoom'
-import { useNotificationStore } from '@/stores/notificationStore'
+
+
 
 export default function ChatRoom() {
   const [isReservationOpen, setIsReservationOpen] = useState(false)

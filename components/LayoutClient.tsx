@@ -2,10 +2,10 @@
 
 import NextTopLoader from "nextjs-toploader";
 import { ReactNode, useEffect } from "react";
-import { useAuthStore } from "@/stores/authStore";
 import { Toaster } from "react-hot-toast";
+
+import { useAuthStore } from "@/stores/authStore";
 import config from "@/config";
-import ProgressBar from "@/components/ProgressBar";
 
 /**
  * 전체 레이아웃을 감싸는 클라이언트 컴포넌트입니다.

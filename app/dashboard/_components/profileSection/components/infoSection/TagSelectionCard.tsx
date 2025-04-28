@@ -2,8 +2,9 @@
 
 import React, { useCallback } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
-import { ProfileDataSchema } from '@/libs/schemas/profile.schema';
 import { toast } from 'react-hot-toast';
+
+import { ProfileDataSchema } from '@/libs/schemas/profile.schema';
 
 // TODO: Move userTags data to a constants file or fetch from API
 const userTags = [

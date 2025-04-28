@@ -2,6 +2,7 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+
 import type { Database } from '@/types/database.types' // 경로 조정
 
 // 첫 로드시 로드할 아이템 수, 이후 페이지당 로드할 아이템 수

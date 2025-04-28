@@ -1,7 +1,8 @@
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
-import { fetchGameHeader } from "../_api/CategoryApi";
 import { useParams } from "next/navigation";
+
+import { fetchGameHeader } from "../_api/CategoryApi";
 
 export default function CategoryHeader() {
   const params = useParams();

@@ -1,8 +1,8 @@
 "use client";
 
+import { useRouter , usePathname } from "next/navigation";
+
 import { Button } from "@/components/ui";
-import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
 
 export default function EditButton({ currentTab }: { currentTab: string }) {
   const router = useRouter();

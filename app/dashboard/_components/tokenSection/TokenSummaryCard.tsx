@@ -1,9 +1,11 @@
 "use client";
 
-import TokenChargeButton from "./TokenChargeButton";
-import TokenChargeModal from "../modals/TokenChargeModal";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+
+import TokenChargeModal from "../modals/TokenChargeModal";
+
+import TokenChargeButton from "./TokenChargeButton";
 
 interface BalanceData {
   balance: {

@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { Plus, X, ChevronDown, Check } from 'lucide-react';
-import { useFormContext, Controller, ControllerRenderProps, ControllerFieldState, FieldErrors } from 'react-hook-form';
+import { useFormContext, Controller, ControllerRenderProps } from 'react-hook-form';
+
 import { ProfileDataSchema } from '@/libs/schemas/profile.schema';
-import React from 'react';
+
 
 // TODO: Move games data to a constants file or fetch from API
 const games = [

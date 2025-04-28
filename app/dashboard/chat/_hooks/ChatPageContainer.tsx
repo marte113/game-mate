@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+
 import LeftSection from '../_components/LeftSection'
 import RightSection from '../_components/RightSection'
 import ChatRoom from '../_components/ChatRoom'

@@ -3,8 +3,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, ExternalLink, RefreshCw, ChevronUp } from "lucide-react";
-import {
+import { Menu, 
   LayoutDashboard,
   ClipboardList,
   MessageSquare,
@@ -12,11 +11,13 @@ import {
   Settings,
   HelpCircle,
 } from "lucide-react";
+
 import { useNotificationStore } from "@/stores/notificationStore";
 import { useAuthStore } from "@/stores/authStore";
+import { Separator } from "@/components/ui/Separator";
+
 import RecommendMate from "./ui/sidebar/RecommendMate";
 import PartnerMate from "./ui/sidebar/PartnerMate";
-import { Separator } from "@/components/ui/Separator";
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);

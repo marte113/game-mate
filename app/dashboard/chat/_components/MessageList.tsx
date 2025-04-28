@@ -2,8 +2,10 @@
 'use client'
 
 import { useRef, useEffect } from 'react'
-import MessageItem from './MessageItem'
+
 import { Message } from '@/app/dashboard/chat/_types'
+
+import MessageItem from './MessageItem'
 
 interface MessageListProps {
   messages?: Message[]

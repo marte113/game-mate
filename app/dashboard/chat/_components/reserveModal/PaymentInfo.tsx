@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+
 import { PaymentInfoProps } from "./types";
 
 export function PaymentInfo({

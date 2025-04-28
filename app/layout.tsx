@@ -1,13 +1,16 @@
 import { Noto_Sans_KR } from "next/font/google";
 import PlausibleProvider from "next-plausible";
+
 import { getSEOTags } from "@/libs/seo";
 import ClientLayout from "@/components/LayoutClient";
 import config from "@/config";
+
 import "./globals.css";
-import Header from "./dashboard/_components/Header";
 import QueryProvider from "@/components/QueryProvider";
 import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
+
+import Header from "./dashboard/_components/Header";
 // import { JalnanGothic } from "./globals.css";
 
 // 기본 폰트

@@ -1,8 +1,9 @@
 // app/dashboard/chat/_components/MessageItem.tsx
 'use client'
 
-import { formatMessageTime } from '../_utils/formatters'
 import { Message } from '@/app/dashboard/chat/_types'
+
+import { formatMessageTime } from '../_utils/formatters'
 
 interface MessageItemProps {
   message: Message

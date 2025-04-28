@@ -3,8 +3,7 @@
 
 import type {
   ProfilesRow,
-  UsersRow,
-  GamesRow
+  UsersRow
 } from '@/types/database.table.types' // 기본 테이블 타입 경로
 
 // API 라우트에서 사용할 조인된 데이터의 상세 타입 (선택적이지만 가독성 향상)

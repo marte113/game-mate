@@ -2,8 +2,9 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+
 import { Database } from '@/types/database.types'
-import { ChatRoom, ChatRoomsResponse, ApiResponse } from '@/app/dashboard/chat/_types/chatTypes'
+import { ChatRoom, ChatRoomsResponse } from '@/app/dashboard/chat/_types/chatTypes'
 
 export async function GET(): Promise<NextResponse> {
   try {

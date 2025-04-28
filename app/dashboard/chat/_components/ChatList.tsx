@@ -1,13 +1,16 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { formatMessageTime } from '../_utils/formatters'
-import { useChatStore } from '@/stores/chatStore'
 import { useQuery } from '@tanstack/react-query'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+
+import { useChatStore } from '@/stores/chatStore'
 import { chatApi, ChatQueryKeys } from '@/app/dashboard/chat/_api'
 import { ChatRoom } from '@/app/dashboard/chat/_types'
 import { useMessageSubscription } from '@/app/dashboard/chat/_hooks/useMessageSubscription'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+
+
+import { formatMessageTime } from '../_utils/formatters'
 
 // 로딩 중 스켈레톤 UI 컴포넌트
 function ChatSkeleton() {

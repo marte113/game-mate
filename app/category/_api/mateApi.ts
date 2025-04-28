@@ -1,5 +1,6 @@
 import type { QueryFunctionContext } from '@tanstack/react-query'
-import type { MateCardData, MatesApiResponse } from '@/app/category/_types/categoryPage.types'
+
+import type { MatesApiResponse } from '@/app/category/_types/categoryPage.types'
 
 // queryKey 타입을 readonly ['mates', string] 형태로 수정하고, pageParam 타입을 number로 명시
 export const fetchMates = async (

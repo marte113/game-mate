@@ -1,7 +1,9 @@
 "use client";
 
+import { useInfiniteQuery } from "@tanstack/react-query";
+
 import { Button } from "@/components/ui";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+
 import TokenHistoryTr from "./TokenHistoryTr";
 export default function TokenHistoryTable() {
   

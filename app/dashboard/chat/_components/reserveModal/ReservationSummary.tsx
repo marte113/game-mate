@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+
 import { ReservationSummaryProps } from "./types";
 
 export function ReservationSummary({

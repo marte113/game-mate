@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+
 import GameCategorySlider from "@/components/GameCategorySlider";
 import RecommendedMatesSlider from "@/components/RecommendedMatesSlider";
 import MainCarousel from "@/components/MainCarousel";

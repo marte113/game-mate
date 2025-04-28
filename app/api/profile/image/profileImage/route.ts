@@ -1,8 +1,9 @@
 // app/api/profile/image/route.ts
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { Database } from "@/types/database.types";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+
+import { Database } from "@/types/database.types";
 
 // 프로필 이미지 정보 가져오기
 export async function GET() {

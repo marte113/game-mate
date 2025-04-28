@@ -1,5 +1,6 @@
 import { createClientComponentClient, createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
+
 import { Database } from '@/types/database.types';
 
 // 클라이언트 컴포넌트에서 사용할 Supabase 클라이언트

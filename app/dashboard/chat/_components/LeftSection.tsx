@@ -1,6 +1,7 @@
 'use client'
 
 import { Dispatch, SetStateAction } from "react"
+
 import SearchChatInput from "./SearchChatInput"
 import ChatList from "./ChatList"
 

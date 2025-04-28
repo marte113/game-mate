@@ -1,7 +1,8 @@
 // app/dashboard/chat/_hooks/useSendMessage.ts
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { chatApi, ChatQueryKeys } from '@/app/dashboard/chat/_api'
 import { toast } from 'react-hot-toast'
+
+import { chatApi, ChatQueryKeys } from '@/app/dashboard/chat/_api'
 
 export function useSendMessage(roomId: string, hasRoomId: boolean) {
   const queryClient = useQueryClient()

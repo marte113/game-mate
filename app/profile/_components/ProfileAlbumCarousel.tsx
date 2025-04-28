@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+
 import MainCarousel from '@/components/MainCarousel' // 경로 확인
 import { Database } from '@/types/database.types'
 import { AlbumImage, ProfileAlbumCarouselProps } from '@/app/profile/_types/profile.types'

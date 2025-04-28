@@ -1,9 +1,10 @@
 // app/dashboard/chat/_hooks/useMessages.ts
 import { useQuery, UseQueryResult } from '@tanstack/react-query'
-import { chatApi, ChatQueryKeys } from '@/app/dashboard/chat/_api'
-import { Message } from '@/app/dashboard/chat/_types'
 import { toast } from 'react-hot-toast'
 import { useEffect } from 'react'
+
+import { chatApi, ChatQueryKeys } from '@/app/dashboard/chat/_api'
+import { Message } from '@/app/dashboard/chat/_types'
 
 type MessagesQueryResult = UseQueryResult<Message[], Error>
 

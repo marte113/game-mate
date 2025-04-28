@@ -1,4 +1,3 @@
-import { ProfileData } from '@/app/dashboard/_components/profileSection/types';
 import { ProfileDataSchema } from '@/libs/schemas/profile.schema';
 
 /**

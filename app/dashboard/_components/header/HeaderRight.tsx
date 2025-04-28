@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+
+import { useAuthStore } from '@/stores/authStore';
+
 import SearchBar from './SearchBar';
 import TokenDisplay from './TokenDisplay';
 import UserProfile from './UserProfile';
 import LoginButton from './LoginButton';
-import { useAuthStore } from '@/stores/authStore';
 
 
 export default function HeaderRight() {

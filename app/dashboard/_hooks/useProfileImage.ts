@@ -1,8 +1,9 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchProfileImage, updateProfileImage } from '@/app/dashboard/_api/profileSectionApi';
 import { toast } from 'react-hot-toast';
+
+import { fetchProfileImage, updateProfileImage } from '@/app/dashboard/_api/profileSectionApi';
 
 export function useProfileImage() {
   const queryClient = useQueryClient();

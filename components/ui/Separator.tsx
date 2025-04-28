@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+
 import { cn } from '@/libs/utils' // cn 유틸리티 사용 (선택 사항)
 
 // Props 타입 정의 ( orientation 등 추가 확장 가능 )

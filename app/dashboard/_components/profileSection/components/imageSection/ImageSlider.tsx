@@ -3,6 +3,7 @@
 import { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+
 import { AlbumImage } from './AlbumGalleryCard';
 
 interface ImageSliderProps {

@@ -1,7 +1,8 @@
 import React from "react";
 import Link from "next/link";
-import config from "@/config";
 import { MoveLeft } from "lucide-react";
+
+import config from "@/config";
 
 type HeaderCenterProps = {
   content: string;

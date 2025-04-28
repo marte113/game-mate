@@ -3,11 +3,12 @@
 import { useParams } from 'next/navigation' // next/navigation 사용
 import { useInfiniteQuery, type InfiniteData } from '@tanstack/react-query'
 import { useInView } from 'react-intersection-observer'
+import { Fragment, useEffect } from 'react' // Fragment, useEffect 임포트
+
 import { fetchMates } from '../_api/mateApi' // 수정된 API 함수 임포트
 import type { MatesApiResponse, MateCardData } from '../_types/categoryPage.types'
 import LoadingSpinner from '../_components/LoadingSpinner' // 로딩 스피너 임포트
 import { MateCard } from '../_components/MateCard' // MateCard 임포트 경로 확인
-import { Fragment, useEffect } from 'react' // Fragment, useEffect 임포트
 import CategoryHeader from '../_components/CategoryHeader'
 
 export default function CategoryIdPage() {

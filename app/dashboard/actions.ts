@@ -1,9 +1,9 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { createActionClient } from '@/libs/api/supabase';
 import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
+
+import { createActionClient } from '@/libs/api/supabase';
 
 /**
  * 프로필 데이터 가져오기 서버 액션

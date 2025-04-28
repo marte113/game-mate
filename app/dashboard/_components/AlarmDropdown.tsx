@@ -2,11 +2,11 @@
 
 import { Bell } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
-import { useNotificationStore } from '@/stores/notificationStore'
 import Link from 'next/link'
 import { formatDistanceToNow } from 'date-fns'
 import { ko } from 'date-fns/locale'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+
+import { useNotificationStore } from '@/stores/notificationStore'
 
 export default function AlarmDropdown() {
   const [isOpen, setIsOpen] = useState(false);

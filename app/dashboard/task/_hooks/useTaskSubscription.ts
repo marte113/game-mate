@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import type { RealtimeChannel } from '@supabase/supabase-js';
+
 import { Database } from '@/types/database.types';
 import { useAuthStore } from '@/stores/authStore'; // Auth 스토어 임포트
 

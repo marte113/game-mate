@@ -3,13 +3,15 @@
 import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
-import { AlbumImage } from './AlbumGalleryCard';
-import ThumbnailItem from './ThumbnailItem';
+
 import { 
   uploadAlbumImage, 
   deleteAlbumImage, 
   setAlbumImageAsThumbnail 
 } from '@/app/dashboard/_api/profileSectionApi';
+
+import { AlbumImage } from './AlbumGalleryCard';
+import ThumbnailItem from './ThumbnailItem';
 
 interface ThumbnailGridProps {
   albumImages: (AlbumImage | null)[];

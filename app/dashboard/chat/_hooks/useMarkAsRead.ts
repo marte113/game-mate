@@ -1,7 +1,8 @@
 // app/dashboard/chat/_hooks/useMarkAsRead.ts
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
+import { useEffect } from 'react'
+
 import { chatApi, ChatQueryKeys } from '@/app/dashboard/chat/_api'
-import { useEffect, useRef } from 'react'
 
 export function useMarkMessagesAsRead(roomId?: string) {
   const queryClient = useQueryClient()

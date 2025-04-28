@@ -1,10 +1,11 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import MateRow from './MateRow'
-import { fetchPartnerMates } from './mateApi'
 import { AlertTriangle, Loader2, ExternalLink } from 'lucide-react'
 import React from 'react'
+
+import MateRow from './MateRow'
+import { fetchPartnerMates } from './mateApi'
 
 const PartnerMate = React.memo(() => {
   const { data: mates, isLoading, isError, error } = useQuery({

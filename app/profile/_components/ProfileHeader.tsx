@@ -6,6 +6,7 @@ import { Star, MessageCircle, Heart, Share2 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { toast } from 'react-hot-toast'
+
 import { useAuthStore } from '@/stores/authStore'
 import { useChatStore } from '@/stores/chatStore2' // chatStore2 확인
 import { useChatStore as useChatStoreAlias } from '@/stores/chatStore' // chatStore 확인

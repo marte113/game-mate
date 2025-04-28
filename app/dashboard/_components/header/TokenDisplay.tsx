@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, memo } from "react";
+import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
+
 import { useAuthStore } from "@/stores/authStore";
 
 // API 호출 함수 분리

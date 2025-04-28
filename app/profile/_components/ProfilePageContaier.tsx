@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { cookies } from 'next/headers';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+
 import { Database } from '@/types/database.types'; // DB 타입 경로 확인
 import { PrefetchedProfileData } from '@/app/profile/_types/profile.types'; // 수정된 타입 경로
 

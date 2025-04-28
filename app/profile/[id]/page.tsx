@@ -1,11 +1,13 @@
-import ProfilePageContainer from '../_components/ProfilePageContaier'
-import ProfileHeader from '../_components/ProfileHeader'
-import ProfileMainContent from '../_components/ProfileMainContent'
 import { QueryClient } from '@tanstack/react-query'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
+
 import { Database } from '@/types/database.types'
+
+import ProfileMainContent from '../_components/ProfileMainContent'
+import ProfileHeader from '../_components/ProfileHeader'
+import ProfilePageContainer from '../_components/ProfilePageContaier'
 import { PrefetchedProfileData } from '../_types/profile.types'
 
 

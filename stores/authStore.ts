@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+
 import {UsersRow, ProfilesRow} from '@/types/database.table.types'
 
 // 프로필 인터페이스 정의

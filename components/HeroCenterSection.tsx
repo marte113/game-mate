@@ -1,4 +1,3 @@
-import Image from "next/image";
 import UserComment from "./UserComment";
 
 const HeroCenterSection = () => {

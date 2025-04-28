@@ -1,8 +1,8 @@
 'use client'
 
-import Image from 'next/image'
 import { Star } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
+
 import profileApi from '@/app/profile/_api/profileApi'
 import { ReviewInfo, ProfileReviewSectionProps } from '@/app/profile/_types/profile.types'
 

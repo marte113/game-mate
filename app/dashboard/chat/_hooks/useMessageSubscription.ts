@@ -4,10 +4,11 @@
 import { useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useQueryClient } from '@tanstack/react-query'
+import { RealtimeChannel, RealtimePostgresChangesPayload } from '@supabase/supabase-js'
+
 import { Database } from '@/types/database.types'
 import { Message } from '@/app/dashboard/chat/_types/chatTypes'
-import { RealtimeChannel, RealtimePostgresChangesPayload } from '@supabase/supabase-js'
-import { chatApi, ChatQueryKeys } from '@/app/dashboard/chat/_api'
+import { ChatQueryKeys } from '@/app/dashboard/chat/_api'
 
 export const useMessageSubscription = (currentChatRoomId: string | null) => {
   const queryClient = useQueryClient()

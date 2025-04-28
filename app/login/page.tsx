@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import toast from "react-hot-toast";
-import config from "@/config";
+import { useRouter } from 'next/navigation'
+
 import HeaderCenter from "@/components/HeaderCenter";
 import ButtonKakaoLogin from "@/components/ButtonKakaoLogin";
 import ButtonGoogleLogin from "@/components/ButtonGoogleLogin";
 import { useAuthStore } from '@/stores/authStore'
-import { useRouter } from 'next/navigation'
+
 
 // Supabase 회원가입 및 로그인 페이지
 export default function Login() {

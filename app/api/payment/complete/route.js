@@ -1,8 +1,6 @@
 'use client'
 
 import { NextResponse } from "next/server";
-import config from "@/config";
-import { P } from "storybook/internal/components";
 
 // 포트원 V2 버전 API 호출 예시
 // 내부 PG사는 토스페이먼츠 사용

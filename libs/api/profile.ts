@@ -1,7 +1,8 @@
+import { cache } from 'react';
+
 import { createClient, createServerClient } from './supabase';
 import { clientFetch, serverFetch, ApiResponse } from './base';
-import { Database } from '@/types/supabase';
-import { cache } from 'react';
+
 
 export type ProfileData = {
   id: string;

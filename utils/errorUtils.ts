@@ -1,4 +1,4 @@
-import { FieldErrors, FieldValues, UseFormSetError } from 'react-hook-form';
+import { FieldValues, UseFormSetError } from 'react-hook-form';
 import { ZodError } from 'zod';
 
 // 백엔드에서 오는 표준 에러 응답 형태 (예시)
@@ -17,7 +17,7 @@ interface ParsedError {
 // API 에러 파싱 함수
 export function parseApiError(error: any): ParsedError {
   const defaultMessage = '오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
-  let parsedError: ParsedError = { generalMessage: defaultMessage };
+  const parsedError: ParsedError = { generalMessage: defaultMessage };
 
   // 1. Axios 등 HTTP 클라이언트의 response data 확인 (가장 우선)
   if (error?.response?.data) {

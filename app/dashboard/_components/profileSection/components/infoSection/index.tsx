@@ -2,13 +2,15 @@
 
 import React from 'react';
 import { FormProvider } from 'react-hook-form';
+
+import { Button } from '@/components/ui';
+import { useProfileForm } from '@/hooks/useProfileForm';
+
 import BasicInfoCard from "./BasicInfoCard";
 import GameSelectionCard from "./GameSelectionCard";
 import TagSelectionCard from "./TagSelectionCard";
 import YouTubeUrlsCard from "./YouTubeUrlsCard";
 import MateRegister from "./MateRegister";
-import { Button } from '@/components/ui';
-import { useProfileForm } from '@/hooks/useProfileForm';
 
 export default function ProfileInfoSection() {
   const {
