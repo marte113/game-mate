@@ -3,8 +3,8 @@
 import React from "react";
 
 import GameCategorySlider from "@/components/GameCategorySlider";
-import RecommendedMatesSlider from "@/components/RecommendedMatesSlider";
 import MainCarousel from "@/components/MainCarousel";
+import RecommendedMates from "@/components/ui/RecomendedMates";
 
 interface Slide {
   image: string;
@@ -32,10 +32,9 @@ export default function Home() {
         <div className="container mx-auto px-4 pt-6">
           <MainCarousel slides={slides} className="h-[370px]" />
           <GameCategorySlider />
-          <RecommendedMatesSlider />
+          <RecommendedMates />
         </div>
       </main>
-     
     </>
   );
 }

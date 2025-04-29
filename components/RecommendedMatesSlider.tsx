@@ -5,97 +5,20 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react'
 
-interface Mate {
-  id: number
-  name: string
-  game: string
-  gameIcon: string
-  price: number
-  rating: number
-  description: string
-  image: string
-  isOnline: boolean
-  videoLength: string
-}
+import { MateData } from '@/app/(home)/_types/homePage.types'
 
 interface MateCardProps {
-  mate: Mate
+  mate: MateData
 }
 
-const mates: Mate[] = [
-  {
-    id: 1,
-    name: '피츠',
-    game: '리그오브레전드',
-    gameIcon: '/images/lol2.webp',
-    price: 950,
-    rating: 5.0,
-    description: '칼바람 협곡 롤체 솔랭 협심당',
-    image: '/avatar/tempprofileimg1.jpg',
-    isOnline: true,
-    videoLength: '04:00'
-  },
-  {
-    id: 2,
-    name: '카츄',
-    game: '리그오브레전드',
-    gameIcon: '/images/lol2.webp',
-    price: 700,
-    rating: 5.0,
-    description: '서포>정글>미드 순으로 선호해요(랭크게임, 칼바람 다 좋아해요)',
-    image: '/avatar/tempprofileimg2.jpg',
-    isOnline: true,
-    videoLength: '06:00'
-  },
-  {
-    id: 3,
-    name: '미나',
-    game: '발로란트',
-    gameIcon: '/images/valrorant.webp',
-    price: 850,
-    rating: 4.9,
-    description: '발로란트 경쟁전 같이 하실 분 구해요',
-    image: '/avatar/tempprofileimg3.jpg',
-    isOnline: false,
-    videoLength: '03:30'
-  },
-  {
-    id: 4,
-    name: '준호',
-    game: '배틀그라운드',
-    gameIcon: '/images/bg.jpg',
-    price: 800,
-    rating: 4.8,
-    description: '배그 스쿼드 모드 같이 치킨 먹어요',
-    image: '/avatar/tempprofileimg4.jpg',
-    isOnline: true,
-    videoLength: '05:20'
-  },
-  {
-    id: 5,
-    name: '준호',
-    game: '배틀그라운드',
-    gameIcon: '/images/bg.jpg',
-    price: 800,
-    rating: 4.8,
-    description: '배그 스쿼드 모드 같이 치킨 먹어요',
-    image: '/avatar/tempprofileimg4.jpg',
-    isOnline: true,
-    videoLength: '05:20'
-  },
-  {
-    id: 6,
-    name: '준호',
-    game: '배틀그라운드',
-    gameIcon: '/images/bg.jpg',
-    price: 800,
-    rating: 4.8,
-    description: '배그 스쿼드 모드 같이 치킨 먹어요',
-    image: '/avatar/tempprofileimg4.jpg',
-    isOnline: true,
-    videoLength: '05:20'
-  }
-]
+interface RecommendedMatesSliderProps {
+  theme: {
+    id: string;
+    name: string;
+    description: string;
+  };
+  mates: MateData[];
+}
 
 export const MateCard = ({ mate }: MateCardProps) => {
   return (
@@ -164,19 +87,21 @@ export const MateCard = ({ mate }: MateCardProps) => {
   )
 }
 
-const RecommendedMatesSlider = () => {
+const RecommendedMatesSlider = ({ theme, mates }: RecommendedMatesSliderProps) => {
+  const sliderId = `recommended-mates-${theme.id}`;
+  
   const scrollLeft = () => {
-    document.getElementById('recommended-mates')?.scrollBy({ left: -300, behavior: 'smooth' })
+    document.getElementById(sliderId)?.scrollBy({ left: -500, behavior: 'smooth' })
   }
 
   const scrollRight = () => {
-    document.getElementById('recommended-mates')?.scrollBy({ left: 300, behavior: 'smooth' })
+    document.getElementById(sliderId)?.scrollBy({ left: 500, behavior: 'smooth' })
   }
 
   return (
     <section className="py-8 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl md:text-2xl font-bold text-base-content">추천 게임 메이트</h2>
+        <h2 className="text-xl md:text-2xl font-bold text-base-content">{theme.description} 추천 메이트</h2>
         <div className="flex gap-2">
           <button 
             onClick={scrollLeft}
@@ -197,7 +122,7 @@ const RecommendedMatesSlider = () => {
 
       <div className="relative">
         <div 
-          id="recommended-mates" 
+          id={sliderId}
           className="carousel carousel-center gap-4 pb-4 overflow-x-auto scroll-smooth"
         >
           {mates.map((mate) => (

@@ -15,7 +15,7 @@ export type RecommendedMateData = {
   isOnline: boolean | null
 }
 
-export async function GET(request: Request) {
+export async function GET() {
   const cookieStore = cookies()
   // 주의: 추천 메이트는 로그인 여부와 관계 없으므로,
   // 익명 사용자도 읽을 수 있도록 RLS 정책 설정 또는 service_role 키 사용 필요
