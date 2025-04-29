@@ -91,6 +91,7 @@ export async function GET(request: NextRequest) {
             nickname,
             description,
             rating,
+            public_id,
             users (
               is_online,
               profile_thumbnail_img
@@ -116,6 +117,7 @@ export async function GET(request: NextRequest) {
         // 메이트 데이터 형식 변환
         const mates: MateData[] = profilesData.map((profile) => ({
           id: profile.user_id || "",
+          public_id: profile.public_id,
           name: profile.nickname || "Unknown",
           game: game.description || "",
           gameIcon: game.image_url || "/default-game-icon.png",

@@ -22,7 +22,7 @@ interface RecommendedMatesSliderProps {
 
 export const MateCard = ({ mate }: MateCardProps) => {
   return (
-    <Link href={`/profile/${mate.id}`} className="carousel-item w-[20%] group">
+    <Link href={`/profile/${mate.public_id}`} className="carousel-item w-[20%] group">
       <div className="card bg-base-100 shadow-md hover:shadow-lg transition-all duration-300">
         <div className="relative">
           <div className="relative aspect-[4/3] w-full overflow-hidden rounded-t-xl">

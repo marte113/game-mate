@@ -13,7 +13,7 @@ interface MateCardProps {
 export function MateCard({ mate }: MateCardProps) {
   return (
     // Link href를 profile id (user_id)로 수정
-    <Link href={`/profile/${mate.id}`} className="card bg-base-100 shadow-md hover:shadow-lg transition-all duration-300 group block">
+    <Link href={`/profile/${mate.public_id}`} className="card bg-base-100 shadow-md hover:shadow-lg transition-all duration-300 group block">
       <div className="relative">
         <div className="relative aspect-[4/3] w-full overflow-hidden rounded-t-xl">
           <Image

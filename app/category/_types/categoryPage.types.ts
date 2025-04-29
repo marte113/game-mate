@@ -19,6 +19,7 @@ export type ProfileWithUserAndGameIcon = Omit<ProfilesRow, 'user_id'> & { // use
 // MateCard 컴포넌트 프롭 타입
 export interface MateCardData {
   id: string // profiles.user_id
+  public_id: number // profiles.public_id
   name: string
   game: string // categoryId (영문 이름)
   gameIcon: string

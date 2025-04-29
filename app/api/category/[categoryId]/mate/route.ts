@@ -16,7 +16,7 @@ const PAGE_SIZE_DEFAULT = 10;
 // 실제 쿼리 결과 구조에 따라 조정 필요
 type MateQueryResult = Pick<
   ProfilesRow,
-  "user_id" | "nickname" | "rating" | "description" | "created_at"
+  "user_id" | "nickname" | "rating" | "description" | "created_at" | "public_id"
 > & {
   users: {
     is_online: boolean | null;
@@ -79,6 +79,7 @@ export async function GET(
       .select(
         `
         user_id,
+        public_id,
         nickname,
         rating,
         description,
@@ -117,6 +118,7 @@ export async function GET(
 
         return {
           id: mate.user_id,
+          public_id: mate.public_id,
           name: mate.nickname ?? "Unknown",
           game: koreanGameName,
           gameIcon: gameIconUrl,

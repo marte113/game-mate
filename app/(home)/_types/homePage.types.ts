@@ -19,6 +19,7 @@ export interface ThemeWithMates {
 // 메이트 데이터 타입
 export interface MateData {
   id: string;           // 유저 ID
+  public_id: number;   //  프로필 페이지  ID
   name: string;         // 닉네임
   game: string;         // 게임 이름 (한글)
   gameIcon: string;     // 게임 아이콘 URL
