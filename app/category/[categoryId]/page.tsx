@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation' // next/navigation 사용
 import { useInfiniteQuery, type InfiniteData } from '@tanstack/react-query'
 import { useInView } from 'react-intersection-observer'
-import { Fragment, useEffect } from 'react' // Fragment, useEffect 임포트
+import { Fragment } from 'react' // useEffect 제거
 
 import { fetchMates } from '../_api/mateApi' // 수정된 API 함수 임포트
 import type { MatesApiResponse, MateCardData } from '../_types/categoryPage.types'
@@ -38,16 +38,14 @@ export default function CategoryIdPage() {
     enabled: !!categoryId, // categoryId가 있을 때만 쿼리 실행
     })
 
-  const { ref, inView } = useInView({
+  const { ref } = useInView({
     threshold: 0, // 요소가 1px이라도 보이면 트리거
+    onChange: (inView) => {
+      if (inView && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage()
+      }
+    },
   })
-
-  // inView 상태가 변경되고, 다음 페이지가 있으며, 현재 로딩 중이 아닐 때 fetchNextPage 호출
-  useEffect(() => {
-    if (inView && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage()
-    }
-  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage])
 
   // 로딩 상태 처리
   if (isLoading) {

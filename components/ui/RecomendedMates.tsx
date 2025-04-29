@@ -3,18 +3,13 @@
 
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useInView } from 'react-intersection-observer'
-import { Fragment, useEffect } from 'react'
+import { Fragment } from 'react'
 
 import { fetchRecommendedThemes } from '@/app/(home)/_api/homeApi'
 import RecommendedMatesSlider from '@/components/RecommendedMatesSlider'
 import { RecommendedThemeResponse } from '@/app/(home)/_types/homePage.types'
 
 export default function RecommendedMates() {
-  // 무한 스크롤을 위한 InView 설정
-  const { ref, inView } = useInView({
-    threshold: 0,
-  })
-
   // 추천 테마 및 메이트 데이터 가져오기
   const {
     data,
@@ -22,19 +17,22 @@ export default function RecommendedMates() {
     hasNextPage,
     isLoading,
     isFetchingNextPage,
-  } = useInfiniteQuery<RecommendedThemeResponse>({
+  } = useInfiniteQuery({
     queryKey: ['recommendedThemes'],
-    queryFn: fetchRecommendedThemes,
+    queryFn: ({ pageParam }) => fetchRecommendedThemes({ pageParam: pageParam as number }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextPage,
   })
 
-  // 스크롤 시 다음 페이지 로드
-  useEffect(() => {
-    if (inView && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage()
+  // 무한 스크롤을 위한 InView 설정 (useInfiniteQuery 후에 정의)
+  const { ref } = useInView({
+    threshold: 0,
+    onChange: (inView) => {
+      if (inView && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage()
+      }
     }
-  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage])
+  })
 
   // 로딩 상태
   if (isLoading) {
