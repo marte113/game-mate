@@ -5,8 +5,6 @@ import sanitizeHtml from 'sanitize-html' // 새니타이즈 라이브러리 임�
 
 import { Database } from '@/types/database.types'
 
-type Review = Database['public']['Tables']['reviews']['Row']
-
 // POST: 새 리뷰 생성
 export async function POST(request: Request) {
   try {

@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server'
 import { Database } from '@/types/database.types'
 
 // GET: 사용자가 신청한 의뢰 목록 조회 (리뷰 작성 여부 포함)
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const supabase = createRouteHandlerClient<Database>({ cookies })
     

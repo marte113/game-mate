@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     const fileBuffer = new Uint8Array(arrayBuffer);
 
     // Supabase Storage에 업로드
-    const { error, data } = await supabase.storage
+    const { error } = await supabase.storage
       .from('avatars')
       .upload(filePath, fileBuffer, {
         contentType: file.type,

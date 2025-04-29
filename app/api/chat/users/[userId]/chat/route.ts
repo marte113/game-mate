@@ -29,7 +29,7 @@ export async function POST(request: Request, { params }: RouteParams) {
     }
     
     // 이미 존재하는 채팅방 찾기
-    const { data: existingRooms, error: roomsError } = await supabase
+    const { data: existingRooms } = await supabase
       .from('chat_room_participants')
       .select(`
         chat_room_id,

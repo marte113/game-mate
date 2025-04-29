@@ -2,7 +2,6 @@
 import { Database } from '@/types/database.types'
 
 // reviews 테이블의 Row 타입을 가져옵니다. (database.types.ts 기반)
-type ReviewInsert = Database['public']['Tables']['reviews']['Insert']
 type Review = Database['public']['Tables']['reviews']['Row']
 
 export interface CreateReviewRequest {

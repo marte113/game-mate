@@ -14,7 +14,7 @@ export type PartnerMateData = {
   isOnline: boolean | null
 }
 
-export async function GET(request: Request) {
+export async function GET() {
   const cookieStore = cookies()
   // 익명 접근 가능한 클라이언트 또는 RLS 설정 필요
   const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore })
