@@ -23,37 +23,37 @@ const categories: Category[] = [
     id: 'lol',
     name: '리그오브레전드',
     image: '/images/lol2.webp',
-    slug: '/games/lol'
+    slug: '/category/League_Of_Legend'
   },
   {
     id: 'tft',
     name: '전략적 팀 전투',
     image: '/images/tft.jpg',
-    slug: '/games/tft'
+    slug: '/category/TFT'
   },
   {
     id: 'pubg',
     name: '배틀그라운드',
     image: '/images/bg.jpg',
-    slug: '/games/pubg'
+    slug: '/category/Battle_Ground'
   },
   {
     id: 'voice',
     name: '보이스 채팅',
     image: '/images/voicechat.jpeg',
-    slug: '/games/voice'
+    slug: '/category/Voice_Chat'
   },
   {
     id: 'valorant',
     name: '발로란트',
     image: '/images/valrorant.webp',
-    slug: '/games/valorant'
+    slug: '/category/Valorant'
   },
   {
     id: 'er',
     name: '이터널리턴',
     image: '/images/eternalreturn.jpg',
-    slug: '/games/er'
+    slug: '/category/Eternal_Return'
   }
 ]
 

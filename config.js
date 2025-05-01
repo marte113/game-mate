@@ -5,7 +5,7 @@ const config = {
   appName: "Game Mate",
   // 필수 : 앱 설명 (SEO 태그에 사용됨. 덮어쓸 수 있음)
   appDescription:
-    "하루만에 당신의 스타트업을 시작해보세요! SupaNextTemplate은 다양한 기능을 제공하는 nextjs 템플릿(상용구) 서비스입니다.",
+    "게임 메이트와 함께 실력을 증진 해보세요!",
   // 필수입력 (https:// 빼고 도메인만 입력. 끝에 /도 빼야 함. ex) yoursite.com
   domainName: "yoursite.com",
   supportEmail: "support@yoursite.com",
@@ -22,7 +22,7 @@ const config = {
     // 필수 - 로그인 경로. 개인 경로 보호 및 401 오류 처리에 사용
     loginUrl: "/login",
     // 필수 — 로그인 성공 후 리다이렉트될 개인 페이지 경로.
-    callbackUrl: "/dashboard",
+    callbackUrl: "/",
   },
 };
 

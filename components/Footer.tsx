@@ -5,14 +5,15 @@ import config from "@/config";
 import logo from "@/app/icon.png";
 
 // 사업자 관련 정보
+
 const companyInfo = {
-  name: "수파 스타트업",
-  company_number: "123-45-67890",
-  selling_number: "제2024-서울-00000호",
-  owner: "김수파",
+  name: "에이스 테크놀로지",
+  company_number: "101-23-45678",
+  selling_number: "제2025-서울-01234호",
+  owner: "홍길동",
   address:
-    "서울특별시 강남구 테헤란로 14길 6 남도빌딩 4층 401호(삼성동, 남도빌딩)",
-  email: "supa@supastartup.com",
+    "서울특별시 강남구 테헤란로 427 위워크타워 10층",
+  email: "contact@acetech.com",
 };
 
 const Footer = () => {
@@ -67,12 +68,6 @@ const Footer = () => {
                     이메일로 문의하기
                   </a>
                 )}
-                <Link href="/#pricing" className="link link-hover">
-                  가격
-                </Link>
-                <Link href="/blog" className="link link-hover">
-                  블로그
-                </Link>
               </div>
             </div>
 
