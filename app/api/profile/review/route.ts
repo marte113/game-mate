@@ -48,8 +48,8 @@ export async function GET(request: NextRequest) {
       .from('reviews')
       .select(`
         *,
-        reviewer:reviewer_id ( id, name, profile_circle_img )
-      `) // reviewer_id를 통해 users 테이블 join
+        reviewer:users!reviews_reviewer_id_fkey ( id, name, profile_circle_img )
+      `) // 외래키 명시 조인으로 타입 추론 안정화
       .eq('reviewed_id', reviewedUserId) // reviewed_id 기준으로 필터링
       .order('created_at', { ascending: false }) // 최신순 정렬 (옵션)
       // .limit(10) // 필요시 페이지네이션 또는 개수 제한

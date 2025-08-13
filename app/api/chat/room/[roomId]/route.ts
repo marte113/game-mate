@@ -8,10 +8,10 @@ import { ChatRoom } from '@/app/dashboard/chat/_types/chatTypes'
 
 export async function GET(
   request: Request,
-  { params }: { params: { roomId: string } }
+  { params }: { params: Promise<{ roomId: string }> }
 ): Promise<NextResponse> {
   try {
-    const roomId = params.roomId
+    const { roomId } = await params
     
     if (!roomId) {
       return NextResponse.json(

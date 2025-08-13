@@ -12,9 +12,7 @@ import { PrefetchedProfileData } from '../_types/profile.types'
 
 
 interface ProfilePageProps {
-  params: {
-    id: string // URL 파라미터 'id' (public_id)
-  }
+  params: Promise<{ id: string }>
 }
 
 // 서버 컴포넌트에서 초기 데이터 로드 (404 처리용)
@@ -44,7 +42,8 @@ async function checkProfileExists(profileId: string): Promise<boolean> {
 
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
-  const profileId = params.id
+  const resolvedParams = await params
+  const profileId = resolvedParams.id
 
   // 서버 레벨에서 프로필 존재 유무 확인 후 404 처리
   const profileExists = await checkProfileExists(profileId)

@@ -4,13 +4,13 @@ import ProfileSection from "./_components/profileSection";
 import TokenSection from "./_components/tokenSection/TokenSection";
 import ClientTabNav from "./_components/ClientTabNav";
 // searchParams는 서버 컴포넌트의 props로 자동으로 전달됩니다
-export default function DashboardPage({
+export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: { tab?: string };
+  searchParams: Promise<{ tab?: string }>;
 }) {
-  // 서버 컴포넌트에서 searchParams에 직접 접근
-  const currentTab = searchParams.tab || "profile";
+  const resolvedSearchParams = await searchParams;
+  const currentTab = resolvedSearchParams.tab || "profile";
 
   const renderSection = () => {
     switch (currentTab) {
