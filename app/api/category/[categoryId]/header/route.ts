@@ -6,9 +6,9 @@ import { Database } from "@/types/database.types";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { categoryId: string } }
+  { params }: { params: Promise<{ categoryId: string }> }
 ) {
-  const { categoryId } = params; // 예: "League_of_legend"
+  const { categoryId } = await params; // 예: "League_of_legend"
 
   const supabase = createRouteHandlerClient<Database>({
     cookies: () => cookies(),

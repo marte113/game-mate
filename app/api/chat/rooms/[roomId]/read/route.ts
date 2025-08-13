@@ -5,15 +5,13 @@ import { NextResponse } from 'next/server'
 import { Database } from '@/types/database.types'
 
 interface RouteParams {
-  params: {
-    roomId: string
-  }
+  params: Promise<{ roomId: string }>
 }
 
 export async function POST(request: Request, { params }: RouteParams) {
   try {
     const supabase = createRouteHandlerClient<Database>({ cookies })
-    const roomId = params.roomId
+    const { roomId } = await params
     
     // 현재 사용자 확인
     const { data: { user } } = await supabase.auth.getUser()

@@ -74,9 +74,9 @@ export async function POST(request: Request) {
     if (validatedData.nickname !== undefined) updatePayload.nickname = validatedData.nickname;
     if (validatedData.username !== undefined) updatePayload.username = validatedData.username;
     if (validatedData.description !== undefined) updatePayload.description = validatedData.description;
-    if (validatedData.selectedGames !== undefined) updatePayload.selected_games = validatedData.selectedGames;
-    if (validatedData.selectedTags !== undefined) updatePayload.selected_tags = validatedData.selectedTags;
-    if (validatedData.youtubeUrls !== undefined) updatePayload.youtube_urls = validatedData.youtubeUrls;
+    if (validatedData.selected_games !== undefined) updatePayload.selected_games = validatedData.selected_games;
+    if (validatedData.selected_tags !== undefined) updatePayload.selected_tags = validatedData.selected_tags;
+    if (validatedData.youtube_urls !== undefined) updatePayload.youtube_urls = validatedData.youtube_urls;
     if (validatedData.is_mate !== undefined) updatePayload.is_mate = validatedData.is_mate;
 
     if (Object.keys(updatePayload).length === 0) {

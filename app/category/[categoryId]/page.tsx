@@ -14,7 +14,17 @@ import CategoryHeader from '../_components/CategoryHeader'
 export default function CategoryIdPage() {
   const params = useParams()
   // params.categoryId가 string | string[] 일 수 있으므로 string으로 처리
-  const categoryId = Array.isArray(params.categoryId) ? params.categoryId[0] : params.categoryId
+  const rawCategoryId = params.categoryId
+  const categoryId = Array.isArray(rawCategoryId) ? rawCategoryId[0] : rawCategoryId
+
+  // 유효하지 않은 경우 조기 반환하여 타입 보장
+  if (typeof categoryId !== 'string' || categoryId.length === 0) {
+    return (
+      <div className="text-center py-10 text-red-500">
+        잘못된 카테고리입니다.
+      </div>
+    )
+  }
 
   const {
     data,
@@ -28,10 +38,10 @@ export default function CategoryIdPage() {
     MatesApiResponse, // TData
     Error, // TError
     InfiniteData<MatesApiResponse>, // TQueryData
-    Readonly<['mates', string]>, // TQueryKey - 명시적으로 타입 지정
+    Readonly<['mates', string]>, // TQueryKey - categoryId는 문자열 확정
     number // TPageParam - 명시적으로 타입 지정
     >({
-    queryKey: ['mates', categoryId], // 타입 인자와 일치
+    queryKey: ['mates', categoryId], // categoryId undefined 허용
     queryFn: fetchMates,
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextPage,
