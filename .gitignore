@@ -37,3 +37,7 @@ next-env.d.ts
 
 #cursor
 .cursorrules
+
+# project specific
+/backend/
+/dailyRecord/
