@@ -41,3 +41,5 @@ next-env.d.ts
 # project specific
 /backend/
 /dailyRecord/
+supabase/schema.sql
+supabase/.temp/
