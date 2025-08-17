@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -19,9 +19,22 @@ class ApiError extends Error {
 
 export async function GET(request: Request) {
   try {
-    const supabaseServer = createRouteHandlerClient(
-      { cookies },
-      { supabaseUrl, supabaseKey: supabaseServiceKey }
+    const cookieStore = await cookies();
+    const supabaseServer = createServerClient(
+      supabaseUrl,
+      supabaseServiceKey,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll();
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options);
+            });
+          },
+        },
+      }
     );
 
     const { searchParams } = new URL(request.url);

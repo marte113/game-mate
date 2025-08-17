@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+
+import { createClient } from "@/libs/api/supabase";
 
 interface ProfileInfo {
   nickname: string;
@@ -28,7 +29,7 @@ export default function ProfileDropdownInfo() {
   useEffect(() => {
     const fetchProfileInfo = async () => {
       try {
-        const supabase = createClientComponentClient();
+        const supabase = createClient();
         
         // 현재 로그인한 사용자 정보 가져오기
         const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -72,7 +73,7 @@ export default function ProfileDropdownInfo() {
           profileImage: userData?.profile_circle_img || "/avatar/avatar_default.png",
           following,
           followers: profileData.follower_count || 0,
-          publicId: profileData.public_id || "",
+          publicId: String(profileData.public_id || ""),
         });
       } catch (error) {
         console.error("프로필 정보 로드 중 오류 발생:", error);

@@ -1,14 +1,13 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
+import { createClient } from "@/libs/api/supabase";
 import {
   PrefetchedProfileData,
   ProfileMainContentProps,
 } from "@/app/profile/_types/profile.types";
 import { useAuthStore } from "@/stores/authStore"; // isOwner 확인용
-import { Database } from "@/types/database.types"; // 추가
 
 import ProfileTabNav from "./ProfileTabNav";
 import ProfileAlbumCarousel from "./ProfileAlbumCarousel";
@@ -22,7 +21,7 @@ import ProfileReviewSection from "./ProfileReviewSection";
 export type ProfileTabType = "profile"; // | 'videos' | 'reviews'; // 추후 확장
 
 // 클라이언트 사이드 데이터 페칭 함수 (ProfileHeader와 동일, 추후 분리 권장)
-async function fetchClientProfile(supabase: ReturnType<typeof createClientComponentClient<Database>>, publicProfileId: number): Promise<PrefetchedProfileData | null> {
+async function fetchClientProfile(supabase: ReturnType<typeof createClient>, publicProfileId: number): Promise<PrefetchedProfileData | null> {
   console.log(`[Client Fetch] Fetching profile for public_id: ${publicProfileId}`);
   const { data: profileInfo, error: profileError } = await supabase
     .from('profiles')
@@ -58,7 +57,7 @@ export default function ProfileMainContent({
   profileId,
 }: ProfileMainContentProps) {
   const { user: loggedInUser } = useAuthStore(); // isOwner 확인용
-  const supabase = createClientComponentClient<Database>(); // 클라이언트 컴포넌트용 Supabase 클라이언트 생성
+  const supabase = createClient(); // 클라이언트 컴포넌트용 Supabase 클라이언트 생성
 
   // Prefetch된 프로필 데이터 가져오기 (하위 컴포넌트에 전달 목적)
   const queryKey = ["profile", profileId];

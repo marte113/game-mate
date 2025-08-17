@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/libs/api/supabase'
 
 import {UsersRow, ProfilesRow} from '@/types/database.table.types'
 
@@ -37,7 +37,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   loginWithKakao: async () => {
     try {
       set({ isLoading: true, error: null })
-      const supabase = createClientComponentClient()
+      const supabase = createClient()
       const redirectURL = window.location.origin + "/api/auth/callback"
       
       await supabase.auth.signInWithOAuth({
@@ -56,7 +56,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   loginWithGoogle: async () => {
     try {
       set({ isLoading: true, error: null })
-      const supabase = createClientComponentClient()
+      const supabase = createClient()
       const redirectURL = window.location.origin + "/api/auth/callback"
       
       await supabase.auth.signInWithOAuth({
@@ -75,7 +75,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: async () => {
     try {
       set({ isLoading: true, error: null })
-      const supabase = createClientComponentClient()
+      const supabase = createClient()
       await supabase.auth.signOut()
       set({ user: null, profile: null, isLoading: false })
     } catch (error) {
@@ -87,7 +87,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   checkAuth: async () => {
     try {
       set({ isLoading: true, error: null })
-      const supabase = createClientComponentClient()
+      const supabase = createClient()
       const { data: { session } } = await supabase.auth.getSession()
       if (session?.user) {
         // 사용자 정보 확인

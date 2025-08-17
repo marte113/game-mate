@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Star, MessageCircle, Heart, Share2 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/libs/api/supabase'
 import { toast } from 'react-hot-toast'
 
 import { useAuthStore } from '@/stores/authStore'
@@ -24,7 +24,7 @@ const mockProfileDataExtras = {
 // --- 임시 Mock 데이터 끝 ---
 
 // 클라이언트 사이드 데이터 페칭 함수 (서버 함수와 유사하게 구현)
-async function fetchClientProfile(supabase: ReturnType<typeof createClientComponentClient<Database>>, publicProfileId: number): Promise<PrefetchedProfileData | null> {
+async function fetchClientProfile(supabase: ReturnType<typeof createClient>, publicProfileId: number): Promise<PrefetchedProfileData | null> {
   console.log(`[Client Fetch] Fetching profile for public_id: ${publicProfileId}`);
   const { data: profileInfo, error: profileError } = await supabase
     .from('profiles')
@@ -59,7 +59,7 @@ async function fetchClientProfile(supabase: ReturnType<typeof createClientCompon
 
 export default function ProfileHeader({ profileId }: ProfileHeaderProps) {
   const router = useRouter()
-  const supabase = createClientComponentClient<Database>() // 클라이언트 컴포넌트용 Supabase 클라이언트 생성
+  const supabase = createClient() // 클라이언트 컴포넌트용 Supabase 클라이언트 생성
   const { user: loggedInUser } = useAuthStore() // 로그인한 사용자 정보
   const { findOrCreateChatWithUser, isLoading: chatLoading } = useChatStore()
   const { setSelectedChat } = useChatStoreAlias()

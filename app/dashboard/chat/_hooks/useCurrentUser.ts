@@ -1,12 +1,12 @@
 // app/dashboard/chat/_hooks/useCurrentUser.ts
 import { useState, useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/libs/api/supabase'
 import { User } from '@supabase/supabase-js'
 
 // useCurrentUser.ts
 export function useCurrentUser() {
     const [user, setUser] = useState<User | null>(null)
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
     
     useEffect(() => {
       const fetchCurrentUser = async () => {

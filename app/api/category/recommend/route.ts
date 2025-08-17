@@ -2,7 +2,7 @@
 // 검증 필요 없음.
 // recommend 
 
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -28,9 +28,23 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const supabase = createRouteHandlerClient<Database>({
-    cookies: () => cookies(),
-  });
+  const cookieStore = await cookies();
+  const supabase = createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options);
+          });
+        },
+      },
+    }
+  );
 
   try {
     // 1. 메이트가 있는 게임만 조회하기 위한 게임 이름 목록 가져오기

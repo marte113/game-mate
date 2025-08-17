@@ -2,7 +2,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/libs/api/supabase'
 import { useQueryClient } from '@tanstack/react-query'
 import { RealtimeChannel, RealtimePostgresChangesPayload } from '@supabase/supabase-js'
 
@@ -14,7 +14,7 @@ export const useMessageSubscription = (currentChatRoomId: string | null) => {
   const queryClient = useQueryClient()
   
   useEffect(() => {
-    const supabase = createClientComponentClient<Database>()
+    const supabase = createClient()
     
     const subscription: RealtimeChannel = supabase
       .channel('public:messages')

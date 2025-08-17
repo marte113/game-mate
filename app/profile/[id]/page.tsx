@@ -1,6 +1,5 @@
 import { QueryClient } from '@tanstack/react-query'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createServerClientComponent } from '@/libs/api/server'
 import { notFound } from 'next/navigation'
 
 import { Database } from '@/types/database.types'
@@ -18,7 +17,7 @@ interface ProfilePageProps {
 // 서버 컴포넌트에서 초기 데이터 로드 (404 처리용)
 async function checkProfileExists(profileId: string): Promise<boolean> {
    const queryClient = new QueryClient() // 임시 QueryClient
-   const supabase = createServerComponentClient<Database>({ cookies })
+   const supabase = await createServerClientComponent()
    const numericProfileId = Number(profileId)
    const queryKey = ['profile', profileId] // 컨테이너와 동일한 키 사용
 

@@ -3,7 +3,7 @@
 
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/libs/api/supabase';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 
 import { Database } from '@/types/database.types';
@@ -16,7 +16,7 @@ import { useAuthStore } from '@/stores/authStore'; // Auth 스토어 임포트
 
 export function useTaskSubscription(): void { // 인자 제거
   const queryClient = useQueryClient();
-  const supabase = createClientComponentClient<Database>();
+  const supabase = createClient();
   const user = useAuthStore((state) => state.user); // 스토어에서 사용자 정보 가져오기
   const userId = user?.id; // 사용자 ID 추출
 

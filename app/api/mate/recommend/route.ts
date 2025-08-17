@@ -1,6 +1,6 @@
 // 추천 메이트 데이터를 가져오는 라우트
 
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
@@ -16,12 +16,27 @@ export type RecommendedMateData = {
 }
 
 export async function GET() {
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   // 주의: 추천 메이트는 로그인 여부와 관계 없으므로,
   // 익명 사용자도 읽을 수 있도록 RLS 정책 설정 또는 service_role 키 사용 필요
   // 여기서는 createRouteHandlerClient를 사용하지만, 실제로는
   // 익명 접근이 가능하도록 설정된 클라이언트 또는 service_role 클라이언트 사용 고려
-  const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore })
+  const supabase = createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options)
+          })
+        },
+      },
+    }
+  )
 
   try {
     // 임시 추천 로직: is_mate = true 인 사용자 중 랜덤 5명

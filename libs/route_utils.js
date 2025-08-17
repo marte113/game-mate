@@ -1,4 +1,4 @@
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
 
@@ -23,7 +23,25 @@ export async function getSupabaseClientServiceRole() {
 
 // 서버, 세션
 export async function getSupabaseSession() {
-  const supabase = createRouteHandlerClient({ cookies });
+  const cookieStore = await cookies();
+  
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options);
+          });
+        },
+      },
+    }
+  );
+  
   const { data } = await supabase.auth.getSession();
   const { session } = data;
 

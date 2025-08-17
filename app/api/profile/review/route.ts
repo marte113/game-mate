@@ -1,7 +1,7 @@
 //여기에 리뷰를 가져오는 supabase 코드를 작성
 //
 import { NextResponse, NextRequest } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
 import { Database } from '@/types/database.types'
@@ -13,7 +13,23 @@ export type ApiReviewData = Omit<ReviewsRow, 'reviewer_id' | 'reviewed_id' | 're
 }
 
 export async function GET(request: NextRequest) {
-  const supabase = createRouteHandlerClient<Database>({ cookies })
+  const cookieStore = await cookies()
+  const supabase = createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options)
+          })
+        },
+      },
+    }
+  )
   const { searchParams } = new URL(request.url)
   const publicProfileIdString = searchParams.get('profileId') // public_id 받기
 

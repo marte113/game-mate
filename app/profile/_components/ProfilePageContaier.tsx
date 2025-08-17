@@ -1,10 +1,8 @@
 import { ReactNode } from 'react';
-import { cookies } from 'next/headers';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 
-import { Database } from '@/types/database.types'; // DB 타입 경로 확인
-import { PrefetchedProfileData } from '@/app/profile/_types/profile.types'; // 수정된 타입 경로
+import { createServerClientComponent } from '@/libs/api/server';
+import { PrefetchedProfileData } from '@/app/profile/_types/profile.types';
 
 // 컴포넌트 Props 타입 정의
 interface ProfilePageContainerProps {
@@ -15,7 +13,7 @@ interface ProfilePageContainerProps {
 // --- 타입 정의 제거 ---
 // type PublicProfile = Pick< ... >;
 
-async function fetchProfileData(supabase: ReturnType<typeof createServerComponentClient<Database>>, publicProfileId: number): Promise<PrefetchedProfileData | null> {
+async function fetchProfileData(supabase: Awaited<ReturnType<typeof createServerClientComponent>>, publicProfileId: number): Promise<PrefetchedProfileData | null> {
   console.log(`[Server] Fetching profile for public_id: ${publicProfileId}`);
   const { data: profileInfo, error: profileError } = await supabase
     .from('profiles')
@@ -61,7 +59,7 @@ export default async function ProfilePageContainer({
   children,
 }: ProfilePageContainerProps) {
   const queryClient = new QueryClient();
-  const supabase = createServerComponentClient<Database>({ cookies });
+  const supabase = await createServerClientComponent();
   const numericProfileId = Number(profileId);
   const queryKey = ['profile', profileId];
 
