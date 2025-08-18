@@ -2,7 +2,7 @@
 'use client'
 
 import { create } from 'zustand'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/libs/api/supabase'
 
 import { Database } from '@/types/database.types'
 
@@ -44,7 +44,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   },
   
   fetchNotifications: async () => {
-    const supabase = createClientComponentClient<Database>()
+    const supabase = createClient()
     const { data: userData } = await supabase.auth.getUser()
     
     if (!userData.user) return
@@ -78,7 +78,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   },
   
   markAsRead: async (id) => {
-    const supabase = createClientComponentClient<Database>()
+    const supabase = createClient()
     
     await supabase
       .from('notifications')
@@ -89,7 +89,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   },
   
   markAllAsRead: async () => {
-    const supabase = createClientComponentClient<Database>()
+    const supabase = createClient()
     const { data: userData } = await supabase.auth.getUser()
     
     if (!userData.user) return
@@ -104,7 +104,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   },
   
   subscribeToNotifications: () => {
-    const supabase = createClientComponentClient<Database>()
+    const supabase = createClient()
     
     // 실시간 알림 구독
     const subscription = supabase
@@ -128,7 +128,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   },
   
   markChatNotificationsAsRead: async (chatRoomId: string) => {
-    const supabase = createClientComponentClient<Database>()
+    const supabase = createClient()
     const { data: userData } = await supabase.auth.getUser()
     
     console.log("markChatNotificationsAsRead 실행")
@@ -176,7 +176,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   },
   
   markTaskNotificationsAsRead: async () => {
-    const supabase = createClientComponentClient<Database>()
+    const supabase = createClient()
     const { data: userData } = await supabase.auth.getUser()
     
     if (!userData.user) return
@@ -193,7 +193,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   },
   
   markHeaderNotificationsAsRead: async () => {
-    const supabase = createClientComponentClient<Database>()
+    const supabase = createClient()
     const { data: userData } = await supabase.auth.getUser()
     
     if (!userData.user) return
@@ -211,7 +211,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   
   // Realtime 구독 설정을 위한 새 함수
   setupNotificationSubscription: () => {
-    const supabase = createClientComponentClient<Database>()
+    const supabase = createClient()
     
     const channel = supabase
       .channel('public:notifications')

@@ -1,20 +1,12 @@
 'use client'
 
 import { create } from 'zustand'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/libs/api/supabase'
 
 import { Database } from '@/types/database.types'
 
-// 클라이언트 컴포넌트용 Supabase 인스턴스 생성 (쿠키 자동 처리)
-const supabase = createClientComponentClient<Database>({
-  options: {
-    global: {
-      headers: {
-        'X-Client-Info': 'game-mate-client'
-      }
-    }
-  }
-})
+// 클라이언트 컴포넌트용 Supabase 인스턴스 생성
+const supabase = createClient()
 
 type Tables = Database['public']['Tables']
 type ChatRoomRow = Tables['chat_rooms']['Row']

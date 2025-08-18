@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/libs/api/supabase'
 
 import { useChatStore } from '@/stores/chatStore'
 import { chatApi, ChatQueryKeys } from '@/app/dashboard/chat/_api'
@@ -75,7 +75,7 @@ export default function ChatList({ searchTerm = '' }: ChatListProps) {
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
-      const supabase = createClientComponentClient()
+      const supabase = createClient()
       const { data } = await supabase.auth.getUser()
       if (data.user) {
         setCurrentUserId(data.user.id)

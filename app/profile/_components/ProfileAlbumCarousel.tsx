@@ -1,14 +1,13 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
+import { createClient } from '@/libs/api/supabase'
 import MainCarousel from '@/components/MainCarousel' // 경로 확인
-import { Database } from '@/types/database.types'
 import { AlbumImage, ProfileAlbumCarouselProps } from '@/app/profile/_types/profile.types'
 
 // 앨범 이미지 가져오는 함수
-async function fetchAlbumImages(supabase: ReturnType<typeof createClientComponentClient<Database>>, userId: string): Promise<AlbumImage[]> {
+async function fetchAlbumImages(supabase: ReturnType<typeof createClient>, userId: string): Promise<AlbumImage[]> {
   const { data: albumImages, error } = await supabase
     .from('album_images')
     .select('id, image_url, order_num')
@@ -24,7 +23,7 @@ async function fetchAlbumImages(supabase: ReturnType<typeof createClientComponen
 }
 
 export default function ProfileAlbumCarousel({ userId, profileNickname }: ProfileAlbumCarouselProps) {
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   // 앨범 이미지 데이터 Fetch (클라이언트 사이드)
   const queryKey = ['albumImages', userId]

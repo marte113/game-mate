@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 import { Database } from "@/types/database.types";
@@ -19,9 +19,22 @@ class ApiError extends Error {
 
 export async function GET() {
   try {
-    const supabaseServer = createRouteHandlerClient<Database>(
-      { cookies },
-      { supabaseUrl, supabaseKey: supabaseAnonKey }
+    const cookieStore = await cookies();
+    const supabaseServer = createServerClient<Database>(
+      supabaseUrl,
+      supabaseAnonKey,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll();
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options);
+            });
+          },
+        },
+      }
     );
 
     const { data: { session } } = await supabaseServer.auth.getSession();
