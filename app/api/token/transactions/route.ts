@@ -37,13 +37,13 @@ export async function GET() {
       }
     );
 
-    const { data: { session } } = await supabaseServer.auth.getSession();
+    const { data: { user }, error: userError } = await supabaseServer.auth.getUser();
 
-    if (!session) {
+    if (userError || !user) {
       throw new ApiError("인증되지 않은 사용자입니다.", 401);
     }
 
-    const userId = session.user.id;
+    const userId = user.id;
 
     const { data: transactions, error: transactionsError } = await supabaseServer
       .from("token_transactions")

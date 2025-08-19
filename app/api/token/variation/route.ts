@@ -41,13 +41,12 @@ export async function GET() {
       throw new ApiError("Failed to create supabase server client", 500);
     }
 
-    const { data: sessionData, error: sessionError } =
-      await supabaseServer.auth.getSession();
-    if (sessionError || !sessionData.session?.user) {
-      throw new ApiError("Session Unauthorized", 401);
+    const { data: { user }, error: userError } = await supabaseServer.auth.getUser();
+    if (userError || !user) {
+      throw new ApiError("Unauthorized", 401);
     }
 
-    const userId = sessionData.session.user.id;
+    const userId = user.id;
 
     // 현재 시각을 기준으로 날짜 범위 계산
     const current_ts = new Date().toISOString();

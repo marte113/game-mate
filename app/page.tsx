@@ -19,7 +19,7 @@ const slides: Slide[] = [
     text: "새로운 게임 친구와 스쿼드를 이루어 두 배로 즐겨봐요!",
   },
   {
-    image: "/carousel/welcome.png",
+    image: "/carousel/welcomeBanner.png",
     alt: "게임 배너 2",
     text: "첫 가입 이벤트 진행 중!",
   },

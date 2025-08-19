@@ -37,13 +37,13 @@ export async function GET(request: Request) {
         }
       );
   
-      const { data: { session } } = await supabaseServer.auth.getSession();
+      const { data: { user }, error: userError } = await supabaseServer.auth.getUser();
   
-      if (!session) {
+      if (userError || !user) {
         throw new ApiError("인증되지 않은 사용자입니다.", 401);
       }
   
-      const userId = session.user.id;
+      const userId = user.id;
   
       const { searchParams } = new URL(request.url);
       const pageParam = searchParams.get("pageParam") || undefined;

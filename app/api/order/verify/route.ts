@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
+import { createClient as createSupabaseAdminClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
@@ -125,7 +126,22 @@ export async function POST(request: Request) {
     }
     
     // 트랜잭션 시작: 주문 생성 및 토큰 차감
-    const { data: order, error: transactionError } = await supabase.rpc('create_order_with_payment', {
+    // service_role 클라이언트로 민감 트랜잭션 수행 (A 배치로 anon/auth EXECUTE 권한 회수됨)
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY
+    if (!serviceKey) {
+      return NextResponse.json(
+        { error: '서버 설정 오류: SUPABASE_SERVICE_ROLE_KEY가 설정되어 있지 않습니다.' },
+        { status: 500 }
+      )
+    }
+
+    const admin = createSupabaseAdminClient<Database>(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      serviceKey,
+      { auth: { persistSession: false } }
+    )
+
+    const { data: order, error: transactionError } = await admin.rpc('create_order_with_payment', {
       p_requester_id: user.id,
       p_provider_id: providerId,
       p_game: game,

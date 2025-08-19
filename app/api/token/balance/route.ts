@@ -44,9 +44,9 @@ export async function GET() {
       );
     }
 
-    const { data: { session } } = await supabaseServer.auth.getSession();
+    const { data: { user }, error: userError } = await supabaseServer.auth.getUser();
 
-    if (!session) {
+    if (userError || !user) {
       throw new ApiError("Unauthorized", 401);
     }
 
@@ -55,7 +55,7 @@ export async function GET() {
     } = await supabaseServer
       .from("user_tokens")
       .select("balance")
-      .eq("user_id", session.user.id)
+      .eq("user_id", user.id)
       .single();
 
     return NextResponse.json({ balance });

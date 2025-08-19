@@ -88,13 +88,17 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       set({ isLoading: true, error: null })
       const supabase = createClient()
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session?.user) {
+      const { data: { user }, error: userAuthError } = await supabase.auth.getUser()
+      if (userAuthError) {
+        set({ error: '인증 정보를 확인하는 중 오류가 발생했습니다', isLoading: false })
+        return
+      }
+      if (user) {
         // 사용자 정보 확인
         const { data: userData, error: userError } = await supabase
           .from('users')
           .select('*')
-          .eq('id', session.user.id)
+          .eq('id', user.id)
           .single()
         
         if (userError) {
@@ -109,7 +113,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('*')  
-          .eq('user_id', session.user.id)
+          .eq('user_id', user.id)
           .single()
         
         if (profileError) {

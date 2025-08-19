@@ -44,14 +44,12 @@ export async function GET(request: Request) {
       throw new ApiError("결제 ID가 없습니다", 400);
     }
 
-    const { data: sessionData, error: sessionError } =
-      await supabaseServer.auth.getSession();
-
-    if (sessionError || !sessionData.session?.user.id) {
-      throw new ApiError("인증 세션이 유효하지 않습니다", 401, sessionError);
+    const { data: { user }, error: userError } = await supabaseServer.auth.getUser();
+    if (userError || !user?.id) {
+      throw new ApiError("인증 세션이 유효하지 않습니다", 401, userError);
     }
 
-    const userId = sessionData.session.user.id;
+    const userId = user.id;
 
     const portOneResponse = await fetch(
       `https://api.portone.io/payments/${encodeURIComponent(paymentId)}`,

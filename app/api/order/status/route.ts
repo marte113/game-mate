@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
 import { Database } from '@/types/database.types'
+import { createClient as createSupabaseAdminClient } from '@supabase/supabase-js'
 
 // PATCH: 의뢰 상태 변경
 export async function PATCH(request: Request) {
@@ -148,11 +149,25 @@ export async function PATCH(request: Request) {
       // status가 null일 경우 비교 안함
     }
     
+    // service_role 클라이언트 준비 (민감 RPC는 admin으로 실행)
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY
+    let admin: ReturnType<typeof createSupabaseAdminClient<Database>> | null = null
+    if (serviceKey) {
+      admin = createSupabaseAdminClient<Database>(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        serviceKey,
+        { auth: { persistSession: false } }
+      )
+    }
+
     // 완료 시 토큰 지급
     if (status === 'completed' && requestData) {
       // 완료 처리 전 로그 추가
       console.log(`[API /api/order/status] About to call RPC complete_order_payment for ${requestId}`);
-      const { error: completeError } = await supabase.rpc('complete_order_payment', {
+      if (!admin) {
+        return NextResponse.json({ error: '서버 설정 오류: SUPABASE_SERVICE_ROLE_KEY가 필요합니다.' }, { status: 500 })
+      }
+      const { error: completeError } = await admin.rpc('complete_order_payment', {
         p_order_id: requestId
       });
       
@@ -165,7 +180,10 @@ export async function PATCH(request: Request) {
     } else if ((status === 'canceled' || status === 'rejected') && requestData) {
       // 환불 처리 전 로그 추가
       console.log(`[API /api/order/status] About to call RPC cancel_request_and_refund for ${requestId} (${status})`);
-      const { error: refundError } = await supabase.rpc('cancel_request_and_refund', {
+      if (!admin) {
+        return NextResponse.json({ error: '서버 설정 오류: SUPABASE_SERVICE_ROLE_KEY가 필요합니다.' }, { status: 500 })
+      }
+      const { error: refundError } = await admin.rpc('cancel_request_and_refund', {
         p_request_id: requestId
       });
       

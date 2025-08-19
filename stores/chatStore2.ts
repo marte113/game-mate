@@ -291,12 +291,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
       // 기존 채팅방이 없으면 새 채팅방을 직접 생성
       console.log('채팅방 직접 생성 시작');
       
-      // 세션 확인 로그
-      const { data: session } = await supabase.auth.getSession()
-      console.log('현재 세션 상태:', {
-        세션유무: !!session?.session,
-        만료시간: session?.session?.expires_at,
-        유저ID: session?.session?.user?.id
+      // 사용자 확인 로그(getUser 기반)
+      const { data: userState } = await supabase.auth.getUser()
+      console.log('현재 사용자 상태:', {
+        로그인여부: !!userState.user,
+        유저ID: userState.user?.id
       });
       
       try {

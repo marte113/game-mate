@@ -86,7 +86,7 @@ export default function MainCarousel({
               src={slide.image}
               alt={slide.alt}
               fill
-              className="object-cover"
+              className="object-center"
               priority={index === 0}
             />
             {slide.text ? (
