@@ -7,13 +7,6 @@ import { AtSign, CreditCard, UserCircle2, Paintbrush } from "lucide-react";
 import CaroselItem from "./CaroselItem";
 import ExpertSection from "./ExpertSection";
 
-// 기능 배열은 아코디언에 표시될 기능 목록입니다.
-// - title: 기능의 제목
-// - description: 기능에 대한 설명(클릭 시)
-// - type: 미디어 유형(비디오 또는 이미지)
-// - path: 미디어 경로(더 나은 SEO를 위해 로컬 경로를 사용해 보세요)
-// - format: 미디어의 형식(유형이 '비디오'인 경우)
-// - alt: 이미지의 대체 텍스트(유형이 'image'인 경우)
 const features = [
   {
     title: "신뢰할 수 있는 리뷰!",
@@ -57,7 +50,6 @@ const features = [
   },
 ];
 
-// An SEO-friendly accordion component including the title and a description (when clicked.)
 const Item = ({ feature, isOpen, setFeatureSelected }) => {
   const accordion = useRef(null);
   const { title, description, svg } = feature;
@@ -99,8 +91,6 @@ const Item = ({ feature, isOpen, setFeatureSelected }) => {
   );
 };
 
-// A component to display the media (video or image) of the feature. If the type is not specified, it will display an empty div.
-// Video are set to autoplay for best UX.
 const Media = ({ feature }) => {
   const { type, path, format, alt } = feature;
   const style = "rounded-2xl aspect-square w-full sm:w-[26rem]";
@@ -141,8 +131,6 @@ const Media = ({ feature }) => {
   }
 };
 
-// A component to display 2 to 5 features in an accordion.
-// By default, the first feature is selected. When a feature is clicked, the others are closed.
 const FeaturesAccordion = () => {
   const [featureSelected, setFeatureSelected] = useState(0);
 
@@ -192,3 +180,5 @@ const FeaturesAccordion = () => {
 };
 
 export default FeaturesAccordion;
+
+
