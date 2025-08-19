@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 
-import { createClient } from '@/libs/api/supabase'
+import { createClient } from '@/libs/api/client'
 import MainCarousel from '@/components/MainCarousel' // 경로 확인
 import { AlbumImage, ProfileAlbumCarouselProps } from '@/app/profile/_types/profile.types'
 

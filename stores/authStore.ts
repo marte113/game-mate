@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { createClient } from '@/libs/api/supabase'
+import { createClient } from '@/libs/api/client'
 
 import {UsersRow, ProfilesRow} from '@/types/database.table.types'
 

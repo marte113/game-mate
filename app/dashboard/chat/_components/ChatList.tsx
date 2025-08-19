@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { createClient } from '@/libs/api/supabase'
+import { createClient } from '@/libs/api/client'
 
 import { useChatStore } from '@/stores/chatStore'
 import { chatApi, ChatQueryKeys } from '@/app/dashboard/chat/_api'
