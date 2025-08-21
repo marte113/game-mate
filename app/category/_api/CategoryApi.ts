@@ -4,12 +4,25 @@
 import type { QueryFunctionContext } from '@tanstack/react-query' // QueryFunctionContext 임포트
 
 import type { GamesRow } from '@/types/database.table.types' // 테이블 타입 경로 확인
+import type { Database } from '@/types/database.types' // Database 타입 추가
 
 import { GameHeader } from '../_types/categoryPage.types'
 
 export interface GamesApiResponse {
   games: GamesRow[] // 실제 Games 테이블 Row 타입 사용
   nextPage: number | undefined
+}
+
+// Supabase 원본 타입 활용
+type GamesTableRow = Database['public']['Tables']['games']['Row']
+
+// 인기 게임 타입 - Supabase 타입 조합으로 생성
+export type PopularGame = Pick<GamesTableRow, 'id' | 'name' | 'description' | 'image_url'> & {
+  player_count: number; // null을 제거하고 number로 고정
+}
+
+export interface PopularGamesResponse {
+  games: PopularGame[]
 }
 
 // queryKey 타입을 readonly ['games'] 로 수정
@@ -43,4 +56,15 @@ export const fetchGameHeader = async (
 
   const data: GameHeader = await response.json()
   return data;
+}
+
+// 인기 게임 목록 조회 함수
+export const fetchPopularGames = async (limit: number = 6): Promise<PopularGamesResponse> => {
+  const response = await fetch(`/api/category/popular?limit=${limit}`)
+  
+  if (!response.ok) {
+    throw new Error(`Failed to fetch popular games: ${response.status}`)
+  }
+  
+  return response.json()
 }
