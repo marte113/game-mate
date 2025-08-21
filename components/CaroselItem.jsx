@@ -16,3 +16,5 @@ export default function CaroselItem({ src, alt }) {
     </div>
   );
 }
+
+

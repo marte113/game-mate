@@ -3,13 +3,13 @@
 import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 
-import { createActionClient } from '@/libs/api/supabase';
+import { createActionClient } from '@/libs/api/server';
 
 /**
  * 프로필 데이터 가져오기 서버 액션
  */
 export async function getProfileServerAction() {
-  const supabase = createActionClient(cookies());
+  const supabase = await createActionClient(cookies());
   
   // 현재 로그인한 사용자 정보 가져오기
   const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -93,7 +93,7 @@ export async function getProfileServerAction() {
  * 프로필 업데이트 서버 액션
  */
 export async function updateProfileServerAction(formData: FormData) {
-  const supabase = createActionClient(cookies());
+  const supabase = await createActionClient(cookies());
   
   // 현재 로그인한 사용자 정보 가져오기
   const { data: { user }, error: authError } = await supabase.auth.getUser();

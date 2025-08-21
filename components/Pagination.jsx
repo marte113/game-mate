@@ -1,7 +1,6 @@
 import React from "react";
 
 const Pagination = ({ totalPages, page, setPage }) => {
-  // 페이지네이션을 위한 페이지 범위 계산
   const startPage = Math.floor((page - 1) / 10) * 10 + 1;
   const endPage = Math.min(startPage + 9, totalPages);
 
@@ -52,3 +51,5 @@ const Pagination = ({ totalPages, page, setPage }) => {
 };
 
 export default Pagination;
+
+

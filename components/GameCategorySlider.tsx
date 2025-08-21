@@ -1,16 +1,12 @@
 'use client'
 
-import React from 'react'
+import React, { useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 
-interface Category {
-  id: string
-  name: string
-  image: string
-  slug: string
-}
+import { fetchPopularGames } from '@/app/category/_api/CategoryApi'
 
 interface GameCategoryItemProps {
   image: string
@@ -18,7 +14,8 @@ interface GameCategoryItemProps {
   slug: string
 }
 
-const categories: Category[] = [
+// 폴백용 하드코딩 카테고리 (API 실패 시 사용)
+const fallbackCategories = [
   {
     id: 'lol',
     name: '리그오브레전드',
@@ -38,12 +35,6 @@ const categories: Category[] = [
     slug: '/category/Battle_Ground'
   },
   {
-    id: 'voice',
-    name: '보이스 채팅',
-    image: '/images/voicechat.jpeg',
-    slug: '/category/Voice_Chat'
-  },
-  {
     id: 'valorant',
     name: '발로란트',
     image: '/images/valrorant.webp',
@@ -54,8 +45,16 @@ const categories: Category[] = [
     name: '이터널리턴',
     image: '/images/eternalreturn.jpg',
     slug: '/category/Eternal_Return'
+  },
+  {
+    id: 'voice',
+    name: '보이스 채팅',
+    image: '/images/voicechat.jpeg',
+    slug: '/category/Voice_Chat'
   }
 ]
+
+
 
 const GameCategoryItem = ({ image, name, slug }: GameCategoryItemProps) => {
   return (
@@ -77,19 +76,70 @@ const GameCategoryItem = ({ image, name, slug }: GameCategoryItemProps) => {
   )
 }
 
+// 스켈레톤 UI 컴포넌트
+const GameCategorySliderSkeleton = () => (
+  <section className="py-8 w-full max-w-7xl mx-auto px-4">
+    <div className="flex justify-between items-center mb-6">
+      <div className="h-8 w-32 bg-base-300 animate-pulse rounded"></div>
+      <div className="flex gap-2">
+        <div className="w-8 h-8 bg-base-300 animate-pulse rounded-full"></div>
+        <div className="w-8 h-8 bg-base-300 animate-pulse rounded-full"></div>
+      </div>
+    </div>
+    <div className="flex gap-3 overflow-hidden">
+      {Array(6).fill(0).map((_, i) => (
+        <div key={i} className="flex flex-col items-center gap-3 min-w-[180px] md:min-w-[200px]">
+          <div className="aspect-square w-full bg-base-300 animate-pulse rounded-xl"></div>
+          <div className="h-4 w-20 bg-base-300 animate-pulse rounded"></div>
+        </div>
+      ))}
+    </div>
+  </section>
+)
+
 const GameCategorySlider = () => {
+  const carouselRef = useRef<HTMLDivElement>(null)
+
+  // React Query로 인기 게임 데이터 조회
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['popular-games'],
+    queryFn: () => fetchPopularGames(6), // limit 6개로 설정
+    staleTime: 5 * 60 * 1000, // 5분간 신선하다고 간주
+    retry: 1, // 실패 시 1번만 재시도
+  })
+
   const scrollLeft = () => {
-    document.getElementById('game-categories')?.scrollBy({ left: -200, behavior: 'smooth' })
+    carouselRef.current?.scrollBy({ left: -200, behavior: 'smooth' })
   }
 
   const scrollRight = () => {
-    document.getElementById('game-categories')?.scrollBy({ left: 200, behavior: 'smooth' })
+    carouselRef.current?.scrollBy({ left: 200, behavior: 'smooth' })
   }
+
+  // 로딩 상태
+  if (isLoading) {
+    return <GameCategorySliderSkeleton />
+  }
+
+  // 에러 상태일 때 폴백 카테고리 사용
+  const categoriesToShow = error || !data?.games?.length 
+    ? fallbackCategories 
+    : data.games.map(game => ({
+        id: game.id,
+        name: game.description || game.name,
+        image: game.image_url || '/images/default-game-icon.webp',
+        slug: `/category/${game.name}`
+      }))
 
   return (
     <section className="py-8 w-full max-w-7xl mx-auto px-4">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl md:text-2xl font-bold text-base-content">추천 카테고리</h2>
+        <h2 className="text-xl md:text-2xl font-bold text-base-content">
+          추천 카테고리
+          {error && (
+            <span className="text-xs text-warning ml-2">(기본 목록)</span>
+          )}
+        </h2>
         <div className="flex gap-2">
           <button 
             onClick={scrollLeft}
@@ -108,20 +158,19 @@ const GameCategorySlider = () => {
         </div>
       </div>
 
-        <div 
-          id="game-categories" 
-          className="carousel carousel-center gap-3 p-4 rounded-box max-w-full overflow-x-auto"
-        >
-          {categories.map((category) => (
-            <GameCategoryItem
-              key={category.id}
-              image={category.image}
-              name={category.name}
-              slug={category.slug}
-            />
-          ))}
-        </div>
-          
+      <div 
+        ref={carouselRef}
+        className="carousel carousel-center gap-3 p-4 rounded-box max-w-full overflow-x-auto scroll-smooth"
+      >
+        {categoriesToShow.map((category) => (
+          <GameCategoryItem
+            key={category.id}
+            image={category.image}
+            name={category.name}
+            slug={category.slug}
+          />
+        ))}
+      </div>
     </section>
   )
 }

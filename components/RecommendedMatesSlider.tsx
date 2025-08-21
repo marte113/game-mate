@@ -1,6 +1,7 @@
+
 'use client'
 
-import React from 'react'
+import React, { useMemo, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react'
@@ -88,14 +89,22 @@ export const MateCard = ({ mate }: MateCardProps) => {
 }
 
 const RecommendedMatesSlider = ({ theme, mates }: RecommendedMatesSliderProps) => {
-  const sliderId = `recommended-mates-${theme.id}`;
+  console.log("props.mates", mates);
+  
+  // React ref로 DOM 요소 접근
+  const carouselRef = useRef<HTMLDivElement>(null)
+  
+  // 간단 랜덤 셔플
+  const shuffledMates = useMemo(() => {
+    return [...mates].sort(() => Math.random() - 0.5)
+  }, [mates])
   
   const scrollLeft = () => {
-    document.getElementById(sliderId)?.scrollBy({ left: -500, behavior: 'smooth' })
+    carouselRef.current?.scrollBy({ left: -500, behavior: 'smooth' })
   }
 
   const scrollRight = () => {
-    document.getElementById(sliderId)?.scrollBy({ left: 500, behavior: 'smooth' })
+    carouselRef.current?.scrollBy({ left: 500, behavior: 'smooth' })
   }
 
   return (
@@ -122,10 +131,10 @@ const RecommendedMatesSlider = ({ theme, mates }: RecommendedMatesSliderProps) =
 
       <div className="relative">
         <div 
-          id={sliderId}
+          ref={carouselRef}
           className="carousel carousel-center gap-4 pb-4 overflow-x-auto scroll-smooth"
         >
-          {mates.map((mate) => (
+          {shuffledMates.map((mate) => (
             <MateCard key={mate.id} mate={mate} />
           ))}
         </div>

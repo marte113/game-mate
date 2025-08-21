@@ -46,6 +46,7 @@ export default function RecommendedMates() {
   }
 
   const allThemes = data?.pages.flatMap(page => page.themes) || []
+  console.log("allThemes", allThemes);
 
   return (
     <>

@@ -4,12 +4,11 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Star, MessageCircle, Heart, Share2 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
-import { createClient } from '@/libs/api/supabase'
+import { createClient } from '@/libs/api/client'
 import { toast } from 'react-hot-toast'
 
 import { useAuthStore } from '@/stores/authStore'
-import { useChatStore } from '@/stores/chatStore2' // chatStore2 확인
-import { useChatStore as useChatStoreAlias } from '@/stores/chatStore' // chatStore 확인
+import { useChatStore } from '@/stores/chatStore'
 import { chatApi } from '@/app/dashboard/chat/_api/chatApi' // chatApi 경로 확인
 import Badge from '@/components/Badge' // Badge 컴포넌트 경로 확인
 import { PrefetchedProfileData, ProfileHeaderProps } from '@/app/profile/_types/profile.types'
@@ -61,8 +60,7 @@ export default function ProfileHeader({ profileId }: ProfileHeaderProps) {
   const router = useRouter()
   const supabase = createClient() // 클라이언트 컴포넌트용 Supabase 클라이언트 생성
   const { user: loggedInUser } = useAuthStore() // 로그인한 사용자 정보
-  const { findOrCreateChatWithUser, isLoading: chatLoading } = useChatStore()
-  const { setSelectedChat } = useChatStoreAlias()
+  const { findOrCreateChatWithUser, isLoading: chatLoading, setSelectedChat } = useChatStore()
 
   // Prefetch된 프로필 데이터 가져오기
   const queryKey = ['profile', profileId]
