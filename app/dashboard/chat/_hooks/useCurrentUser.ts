@@ -1,6 +1,6 @@
 // app/dashboard/chat/_hooks/useCurrentUser.ts
 import { useState, useEffect } from 'react'
-import { createClient } from '@/libs/api/client'
+import { createClient } from '@/libs/supabase/client'
 import { User } from '@supabase/supabase-js'
 
 // useCurrentUser.ts

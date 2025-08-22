@@ -3,7 +3,7 @@
 import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 
-import { createActionClient } from '@/libs/api/server';
+import { createActionClient } from '@/libs/supabase/server';
 
 /**
  * 프로필 데이터 가져오기 서버 액션

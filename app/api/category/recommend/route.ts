@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { Database } from "@/types/database.types";
 import { ThemeWithMates, MateData, RecommendedThemeResponse } from "@/app/(home)/_types/homePage.types";
+import { createDailyGameRandom, pickNewbieCount } from "@/utils/recommendation";
 
 type GameRow = { id: string; name: string; description: string | null; image_url: string | null };
 type RecommendedGameLatestRow = { game_id: string; player_count: number };
@@ -35,28 +36,7 @@ const NEWBIE_TARGET_MIN = 3;
 const NEWBIE_TARGET_MAX = 4;
 const COMPLETED_STATUS = "COMPLETED";
 
-function cyrb53(str: string, seed = 0) {
-  let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
-  for (let i = 0, ch; i < str.length; i++) {
-    ch = str.charCodeAt(i);
-    h1 = Math.imul(h1 ^ ch, 2654435761);
-    h2 = Math.imul(h2 ^ ch, 1597334677);
-  }
-  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-  return 4294967296 * (2097151 & h2) + (h1 >>> 0);
-}
-function mulberry32(a: number) {
-  return function () {
-    let t = (a += 0x6d2b79f5);
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-function pickNewbieCount(rng: () => number) {
-  return rng() < 0.5 ? NEWBIE_TARGET_MIN : NEWBIE_TARGET_MAX;
-}
+
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -204,7 +184,6 @@ export async function GET(request: NextRequest) {
     });
 
     const now = new Date();
-    const dayKey = now.toISOString().slice(0, 10);
 
     const scoreFor = (profile: ProfileCandidate, desc: string): number => {
       const rating = typeof profile.rating === "number" ? profile.rating : 0;
@@ -232,8 +211,7 @@ export async function GET(request: NextRequest) {
         (p) => Array.isArray(p.selected_games) && (p.selected_games as string[]).includes(desc)
       );
 
-      const seedStr = `${game.id}:${dayKey}`;
-      const rng = mulberry32(cyrb53(seedStr));
+      const rng = createDailyGameRandom(game.id);
 
       const newbies = gameCandidates.filter(isNewbie);
       const veterans = gameCandidates.filter((p) => !isNewbie(p));
@@ -248,7 +226,7 @@ export async function GET(request: NextRequest) {
       const newbiesSorted = sortByWeightedRandom(newbies);
       const veteransSorted = sortByWeightedRandom(veterans);
 
-      const newbieCount = Math.min(pickNewbieCount(rng), MATES_PER_THEME);
+      const newbieCount = Math.min(pickNewbieCount(rng, NEWBIE_TARGET_MIN, NEWBIE_TARGET_MAX), MATES_PER_THEME);
       const pickedNewbies = newbiesSorted.slice(0, newbieCount);
       const remaining = MATES_PER_THEME - pickedNewbies.length;
       const pickedVeterans = veteransSorted.slice(0, remaining);

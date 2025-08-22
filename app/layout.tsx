@@ -1,7 +1,7 @@
 import { Noto_Sans_KR } from "next/font/google";
 import PlausibleProvider from "next-plausible";
 
-import { getSEOTags } from "@/libs/seo";
+import { getSEOTags } from "@/libs/seo/seo";
 import ClientLayout from "@/components/LayoutClient";
 import config from "@/config";
 

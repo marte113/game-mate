@@ -66,7 +66,7 @@ const GameCategoryItem = ({ image, name, slug }: GameCategoryItemProps) => {
             alt={name}
             fill
             sizes="(max-width: 768px) 180px, 200px"
-            className="object-cover"
+            className="object-fill"
             
           />
         </div>

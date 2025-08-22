@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { createClient } from "@/libs/api/client";
+import { createClient } from "@/libs/supabase/client";
 import {
   PrefetchedProfileData,
   ProfileMainContentProps,

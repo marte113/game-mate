@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import cn from 'classnames';
+import { cn } from "@/utils/classname";
 
 interface Slide {
   image: string;
@@ -15,6 +15,19 @@ interface MainCarouselProps {
   initialSlideIndex?: number;
   className?: string;
 }
+
+const slides: Slide[] = [
+  {
+    image: "/images/arcadeBanner.jpg",
+    alt: "게임 배너 1",
+    text: "새로운 게임 친구와 스쿼드를 이루어 두 배로 즐겨봐요!",
+  },
+  {
+    image: "/carousel/welcomeBanner.png",
+    alt: "게임 배너 2",
+    text: "첫 가입 이벤트 진행 중!",
+  },
+];
 
 export default function MainCarousel({
   slides,

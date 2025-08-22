@@ -1,5 +1,5 @@
 import { QueryClient } from '@tanstack/react-query'
-import { createServerClientComponent } from '@/libs/api/server'
+import { createServerClientComponent } from '@/libs/supabase/server'
 import { notFound } from 'next/navigation'
 
 import { Database } from '@/types/database.types'

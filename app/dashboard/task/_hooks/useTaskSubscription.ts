@@ -3,7 +3,7 @@
 
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { createClient } from '@/libs/api/client';
+import { createClient } from '@/libs/supabase/client';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 
 import { Database } from '@/types/database.types';

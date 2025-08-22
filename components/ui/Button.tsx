@@ -3,7 +3,7 @@
 import { ButtonHTMLAttributes, ReactNode, forwardRef } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 
-import { cn } from '@/libs/utils'
+import { cn } from '@/utils/classname'
 
 // 버튼 변형 정의
 const buttonVariants = cva(

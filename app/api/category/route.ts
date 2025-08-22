@@ -5,7 +5,7 @@ import type { NextRequest } from 'next/server'
 
 import type { Database } from '@/types/database.types' // 경로 조정
 
-// 첫 로드시 로드할 아이템 수, 이후 페이지당 로드할 아이템 수
+// 첫 로드시 로드할 아이템 수, 이후 페이지당 게임 카테고리를 로드할 아이템 수
 const INITIAL_LOAD = 18
 const LOAD_PER_PAGE = 12
 

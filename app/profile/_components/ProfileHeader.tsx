@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Star, MessageCircle, Heart, Share2 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
-import { createClient } from '@/libs/api/client'
+import { createClient } from '@/libs/supabase/client'
 import { toast } from 'react-hot-toast'
 
 import { useAuthStore } from '@/stores/authStore'

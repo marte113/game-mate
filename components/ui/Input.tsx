@@ -2,7 +2,7 @@
 //
 import * as React from "react";
 
-import { cn } from "@/libs/utils"; // Assuming cn utility exists for class merging
+import { cn } from "@/utils/classname"; // Assuming cn utility exists for class merging
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {

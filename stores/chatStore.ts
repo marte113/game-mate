@@ -1,7 +1,7 @@
 'use client'
 
 import { create } from 'zustand'
-import { createClient } from '@/libs/api/client'
+import { createClient } from '@/libs/supabase/client'
 
 import { Database } from '@/types/database.types'
 

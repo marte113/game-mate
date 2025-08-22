@@ -9,7 +9,7 @@ import { ZodError } from 'zod';
 import { profileSchema, ProfileDataSchema } from '@/libs/schemas/profile.schema';
 import { fetchProfileInfo, updateProfileInfo } from '@/app/dashboard/_api/profileSectionApi';
 import { queryKeys } from '@/constants/queryKeys';
-import { parseApiError, setFormErrors } from '@/utils/errorUtils';
+import { parseApiError, setFormErrors } from '@/utils/errors/errorUtils';
 
 // Custom hook return type
 interface UseProfileFormReturn {
