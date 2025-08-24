@@ -26,16 +26,6 @@ type ProfileCandidate = {
   is_mate: boolean | null;
   users: UserRef | null;
 };
-type OrderAggRow = { provider_id: string | null; game: string | null; created_at: string | null; status: string | null };
-
-const THEMES_PER_PAGE_INITIAL = 3;
-const THEMES_PER_PAGE = 2;
-const MATES_PER_THEME = 12;
-const NEWBIE_DAYS = 30;
-const NEWBIE_TARGET_MIN = 3;
-const NEWBIE_TARGET_MAX = 4;
-const COMPLETED_STATUS = "COMPLETED";
-
 
 
 export async function GET(request: NextRequest) {
@@ -48,24 +38,6 @@ export async function GET(request: NextRequest) {
       { status: 400 }
     );
   }
-
-  const cookieStore = await cookies();
-  const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options);
-          });
-        },
-      },
-    }
-  );
 
   try {
     const { themes, nextPage } = await buildRecommendedThemes(page);
