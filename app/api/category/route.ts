@@ -1,9 +1,6 @@
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-
-import type { Database } from '@/types/database.types' // 경로 조정
+import { getCategoryList } from '@/app/apis/service/category/listService'
 
 // 첫 로드시 로드할 아이템 수, 이후 페이지당 게임 카테고리를 로드할 아이템 수
 const INITIAL_LOAD = 18
@@ -25,47 +22,9 @@ export async function GET(request: NextRequest) {
       ? 0
       : INITIAL_LOAD + (page - 1) * LOAD_PER_PAGE
 
-  // 쿠키 공급자를 넘겨줘야 Route Handler Client가 동작합니다.
-  const cookieStore = await cookies()
-  const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options)
-          })
-        },
-      },
-    }
-  )
-
   try {
-    const { data: games, error } = await supabase
-      .from('games')
-      .select('id, name, genre, description, image_url')
-      .order('name', { ascending: true })
-      .range(offset, offset + limit - 1)
-
-    if (error) {
-      console.error('Error fetching games:', error)
-      return NextResponse.json(
-        { error: 'Failed to fetch games' },
-        { status: 500 }
-      )
-    }
-
-    // 다음 페이지 존재 여부
-    const hasNextPage = (games?.length ?? 0) === limit
-
-    return NextResponse.json({
-      games: games ?? [],
-      nextPage: hasNextPage ? page + 1 : undefined,
-    })
+    const result = await getCategoryList(page)
+    return NextResponse.json(result)
   } catch (err) {
     console.error('Unexpected error in GET /api/category:', err)
     return NextResponse.json(

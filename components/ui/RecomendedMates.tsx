@@ -3,11 +3,10 @@
 
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useInView } from 'react-intersection-observer'
-import { Fragment } from 'react'
+import { Fragment, useMemo } from 'react'
 
 import { fetchRecommendedThemes } from '@/app/(home)/_api/homeApi'
 import RecommendedMatesSlider from '@/components/RecommendedMatesSlider'
-import { RecommendedThemeResponse } from '@/app/(home)/_types/homePage.types'
 
 export default function RecommendedMates() {
   // 추천 테마 및 메이트 데이터 가져오기
@@ -19,7 +18,7 @@ export default function RecommendedMates() {
     isFetchingNextPage,
   } = useInfiniteQuery({
     queryKey: ['recommendedThemes'],
-    queryFn: ({ pageParam }) => fetchRecommendedThemes({ pageParam: pageParam as number }),
+    queryFn: ({ pageParam }) => fetchRecommendedThemes({ pageParam: Number(pageParam ?? 0) }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextPage,
   })
@@ -34,6 +33,16 @@ export default function RecommendedMates() {
     }
   })
 
+  const allThemes = useMemo(() => data?.pages.flatMap(page => page.themes) || [], [data])
+  const uniqueThemes = useMemo(() => {
+    const seen = new Set<string>()
+    return allThemes.filter((t) => {
+      if (seen.has(t.id)) return false
+      seen.add(t.id)
+      return true
+    })
+  }, [allThemes])
+
   // 로딩 상태
   if (isLoading) {
     return (
@@ -45,12 +54,9 @@ export default function RecommendedMates() {
     )
   }
 
-  const allThemes = data?.pages.flatMap(page => page.themes) || []
-  console.log("allThemes", allThemes);
-
   return (
     <>
-      {allThemes.map((theme) => (
+      {uniqueThemes.map((theme) => (
         <RecommendedMatesSlider 
           key={theme.id} 
           theme={theme} 
@@ -68,7 +74,7 @@ export default function RecommendedMates() {
         ) : hasNextPage ? (
           <span className="text-sm text-gray-500">더 많은 테마 불러오는 중...</span>
         ) : (
-          allThemes.length > 0 && (
+          uniqueThemes.length > 0 && (
             <span className="text-sm text-gray-500">모든 테마를 불러왔습니다</span>
           )
         )}
