@@ -1,8 +1,7 @@
 import Image from "next/image";
-import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 
-import { fetchGameHeader } from "../_api/CategoryApi";
+import { useGameHeaderQuery } from "@/hooks/api/category/useCategoryQueries";
 
 export default function CategoryHeader() {
   const params = useParams();
@@ -11,10 +10,7 @@ export default function CategoryHeader() {
     data: gameHeader,
     isLoading,
     error,
-  } = useQuery({
-    queryKey: ["gameHeader", categoryId],
-    queryFn: () => fetchGameHeader(categoryId),
-  });
+  } = useGameHeaderQuery(categoryId);
 
   if (isLoading) {
     return <CategoryHeaderSkeleton />;

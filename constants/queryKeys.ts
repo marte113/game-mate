@@ -27,11 +27,13 @@ export const queryKeys = {
     // Sidebar/landing
     recommendedThemes: () => ['recommendedThemes'] as const,
     popularGames: () => ['popular-games'] as const,
+    // Games by category
+    gamesByCategory: (categoryId: string) => ['gamesByCategory', categoryId] as const,
   },
 
   mates: {
-    recommended: () => ['recommendedMates'] as const,
-    partner: () => ['partnerMates'] as const,
+    recommended: () => ['mates', 'recommended'] as const,
+    partner: () => ['mates', 'partner'] as const,
   },
 
   chat: {
@@ -60,6 +62,7 @@ export type QueryKey = ReturnType<
   | typeof queryKeys.category.mates
   | typeof queryKeys.category.recommendedThemes
   | typeof queryKeys.category.popularGames
+  | typeof queryKeys.category.gamesByCategory
   | typeof queryKeys.mates.recommended
   | typeof queryKeys.mates.partner
   | typeof queryKeys.chat.messages

@@ -2,9 +2,10 @@
 
 import { useState, useEffect, ChangeEvent } from "react";
 import { X, Star, StarHalf } from "lucide-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Image from "next/image";
+import { useQueryClient } from "@tanstack/react-query";
 
-import { reviewApi } from "@/app/dashboard/_api/reviewApi";
+import { useCreateReviewMutation } from "@/hooks/api/reviews/useReviewMutations";
 import { useAuthStore } from "@/stores/authStore";
 
 import { useTaskStore } from "../store/useTaskStore";
@@ -28,6 +29,7 @@ export default function ReviewModal() {
   const task = useTaskStore((state) => state.reviewModal.task);
   const closeModal = useTaskStore((state) => state.closeReviewModal);
   const user = useAuthStore((state) => state.user);
+  const profile = useAuthStore((state) => state.profile);
 
   const [phase, setPhase] = useState<number>(1);
   const [rating, setRating] = useState<number | null>(null);
@@ -39,7 +41,7 @@ export default function ReviewModal() {
   const requestId = task?.id;
   const reviewedId = task?.provider_id;
   const reviewedName = task?.provider?.name || "메이트";
-  const reviewerName = user?.name || "나";
+  const reviewerName = profile?.nickname || "나";
   const reviewerImg = user?.profile_circle_img;
 
   // 모달 닫힐 때 상태 초기화
@@ -103,9 +105,8 @@ export default function ReviewModal() {
     }
   };
 
-  // --- 리뷰 생성 뮤테이션 (onClose 대신 closeModal 사용) ---
-  const createReviewMutation = useMutation({
-    mutationFn: reviewApi.createReview,
+  // --- 리뷰 생성 뮤테이션 ---
+  const createReviewMutation = useCreateReviewMutation({
     onSuccess: (data) => {
       console.log("Review created successfully:", data);
       queryClient.invalidateQueries({ queryKey: ["requestedOrders"] });
@@ -242,12 +243,15 @@ export default function ReviewModal() {
               <div className="flex gap-4">
                 <div>
                   <div className="w-4 h-4 rounded-full">
-                    <img
+                    <Image
                       src={
                         reviewerImg ||
                         `https://api.dicebear.com/7.x/avataaars/svg?seed=${reviewerName}`
                       }
                       alt={reviewerName}
+                      width={40}
+                      height={40}
+                      className="w-full h-full rounded-full"
                     />
                   </div>
                 </div>

@@ -1,11 +1,11 @@
 'use client' // Hooks 사용을 위해 클라이언트 컴포넌트로 선언
 
 import { useParams } from 'next/navigation' // next/navigation 사용
-import { useInfiniteQuery, type InfiniteData } from '@tanstack/react-query'
 import { useInView } from 'react-intersection-observer'
 import { Fragment } from 'react' // useEffect 제거
 
-import { fetchMates } from '../_api/mateApi' // 수정된 API 함수 임포트
+import { useMatesByCategoryInfiniteQuery } from '@/hooks/api/category/useCategoryQueries'
+
 import type { MatesApiResponse, MateCardData } from '../_types/categoryPage.types'
 import LoadingSpinner from '../_components/LoadingSpinner' // 로딩 스피너 임포트
 import { MateCard } from '../_components/MateCard' // MateCard 임포트 경로 확인
@@ -17,15 +17,10 @@ export default function CategoryIdPage() {
   const rawCategoryId = params.categoryId
   const categoryId = Array.isArray(rawCategoryId) ? rawCategoryId[0] : rawCategoryId
 
-  // 유효하지 않은 경우 조기 반환하여 타입 보장
-  if (typeof categoryId !== 'string' || categoryId.length === 0) {
-    return (
-      <div className="text-center py-10 text-red-500">
-        잘못된 카테고리입니다.
-      </div>
-    )
-  }
+  // 유효성 검증 (Hook 호출 전에 수행)
+  const isValidCategoryId = typeof categoryId === 'string' && categoryId.length > 0
 
+  // Hook들은 항상 최상위에서 호출 (조건부 호출 금지)
   const {
     data,
     error,
@@ -33,20 +28,7 @@ export default function CategoryIdPage() {
     hasNextPage,
     isLoading,
     isFetchingNextPage,
-    // status, // status는 필요 없으면 제거 가능
-  } = useInfiniteQuery<
-    MatesApiResponse, // TData
-    Error, // TError
-    InfiniteData<MatesApiResponse>, // TQueryData
-    Readonly<['mates', string]>, // TQueryKey - categoryId는 문자열 확정
-    number // TPageParam - 명시적으로 타입 지정
-    >({
-    queryKey: ['mates', categoryId], // categoryId undefined 허용
-    queryFn: fetchMates,
-    initialPageParam: 0,
-    getNextPageParam: (lastPage) => lastPage.nextPage,
-    enabled: !!categoryId, // categoryId가 있을 때만 쿼리 실행
-    })
+  } = useMatesByCategoryInfiniteQuery(isValidCategoryId ? categoryId : undefined)
 
   const { ref } = useInView({
     threshold: 0, // 요소가 1px이라도 보이면 트리거
@@ -56,6 +38,15 @@ export default function CategoryIdPage() {
       }
     },
   })
+
+  // 유효하지 않은 경우 조기 반환 (Hook 호출 후에 수행)
+  if (!isValidCategoryId) {
+    return (
+      <div className="text-center py-10 text-red-500">
+        잘못된 카테고리입니다.
+      </div>
+    )
+  }
 
   // 로딩 상태 처리
   if (isLoading) {

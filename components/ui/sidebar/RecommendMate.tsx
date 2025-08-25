@@ -1,19 +1,14 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
-import { AlertTriangle, Loader2, RefreshCw, ChevronUp } from 'lucide-react'
+import { RefreshCw, ChevronUp, Loader2, AlertTriangle } from 'lucide-react'
 import React from 'react'
 
-import { fetchRecommendedMates } from './mateApi'
+import { useRecommendedMatesQuery } from '@/hooks/api/mates/useMateQueries'
+
 import MateRow from './MateRow'
 
 const RecommendMate = React.memo(() => {
-  const { data: mates, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ['recommendedMates'],
-    queryFn: fetchRecommendedMates,
-    staleTime: 5 * 60 * 1000, // 5분 동안 캐시 유지
-    refetchOnWindowFocus: false, // 창 포커스 시 자동 리페치 비활성화
-  })
+  const { data: mates, isLoading, isError, error, refetch } = useRecommendedMatesQuery()
 
   const renderContent = () => {
     if (isLoading) {
