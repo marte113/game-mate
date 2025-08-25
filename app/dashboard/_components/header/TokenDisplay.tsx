@@ -4,31 +4,18 @@ import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import Image from "next/image";
-import { useQuery } from "@tanstack/react-query";
 
+import { useTokenBalanceQuery } from "@/hooks/api/token/useTokenBalanceQuery";
 import { useAuthStore } from "@/stores/authStore";
 
-// API 호출 함수 분리
-const fetchTokenBalance = async () => {
-  const response = await fetch('/api/token/balance');
-  if (!response.ok) {
-    throw new Error('토큰 잔액을 가져오는데 실패했습니다.');
-  }
-  const data = await response.json();
-  return data.balance;
-};
+// API 호출은 커스텀 훅으로 위임
 
 // 메모이제이션을 통한 불필요한 리렌더링 방지
 export default function TokenDisplay() {
   const { user } = useAuthStore();
   const router = useRouter();
 
-  const { data: tokenBalance = 0, isLoading } = useQuery({
-    queryKey: ['tokenBalance', user?.id],
-    queryFn: fetchTokenBalance,
-    enabled: !!user?.id,
-    staleTime: 1000 * 60,
-  });
+  const { data: tokenBalance = 0, isLoading } = useTokenBalanceQuery(user?.id)
 
   const handleTokenClick = useCallback(() => {
     const params = new URLSearchParams();
@@ -54,7 +41,7 @@ export default function TokenDisplay() {
         className="w-5 h-5"
         priority // LCP 최적화
       />
-      <span className="text-sm font-semibold">{tokenBalance.balance}</span>
+      <span className="text-sm font-semibold">{tokenBalance}</span>
       <button
         onClick={handleTokenClick}
         className="bg-purple-500 rounded-full w-[18px] h-[18px] flex items-center justify-center text-white hover:bg-purple-400 transition-colors duration-200"

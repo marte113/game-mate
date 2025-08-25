@@ -1,12 +1,12 @@
 //RecommendMates 컴포넌트
 'use client'
 
-import { useInfiniteQuery } from '@tanstack/react-query'
 import { useInView } from 'react-intersection-observer'
 import { Fragment, useMemo } from 'react'
 
-import { fetchRecommendedThemes } from '@/app/(home)/_api/homeApi'
+import { useRecommendedThemesInfiniteQuery } from '@/hooks/api/category/useRecommendedThemesInfiniteQuery'
 import RecommendedMatesSlider from '@/components/RecommendedMatesSlider'
+import { ThemeWithMates } from '@/app/(home)/_types/homePage.types'
 
 export default function RecommendedMates() {
   // 추천 테마 및 메이트 데이터 가져오기
@@ -16,12 +16,7 @@ export default function RecommendedMates() {
     hasNextPage,
     isLoading,
     isFetchingNextPage,
-  } = useInfiniteQuery({
-    queryKey: ['recommendedThemes'],
-    queryFn: ({ pageParam }) => fetchRecommendedThemes({ pageParam: Number(pageParam ?? 0) }),
-    initialPageParam: 0,
-    getNextPageParam: (lastPage) => lastPage.nextPage,
-  })
+  } = useRecommendedThemesInfiniteQuery()
 
   // 무한 스크롤을 위한 InView 설정 (useInfiniteQuery 후에 정의)
   const { ref } = useInView({
@@ -33,10 +28,13 @@ export default function RecommendedMates() {
     }
   })
 
-  const allThemes = useMemo(() => data?.pages.flatMap(page => page.themes) || [], [data])
+  const allThemes = useMemo(() =>
+    data?.pages.flatMap(page => page.themes) || [],
+    [data]
+  )
   const uniqueThemes = useMemo(() => {
     const seen = new Set<string>()
-    return allThemes.filter((t) => {
+    return allThemes.filter((t: ThemeWithMates) => {
       if (seen.has(t.id)) return false
       seen.add(t.id)
       return true
@@ -56,10 +54,10 @@ export default function RecommendedMates() {
 
   return (
     <>
-      {uniqueThemes.map((theme) => (
-        <RecommendedMatesSlider 
-          key={theme.id} 
-          theme={theme} 
+      {uniqueThemes.map((theme: ThemeWithMates) => (
+        <RecommendedMatesSlider
+          key={theme.id}
+          theme={theme}
           mates={theme.mates}
         />
       ))}

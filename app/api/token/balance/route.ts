@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server'
+
 import { getMyTokenBalance } from '@/app/apis/service/token/balanceService'
 
 export async function GET() {

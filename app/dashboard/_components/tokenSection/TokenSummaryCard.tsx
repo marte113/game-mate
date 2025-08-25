@@ -1,54 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 
 import TokenChargeModal from "../modals/TokenChargeModal";
-
 import TokenChargeButton from "./TokenChargeButton";
-
-interface BalanceData {
-  balance: {
-    balance: number;
-  };
-}
-
-interface UsageData {
-  usageThisMonth: number;
-  usageLastMonth: number;
-  diff: number;
-}
+import { useTokenBalanceQuery, useTokenUsageQuery } from "@/hooks/api/token/useTokenBalanceQuery";
+import { useAuthStore } from "@/stores/authStore";
 
 export default function TokenSummaryCard() {
   const [isChargeModalOpen, setIsChargeModalOpen] = useState<boolean>(false);
 
-
-  const { data: balanceData, error: balanceError } = useQuery({
-    queryKey: ["balance"],
-    queryFn: () => fetchBalance(),
-  });
-
-  const { data: usageData, error: usageError } = useQuery({
-    queryKey: ["usage"],
-    queryFn: () => fetchUsage(),
-  });
-
-  //여기도 추후 api 레이어 이용해서 다시 구현하기.
-  const fetchBalance = async (): Promise<BalanceData> => {
-  const res = await fetch("/api/token/balance", { credentials: "include" });
-  if (!res.ok) {
-    throw new Error("Failed to fetch balance");
-  }
-  return res.json();
-};
-
-const fetchUsage = async (): Promise<UsageData> => {
-  const res = await fetch("/api/token/variation", { credentials: "include" });
-  if (!res.ok) {
-    throw new Error("Failed to fetch usage");
-  }
-  return res.json();
-};
+  const { user } = useAuthStore();
+  const { data: balance, error: balanceError } = useTokenBalanceQuery(user?.id);
+  const { data: usageData, error: usageError } = useTokenUsageQuery();
 
   if (balanceError || usageError) {
     return <div>에러가 발생하였습니다.</div>;
@@ -67,7 +31,7 @@ const fetchUsage = async (): Promise<UsageData> => {
           <div className="stats shadow">
             <div className="stat">
               <div className="stat-title">보유 토큰</div>
-              <div className="stat-value">{balanceData?.balance.balance ?? 0}</div>
+              <div className="stat-value">{balance ?? 0}</div>
               <div className="stat-desc">
                 {usageData
                   ? usageData.diff >= 0

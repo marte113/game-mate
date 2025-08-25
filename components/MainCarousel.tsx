@@ -99,6 +99,7 @@ export default function MainCarousel({
               src={slide.image}
               alt={slide.alt}
               fill
+              sizes="100vw"
               className="object-center"
               priority={index === 0}
             />

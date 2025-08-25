@@ -8,7 +8,7 @@ import { ZodError } from 'zod';
 
 import { profileSchema, ProfileDataSchema } from '@/libs/schemas/profile.schema';
 import { fetchProfileInfo, updateProfileInfo } from '@/app/dashboard/_api/profileSectionApi';
-import { queryKeys } from '@/constants/queryKeys';
+import { legacyQueryKeys } from '@/constants/queryKeys';
 import { parseApiError, setFormErrors } from '@/utils/errors/errorUtils';
 
 // Custom hook return type
@@ -33,7 +33,7 @@ export function useProfileForm(): UseProfileFormReturn {
     error: profileQueryError,
     refetch: refetchProfileInfo // Add refetch function
   } = useQuery<ProfileDataSchema | null>({
-    queryKey: queryKeys.profileInfo,
+    queryKey: legacyQueryKeys.profileInfo,
     queryFn: fetchProfileInfo,
     // staleTime: 5 * 60 * 1000, // Example: Cache for 5 minutes
   });
@@ -93,7 +93,7 @@ export function useProfileForm(): UseProfileFormReturn {
     onSuccess: (updatedData) => {
       toast.success('프로필이 성공적으로 저장되었습니다');
       // Invalidate cache to trigger refetch if needed elsewhere
-      queryClient.invalidateQueries({ queryKey: queryKeys.profileInfo });
+      queryClient.invalidateQueries({ queryKey: legacyQueryKeys.profileInfo });
 
       // Reset form with the updated data returned from mutation
       if (updatedData) {
@@ -122,7 +122,7 @@ export function useProfileForm(): UseProfileFormReturn {
   const onSubmit: SubmitHandler<ProfileDataSchema> = useCallback((data) => {
     const changedData: Partial<ProfileDataSchema> = {};
     // Get current profile data from cache for comparison
-    const currentProfileData = queryClient.getQueryData<ProfileDataSchema | null>(queryKeys.profileInfo);
+    const currentProfileData = queryClient.getQueryData<ProfileDataSchema | null>(legacyQueryKeys.profileInfo);
 
     if (currentProfileData) {
       (Object.keys(data) as Array<keyof ProfileDataSchema>).forEach(key => {
@@ -150,7 +150,7 @@ export function useProfileForm(): UseProfileFormReturn {
 
   // --- Cancel Handler ---
   const handleCancel = useCallback(() => {
-      const currentProfileData = queryClient.getQueryData<ProfileDataSchema | null>(queryKeys.profileInfo);
+      const currentProfileData = queryClient.getQueryData<ProfileDataSchema | null>(legacyQueryKeys.profileInfo);
       reset(currentProfileData ?? defaultValues); // Reset to cached data or defaults
   }, [queryClient, reset, defaultValues]);
 

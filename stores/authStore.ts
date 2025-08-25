@@ -1,25 +1,16 @@
 import { create } from 'zustand'
+
 import { createClient } from '@/libs/supabase/client'
+// UsersRow, ProfilesRow 제거 (충돌 방지)
+import type { Database } from '@/types/database.types'
 
-import {UsersRow, ProfilesRow} from '@/types/database.table.types'
-
-// 프로필 인터페이스 정의
-interface Profile {
-  id: string
-  user_id: string
-  username?: string
-  nickname?: string
-  description?: string
-  rating?: number
-  follower_count?: number
-  youtube_urls?: string[]
-  created_at?: string
-  updated_at?: string
-}
+// 부분 타입 정의 (Pick 사용)
+type UserMinimal = Pick<Database['public']['Tables']['users']['Row'], 'id' | 'profile_circle_img'>
+type ProfileMinimal = Pick<Database['public']['Tables']['profiles']['Row'], 'id' | 'nickname' | 'rating'>
 
 interface AuthState {
-  user: UsersRow | null
-  profile: ProfilesRow | null
+  user: UserMinimal | null  // 최소 필드 타입
+  profile: ProfileMinimal | null  // 최소 필드 타입
   isLoading: boolean
   error: string | null
   loginWithKakao: () => Promise<void>
@@ -94,25 +85,23 @@ export const useAuthStore = create<AuthState>((set) => ({
         return
       }
       if (user) {
-        // 사용자 정보 확인
+        // 사용자 정보 확인 (타입 안전하게)
         const { data: userData, error: userError } = await supabase
           .from('users')
-          .select('*')
+          .select('id, profile_circle_img')
           .eq('id', user.id)
           .single()
         
         if (userError) {
           console.error('Error fetching user:', userError)
-          // 사용자가 없으면 트리거가 자동으로 생성해야 하지만, 수동으로 처리할 수도 있음
-          // 여기서는 트리거에 의존하고 오류만 기록
           set({ error: '사용자 정보를 가져오는 중 오류가 발생했습니다', isLoading: false })
           return
         }
         
-        // 프로필 정보 확인
+        // 프로필 정보 확인 (타입 안전하게)
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
-          .select('*')  
+          .select('id, nickname, rating')
           .eq('user_id', user.id)
           .single()
         
@@ -122,9 +111,10 @@ export const useAuthStore = create<AuthState>((set) => ({
           return
         }
         
+        // 타입 안전하게 set
         set({ 
-          user: userData, 
-          profile: profileData, 
+          user: userData as UserMinimal,  // 타입 단언
+          profile: profileData as ProfileMinimal,  // 타입 단언
           isLoading: false 
         })
       } else {
@@ -136,4 +126,4 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ error: errorMessage, isLoading: false })
     }
   }
-})) 
+}))
