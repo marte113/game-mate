@@ -1,5 +1,8 @@
 import { ProfileDataSchema } from '@/libs/schemas/profile.schema';
 
+// 타입 재내보내기
+export type { ProfileDataSchema };
+
 /**
  * 프로필 정보를 가져오는 함수
  */

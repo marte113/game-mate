@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { useForm, UseFormReturn, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'react-hot-toast';
@@ -7,8 +7,9 @@ import isEqual from 'lodash/isEqual';
 import { ZodError } from 'zod';
 
 import { profileSchema, ProfileDataSchema } from '@/libs/schemas/profile.schema';
-import { fetchProfileInfo, updateProfileInfo } from '@/app/dashboard/_api/profileSectionApi';
-import { legacyQueryKeys } from '@/constants/queryKeys';
+import { useProfileInfoQuery } from '@/hooks/api/profile/useProfileQueries';
+import { useUpdateProfileMutation } from '@/hooks/api/profile/useProfileMutations';
+import { queryKeys } from '@/constants/queryKeys';
 import { parseApiError, setFormErrors } from '@/utils/errors/errorUtils';
 
 // Custom hook return type
@@ -32,11 +33,7 @@ export function useProfileForm(): UseProfileFormReturn {
     isError,
     error: profileQueryError,
     refetch: refetchProfileInfo // Add refetch function
-  } = useQuery<ProfileDataSchema | null>({
-    queryKey: legacyQueryKeys.profileInfo,
-    queryFn: fetchProfileInfo,
-    // staleTime: 5 * 60 * 1000, // Example: Cache for 5 minutes
-  });
+  } = useProfileInfoQuery();
 
   // --- Form Initialization ---
   const methods = useForm<ProfileDataSchema>({
@@ -84,31 +81,11 @@ export function useProfileForm(): UseProfileFormReturn {
   }, [profileData, reset, isLoadingProfile, isError]); // Removed defaultValues
 
   // --- Data Mutation ---
-  const { mutate: updateProfile, isPending: isSaving } = useMutation<
-    ProfileDataSchema | null, // onSuccess data type
-    Error | ZodError | any, // onError error type
-    Partial<ProfileDataSchema> // Variables type
-  >({
-    mutationFn: (data: Partial<ProfileDataSchema>) => updateProfileInfo(data),
-    onSuccess: (updatedData) => {
+  const { mutate: updateProfile, isPending: isSaving } = useUpdateProfileMutation({
+    onSuccess: () => {
       toast.success('프로필이 성공적으로 저장되었습니다');
-      // Invalidate cache to trigger refetch if needed elsewhere
-      queryClient.invalidateQueries({ queryKey: legacyQueryKeys.profileInfo });
-
-      // Reset form with the updated data returned from mutation
-      if (updatedData) {
-        const validatedData = profileSchema.partial().safeParse(updatedData);
-        if (validatedData.success) {
-           const dataToReset = { ...defaultValues, ...validatedData.data };
-           reset(dataToReset);
-        } else {
-           console.error("Updated profile data from mutation doesn't match schema:", validatedData.error);
-           reset(defaultValues);
-        }
-      } else {
-        // If mutation doesn't return data, explicitly refetch and let useEffect handle reset
-        refetchProfileInfo();
-      }
+      // 캐시 무효화는 mutation 내부에서 처리됨
+      // 폼 리셋은 useEffect에서 새로운 profileData로 자동 처리
     },
     onError: (error: any) => {
       const parsed = parseApiError(error);
@@ -122,7 +99,7 @@ export function useProfileForm(): UseProfileFormReturn {
   const onSubmit: SubmitHandler<ProfileDataSchema> = useCallback((data) => {
     const changedData: Partial<ProfileDataSchema> = {};
     // Get current profile data from cache for comparison
-    const currentProfileData = queryClient.getQueryData<ProfileDataSchema | null>(legacyQueryKeys.profileInfo);
+    const currentProfileData = queryClient.getQueryData<ProfileDataSchema | null>(queryKeys.profile.info());
 
     if (currentProfileData) {
       (Object.keys(data) as Array<keyof ProfileDataSchema>).forEach(key => {
@@ -150,7 +127,7 @@ export function useProfileForm(): UseProfileFormReturn {
 
   // --- Cancel Handler ---
   const handleCancel = useCallback(() => {
-      const currentProfileData = queryClient.getQueryData<ProfileDataSchema | null>(legacyQueryKeys.profileInfo);
+      const currentProfileData = queryClient.getQueryData<ProfileDataSchema | null>(queryKeys.profile.info());
       reset(currentProfileData ?? defaultValues); // Reset to cached data or defaults
   }, [queryClient, reset, defaultValues]);
 

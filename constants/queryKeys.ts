@@ -41,6 +41,8 @@ export const queryKeys = {
   },
 
   profile: {
+    info: () => ['profileInfo'] as const,
+    image: () => ['profileImage'] as const,
     albumImages: () => ['albumImages'] as const,
   },
 } as const
@@ -63,6 +65,8 @@ export type QueryKey = ReturnType<
   | typeof queryKeys.chat.messages
   | typeof queryKeys.chat.chatRooms
   | typeof queryKeys.chat.notifications
+  | typeof queryKeys.profile.info
+  | typeof queryKeys.profile.image
   | typeof queryKeys.profile.albumImages
 >
 
