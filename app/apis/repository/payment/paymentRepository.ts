@@ -1,11 +1,9 @@
 import 'server-only'
 
 import { getServerSupabase, wrapRepo } from '@/app/apis/base'
+import type { Database } from '@/types/database.types'
 
-export type PaymentRecord = {
-  payment_id: string
-  status: string
-}
+export type PaymentRecord = Pick<Database['public']['Tables']['payments']['Row'], 'payment_id' | 'status'>
 
 export async function findPaymentByExternalId(externalPaymentId: string): Promise<PaymentRecord | null> {
   return wrapRepo('payment.findPaymentByExternalId', async () => {

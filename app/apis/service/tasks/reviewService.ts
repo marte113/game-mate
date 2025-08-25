@@ -1,9 +1,11 @@
 import 'server-only'
 
+import sanitizeHtml from 'sanitize-html'
+
 import { wrapService } from '@/app/apis/base'
 import { getCurrentUserId } from '@/app/apis/base/auth'
 import { insertReview } from '@/app/apis/repository/review/reviewsRepository'
-import sanitizeHtml from 'sanitize-html'
+import type { TablesInsert } from '@/types/database.types'
 
 type CreateReviewInput = {
   rating: number
@@ -25,14 +27,15 @@ export async function createReview(input: CreateReviewInput) {
     }
 
     const sanitizedContent = sanitizeHtml(content || '', { allowedTags: [], allowedAttributes: {} })
-    const newReview = await insertReview({
+    const payload: TablesInsert<'reviews'> = {
       reviewer_id: userId,
       reviewed_id: reviewedId,
       request_id: requestId,
       rating,
       content: sanitizedContent.trim() || '후기를 작성하지 않았습니다',
       created_at: new Date().toISOString(),
-    })
+    }
+    const newReview = await insertReview(payload as any)
     return { review: newReview }
   })
 }

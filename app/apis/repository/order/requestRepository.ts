@@ -1,22 +1,12 @@
 import 'server-only'
 
 import { getServerSupabase, wrapRepo } from '@/app/apis/base'
+import type { Database } from '@/types/database.types'
 
-export interface RequestedOrderRow {
-  id: string
-  requester_id: string
-  provider_id: string
-  status?: string
-  scheduled_date?: string
-  scheduled_time?: string
-  // 필요 시 도메인에 맞춰 확장
-  provider?: {
-    id: string
-    name: string
-    profile_circle_img?: string | null
-    is_online?: boolean | null
-  }
-  reviews?: Array<{ id: string }>
+export type RequestedOrderRow = Database['public']['Tables']['requests']['Row'] & {
+  provider?: Pick<Database['public']['Tables']['users']['Row'], 'id' | 'name' | 'profile_circle_img' | 'is_online'> | null
+  requester?: Pick<Database['public']['Tables']['users']['Row'], 'id' | 'name' | 'profile_circle_img' | 'is_online'> | null
+  reviews?: Array<Pick<Database['public']['Tables']['reviews']['Row'], 'id'>>
 }
 
 export async function fetchRequestedOrdersByUser(
@@ -85,7 +75,7 @@ export async function fetchProviderReservations(
       .eq('provider_id', providerId)
       .in('status', ['pending', 'accepted'])
     if (error) throw error
-    return (data ?? []) as any
+    return (data ?? []) as Array<Pick<RequestedOrderRow, 'id' | 'scheduled_date' | 'scheduled_time' | 'status'>>
   })
 }
 

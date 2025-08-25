@@ -4,6 +4,7 @@ import { getCompletedRequestsByGames, getGamesByIds, getMatesBySelectedGames, ge
 import { calcNextPage } from '@/app/apis/base'
 import { createDailyGameRandom, pickNewbieCount } from '@/utils/recommendation'
 import type { ThemeWithMates, MateData } from '@/app/(home)/_types/homePage.types'
+import type { UsersRow, ProfilesRow } from '@/types/database.table.types'
 
 const THEMES_PER_PAGE_INITIAL = 3
 const THEMES_PER_PAGE = 2
@@ -12,27 +13,29 @@ const NEWBIE_DAYS = 30
 const NEWBIE_TARGET_MIN = 3
 const NEWBIE_TARGET_MAX = 4
 
-type UserRef = { is_online: boolean | null; profile_thumbnail_img: string | null }
-type ProfileCandidate = {
-  id: string
-  user_id: string | null
-  nickname: string | null
-  description: string | null
-  rating: number | null
-  public_id: number
-  follower_count: number | null
-  created_at: string | null
-  selected_games: string[] | null
-  is_mate: boolean | null
-  users: UserRef | null
-}
+type UserRef = Pick<UsersRow, 'is_online' | 'profile_thumbnail_img'>
+type ProfileCandidate = Pick<
+  ProfilesRow,
+  | 'id'
+  | 'user_id'
+  | 'nickname'
+  | 'description'
+  | 'rating'
+  | 'public_id'
+  | 'follower_count'
+  | 'created_at'
+  | 'selected_games'
+  | 'is_mate'
+> & { users: UserRef | null }
 
 export async function buildRecommendedThemes(page: number) {
   const themesPerPage = page === 0 ? THEMES_PER_PAGE_INITIAL : THEMES_PER_PAGE
   const offset = page === 0 ? 0 : THEMES_PER_PAGE_INITIAL + (page - 1) * THEMES_PER_PAGE
 
   const { latest, total } = await getRecommendedLatest(offset, themesPerPage)
-  const gameIds = latest.map((r) => r.game_id)
+  const gameIds = latest
+    .map((r) => r.game_id)
+    .filter((id): id is string => typeof id === 'string')
   if (gameIds.length === 0) return { themes: [] as ThemeWithMates[], nextPage: null as number | null }
 
   const gamesRaw = await getGamesByIds(gameIds)
@@ -40,8 +43,10 @@ export async function buildRecommendedThemes(page: number) {
   const pageGames = gameIds.map((id) => idToGame.get(id)).filter(Boolean) as typeof gamesRaw
   if (pageGames.length === 0) return { themes: [] as ThemeWithMates[], nextPage: null as number | null }
 
-  const gameDescs = pageGames.map((g) => g.description).filter(Boolean) as string[]
-  const gameNames = pageGames.map((g) => g.name).filter(Boolean) as string[]
+  const gameDescs = pageGames
+    .map((g) => g.description)
+    .filter((d): d is string => typeof d === 'string')
+  const gameNames = pageGames.map((g) => g.name)
 
   const descToName = new Map<string, string>()
   pageGames.forEach((g) => { if (g.description && g.name) descToName.set(g.description, g.name) })

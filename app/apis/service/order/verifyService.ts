@@ -1,9 +1,8 @@
 import 'server-only'
 
-import { wrapService } from '@/app/apis/base'
+import { wrapService, callRpc } from '@/app/apis/base'
 import { getCurrentUserId } from '@/app/apis/base/auth'
 import { fetchMessagesByRoom, markMessagesAsRead } from '@/app/apis/repository/chat/messageRepository'
-import { callRpc } from '@/app/apis/base'
 
 export async function getMessagesAndMarkRead(roomId: string) {
   return wrapService('order.getMessagesAndMarkRead', async () => {

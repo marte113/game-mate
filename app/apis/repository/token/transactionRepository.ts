@@ -1,16 +1,9 @@
 import 'server-only'
 
-import { getServerSupabase } from '@/app/apis/base'
-import { wrapRepo } from '@/app/apis/base'
+import { getServerSupabase, wrapRepo } from '@/app/apis/base'
+import type { Database } from '@/types/database.types'
 
-export interface TokenTransactionRow {
-  id: string
-  user_id: string
-  amount: number
-  type: string
-  created_at: string
-  // 기타 컬럼은 실제 스키마에 맞춰 확장
-}
+export type TokenTransactionRow = Database['public']['Tables']['token_transactions']['Row']
 
 type ListOptions = {
   beforeCreatedAt?: string

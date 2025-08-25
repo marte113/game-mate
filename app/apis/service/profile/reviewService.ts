@@ -1,8 +1,7 @@
 import 'server-only'
 
-import { wrapService } from '@/app/apis/base'
+import { wrapService, getServerSupabase } from '@/app/apis/base'
 import { fetchReviewsOfReviewedUser } from '@/app/apis/repository/review/reviewsRepository'
-import { getServerSupabase } from '@/app/apis/base'
 
 export async function getProfileReviewsByPublicId(publicId: number) {
   return wrapService('profile.getProfileReviewsByPublicId', async () => {

@@ -1,9 +1,9 @@
 import 'server-only'
 
-import { wrapService } from '@/app/apis/base'
+import { wrapService, callRpc } from '@/app/apis/base'
 import { getCurrentUserId } from '@/app/apis/base/auth'
-import { callRpc } from '@/app/apis/base'
 import { getAdminSupabase } from '@/app/apis/base/client'
+import type { TablesInsert } from '@/types/database.types'
 
 type RefundInput = { requestId: string; amount: number }
 
@@ -19,15 +19,16 @@ export async function refundTokens(input: RefundInput) {
 
     // 거래 기록 추가
     const admin = await getAdminSupabase()
+    const payload: TablesInsert<'token_transactions'> = {
+      user_id: userId,
+      amount: input.amount,
+      transaction_type: 'REFUND',
+      description: `의뢰 취소 반환 (의뢰 ID: ${input.requestId})`,
+      related_user_id: null,
+    }
     const { error } = await admin
       .from('token_transactions')
-      .insert({
-        user_id: userId,
-        amount: input.amount,
-        transaction_type: 'REFUND',
-        description: `의뢰 취소 반환 (의뢰 ID: ${input.requestId})`,
-        related_user_id: null,
-      })
+      .insert(payload as any)
     if (error) throw error
 
     return { success: true }

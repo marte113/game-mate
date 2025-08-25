@@ -1,8 +1,9 @@
 'use server'
 import { getServerSupabase } from '@/app/apis/base'
+import type { Database } from '@/types/database.types'
 
-type GameRow = { id: string; name: string; description: string | null; image_url: string | null }
-type RecommendedGameLatestRow = { game_id: string; player_count: number }
+type GameRow = Database['public']['Tables']['games']['Row']
+type RecommendedGameLatestRow = Required<Pick<Database['public']['Views']['recommended_games_latest']['Row'], 'game_id' | 'player_count'>>
 
 export async function getRecommendedLatest(offset: number, limit: number) {
   const supabase = await getServerSupabase()

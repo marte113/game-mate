@@ -2,12 +2,9 @@ import 'server-only'
 
 import { getServerSupabase } from '@/app/apis/base'
 import { wrapRepo } from '@/app/apis/base'
+import type { Database } from '@/types/database.types'
 
-export interface MonthlyUsageResult {
-  usage_this_month: number
-  usage_last_month: number
-  diff: number
-}
+export type MonthlyUsageResult = Database['public']['Functions']['get_monthly_token_usage']['Returns'][number]
 
 export async function fetchMonthlyTokenUsage(userId: string): Promise<MonthlyUsageResult> {
   return wrapRepo('token.fetchMonthlyTokenUsage', async () => {
@@ -18,8 +15,8 @@ export async function fetchMonthlyTokenUsage(userId: string): Promise<MonthlyUsa
       current_ts,
     })
     if (error) throw error
-    const result = Array.isArray(data) ? data[0] : data
-    return result as MonthlyUsageResult
+    const result = (Array.isArray(data) ? data[0] : data) as MonthlyUsageResult
+    return result
   })
 }
 

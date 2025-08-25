@@ -1,18 +1,9 @@
 import 'server-only'
 
-import { getServerSupabase, wrapRepo } from '@/app/apis/base'
-import { callRpc } from '@/app/apis/base'
+import { getServerSupabase, wrapRepo, callRpc } from '@/app/apis/base'
+import type { Database } from '@/types/database.types'
 
-export interface MessageRow {
-  id: string
-  chat_room_id: string
-  sender_id: string
-  content: string | null
-  created_at: string
-  // 필요한 경우 추가 필드
-}
-
-export async function fetchMessagesByRoom(roomId: string): Promise<MessageRow[]> {
+export async function fetchMessagesByRoom(roomId: string): Promise<Array<Database['public']['Tables']['messages']['Row']>> {
   return wrapRepo('chat.fetchMessagesByRoom', async () => {
     const supabase = await getServerSupabase()
     const { data, error } = await supabase
@@ -21,7 +12,7 @@ export async function fetchMessagesByRoom(roomId: string): Promise<MessageRow[]>
       .eq('chat_room_id', roomId)
       .order('created_at', { ascending: true })
     if (error) throw error
-    return (data ?? []) as MessageRow[]
+    return (data ?? []) as Array<Database['public']['Tables']['messages']['Row']>
   })
 }
 

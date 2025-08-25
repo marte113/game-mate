@@ -1,6 +1,6 @@
 'use server'
 import { listPartnerMates, listSimpleRecommendedMates } from '@/app/apis/repository/mate/mateRepository'
-import type { Database } from '@/types/database.types'
+import type { UsersRow, ProfilesRow } from '@/types/database.table.types'
 
 export type RecommendedMateData = {
   public_id: number
@@ -10,11 +10,15 @@ export type RecommendedMateData = {
   isOnline: boolean | null
 }
 
-function toRecommended(data: any[]): RecommendedMateData[] {
+type ProfileWithUserLite = Pick<ProfilesRow, 'public_id' | 'nickname' | 'selected_games'> & {
+  users: Pick<UsersRow, 'profile_circle_img' | 'is_online'> | null
+}
+
+function toRecommended(data: ProfileWithUserLite[]): RecommendedMateData[] {
   return data
-    .filter((profile) => profile.users !== null && !Array.isArray(profile.users))
+    .filter((profile) => profile.users !== null)
     .map((profile) => {
-      const userData = profile.users as Database['public']['Tables']['users']['Row'] | null
+      const userData = profile.users
       return {
         public_id: profile.public_id!,
         nickname: profile.nickname,
