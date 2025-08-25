@@ -1,19 +1,13 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
 import { AlertTriangle, Loader2, ExternalLink } from 'lucide-react'
 import React from 'react'
 
 import MateRow from './MateRow'
-import { fetchPartnerMates } from './mateApi'
+import { usePartnerMatesQuery } from '@/hooks/api/mates/useMateQueries'
 
 const PartnerMate = React.memo(() => {
-  const { data: mates, isLoading, isError, error } = useQuery({
-    queryKey: ['partnerMates'],
-    queryFn: fetchPartnerMates,
-    staleTime: 10 * 60 * 1000, // 10분 동안 캐시 유지 (파트너는 덜 자주 바뀔 수 있음)
-    refetchOnWindowFocus: false,
-  })
+  const { data: mates, isLoading, isError, error } = usePartnerMatesQuery()
 
   const renderContent = () => {
     if (isLoading) {

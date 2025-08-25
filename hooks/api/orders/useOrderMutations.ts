@@ -1,8 +1,6 @@
 "use client"
 
-import { useMutation, UseMutationOptions } from "@tanstack/react-query"
-
-import { queryClient } from "@/libs/queryClient"
+import { useMutation, UseMutationOptions, useQueryClient } from "@tanstack/react-query"
 
 import { queryKeys } from "@/constants/queryKeys"
 import { orderApi, CreateOrderRequest, ChangeOrderStatusRequest, OrderResponse } from "@/app/dashboard/_api/orderApi"
@@ -10,6 +8,8 @@ import { orderApi, CreateOrderRequest, ChangeOrderStatusRequest, OrderResponse }
 export function useCreateOrderMutation(
   options?: UseMutationOptions<OrderResponse, Error, CreateOrderRequest>
 ) {
+  const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: orderApi.createOrder,
     onSuccess: (data, variables) => {
@@ -28,6 +28,8 @@ export function useCreateOrderMutation(
 export function useChangeOrderStatusMutation(
   options?: UseMutationOptions<OrderResponse, Error, ChangeOrderStatusRequest>
 ) {
+  const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: orderApi.changeOrderStatus,
     onSuccess: (data, variables) => {
