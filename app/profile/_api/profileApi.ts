@@ -1,11 +1,11 @@
 //profile페이지에서 사용되는 api 코드를 작성
 //
 
-import type { ApiReviewData } from '@/types/review.types';
+import type { ReviewInfo } from '@/app/profile/_types/profile.types';
 
 // API 응답의 예상 구조 (reviews 키가 있는 객체)
 interface ReviewsApiResponse {
-  reviews: ApiReviewData[];
+  reviews: ReviewInfo[];
 }
 
 const profileApi = {
@@ -14,7 +14,7 @@ const profileApi = {
    * @param profileId - 조회할 프로필의 public_id
    * @returns 리뷰 목록 Promise
    */
-  async getReviewsByProfileId(profileId: string): Promise<ApiReviewData[]> {
+  async getReviewsByProfileId(profileId: string): Promise<ReviewInfo[]> {
     try {
       const response = await fetch(`/api/profile/review?profileId=${profileId}`);
 
@@ -25,7 +25,7 @@ const profileApi = {
       }
 
       const data: ReviewsApiResponse = await response.json();
-      return data.reviews || []; // reviews 배열 반환, 없으면 빈 배열
+      return data.reviews || [];
 
     } catch (error) {
       console.error('Error fetching reviews:', error);
