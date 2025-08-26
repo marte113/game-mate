@@ -1,7 +1,6 @@
 //api 정의 함수는 여기로
 //
-import { RecommendedMateData } from '@/app/api/mate/recommend/route'
-import { PartnerMateData } from '@/app/api/mate/partner/route'
+import type { RecommendedMateData, PartnerMateData } from '@/types/mate.types'
 
 /**
  * 추천 메이트 목록을 가져옵니다.

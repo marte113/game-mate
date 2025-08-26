@@ -4,7 +4,7 @@ import { useQuery, UseQueryOptions } from "@tanstack/react-query"
 
 import { queryKeys } from "@/constants/queryKeys"
 import { fetchRecommendedMates, fetchPartnerMates } from "@/components/ui/sidebar/mateApi"
-import { RecommendedMateData, PartnerMateData } from "@/app/api/mate/recommend/route"
+import type { RecommendedMateData, PartnerMateData } from "@/types/mate.types"
 
 export function useRecommendedMatesQuery(
   options?: UseQueryOptions<RecommendedMateData[], Error, RecommendedMateData[], ReturnType<typeof queryKeys.mates.recommended>>

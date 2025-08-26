@@ -1,7 +1,7 @@
 //profile페이지에서 사용되는 api 코드를 작성
 //
 
-import { ApiReviewData } from '@/app/api/profile/review/route'; // API 라우트에서 정의한 타입 임포트
+import type { ApiReviewData } from '@/types/review.types';
 
 // API 응답의 예상 구조 (reviews 키가 있는 객체)
 interface ReviewsApiResponse {
