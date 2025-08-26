@@ -61,6 +61,12 @@ export default function AlbumGalleryCard() {
     // text: image.isThumbnail ? '프로필 썸네일로 사용 중' : undefined
   }));
 
+  // 삭제 등으로 인덱스가 범위를 벗어나는 경우 안전 인덱스로 보정
+  const safeInitialIndex = Math.min(
+    Math.max(0, thumbnailIndex ?? 0),
+    Math.max(0, slides.length - 1)
+  );
+
   return (
     <div className="card bg-base-100 shadow-xl">
       <div className="card-body">
@@ -68,10 +74,13 @@ export default function AlbumGalleryCard() {
 
         {/* 이미지가 있을 때만 캐러셀 표시 */}
         {slides.length > 0 ? (
-          <MainCarousel 
-            slides={slides} 
-            initialSlideIndex={thumbnailIndex ?? 0} 
-            className="max-h-[400px] max-w-[400px] aspect-square"
+          <MainCarousel
+            slides={slides}
+            initialSlideIndex={safeInitialIndex}
+            className="w-full max-w-[400px] aspect-square"
+            loop={false}
+            autoplay={false}
+            align="start"
           />
         ) : (
           <EmptyState message="등록된 이미지가 없습니다" height="h-[310px]" />
