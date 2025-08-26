@@ -2,9 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 interface CategoryCardProps {
-  id: string;
+  id: number | string;
   name: string;
-  description: string;
+  description: string | null;
   genre: string[];
   image_url: string;
 }
@@ -70,10 +70,10 @@ export default function CategoryCard({
     <li className="card bg-base-100 shadow-md overflow-hidden">
       <Link href={`/category/${name}`}>
         <div className="relative aspect-[10/12] overflow-hidden">
-          <Image src={image_url} alt={description} fill className="object-fill" />
+          <Image src={image_url} alt={description || name} fill className="object-fill" />
         </div>
         <div className="p-3">
-          <h3 className="text-sm font-bold truncate">{description}</h3>
+          <h3 className="text-sm font-bold truncate">{description || name}</h3>
           <div className="flex gap-1.5 pt-1">
             {genre.map((g) => (
               <p

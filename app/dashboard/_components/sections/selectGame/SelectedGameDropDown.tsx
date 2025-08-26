@@ -1,5 +1,6 @@
 import { Plus, Check, ChevronDown } from "lucide-react";
 import Image from "next/image";
+import type { Dispatch, SetStateAction } from "react";
 
 interface Game {
     id: number;
@@ -10,13 +11,13 @@ interface Game {
 interface SelectedGameDropDownProps {
     selectedGames: number[];
     games: Game[];
-    setSelectedGames: (games: number[]) => void;
+    setSelectedGames: Dispatch<SetStateAction<number[]>>;
   }
   
 
 export default function SelectedGameDropDown({games, selectedGames, setSelectedGames}: SelectedGameDropDownProps) {
     return (
-        <details className="dropdown w-full">
+        <details className="dropdown w-full group">
                 <summary className="flex items-center justify-between w-full px-4 py-3 bg-base-100 hover:bg-black hover:text-white rounded-lg cursor-pointer border border-base-300 transition-colors">
                   <div className="flex items-center">
                     <Plus className="w-5 h-5" />
@@ -33,9 +34,9 @@ export default function SelectedGameDropDown({games, selectedGames, setSelectedG
                           selectedGames.includes(game.id) ? 'ring-2 ring-yellow-400' : ''
                         }`}
                         onClick={() => {
-                          setSelectedGames(prev =>
+                          setSelectedGames((prev: number[]) =>
                             prev.includes(game.id)
-                              ? prev.filter(id => id !== game.id)
+                              ? prev.filter((id: number) => id !== game.id)
                               : [...prev, game.id]
                           );
                         }}
@@ -45,6 +46,7 @@ export default function SelectedGameDropDown({games, selectedGames, setSelectedG
                           alt={game.title}
                           fill
                           className="object-cover"
+                          sizes="(max-width: 640px) 33vw, (max-width: 1024px) 25vw, 200px"
                         />
                         {selectedGames.includes(game.id) && (
                           <div className="absolute top-2 right-2 bg-yellow-400 rounded-full p-1">
