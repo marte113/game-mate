@@ -2,9 +2,6 @@
 'use client'
 
 import { create } from 'zustand'
-import { createClient } from '@/libs/supabase/client'
-
-import { Database } from '@/types/database.types'
 
 export type Notification = {
   id: string
@@ -44,192 +41,159 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   },
   
   fetchNotifications: async () => {
-    const supabase = createClient()
-    const { data: userData } = await supabase.auth.getUser()
-    
-    if (!userData.user) return
-    
-    const { data } = await supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', userData.user.id)
-      .order('created_at', { ascending: false })
-    
-    if (data) {
-      set({ notifications: data })
-      
-      // 읽지 않은 알림 집계
-      const unreadNotifications = data.filter(n => !n.is_read)
-      const unreadMessage = unreadNotifications.filter(n => n.type === 'message').length
-      const unreadRequest = unreadNotifications.filter(n => 
-        ['request', 'accept', 'reject', 'cancel', 'complete'].includes(n.type || '')
-      ).length
-      const unreadFollow = unreadNotifications.filter(n => n.type === 'follow').length
-      
-      set({
-        unreadCount: {
-          total: unreadNotifications.length,
-          message: unreadMessage,
-          request: unreadRequest,
-          follow: unreadFollow
-        }
+    try {
+      const response = await fetch('/api/notifications', {
+        credentials: 'include'
       })
+
+      if (!response.ok) {
+        console.error('알림 조회 실패:', response.statusText)
+        return
+      }
+
+      const data = await response.json()
+
+      set({
+        notifications: data.notifications,
+        unreadCount: data.unreadCount
+      })
+    } catch (error) {
+      console.error('알림 조회 중 에러:', error)
     }
   },
   
   markAsRead: async (id) => {
-    const supabase = createClient()
-    
-    await supabase
-      .from('notifications')
-      .update({ is_read: true })
-      .eq('id', id)
-    
-    await get().fetchNotifications()
+    try {
+      const response = await fetch('/api/notifications/mark-read', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({ notificationId: id })
+      })
+
+      if (!response.ok) {
+        console.error('알림 읽음 처리 실패:', response.statusText)
+        return
+      }
+
+      await get().fetchNotifications()
+    } catch (error) {
+      console.error('알림 읽음 처리 중 에러:', error)
+    }
   },
   
   markAllAsRead: async () => {
-    const supabase = createClient()
-    const { data: userData } = await supabase.auth.getUser()
-    
-    if (!userData.user) return
-    
-    await supabase
-      .from('notifications')
-      .update({ is_read: true })
-      .eq('user_id', userData.user.id)
-      .eq('is_read', false)
-    
-    await get().fetchNotifications()
+    try {
+      const response = await fetch('/api/notifications/mark-all-read', {
+        method: 'POST',
+        credentials: 'include'
+      })
+
+      if (!response.ok) {
+        console.error('모든 알림 읽음 처리 실패:', response.statusText)
+        return
+      }
+
+      await get().fetchNotifications()
+    } catch (error) {
+      console.error('모든 알림 읽음 처리 중 에러:', error)
+    }
   },
   
   subscribeToNotifications: () => {
-    const supabase = createClient()
-    
-    // 실시간 알림 구독
-    const subscription = supabase
-      .channel('public:notifications')
-      .on('postgres_changes', 
-        { 
-          event: 'INSERT', 
-          schema: 'public', 
-          table: 'notifications' 
-        }, 
-        (payload) => {
-          get().fetchNotifications()
-        }
-      )
-      .subscribe()
-    
+    // 실시간 구독을 위한 API 호출
+    const eventSource = new EventSource('/api/notifications/subscribe')
+
+    eventSource.onmessage = (event) => {
+      if (event.data === 'notification_update') {
+        get().fetchNotifications()
+      }
+    }
+
     // 클린업 함수 반환
     return () => {
-      supabase.removeChannel(subscription)
+      eventSource.close()
     }
   },
   
   markChatNotificationsAsRead: async (chatRoomId: string) => {
-    const supabase = createClient()
-    const { data: userData } = await supabase.auth.getUser()
-    
-    console.log("markChatNotificationsAsRead 실행")
-    console.log("userData.user:", userData.user)
-    console.log("chatRoomId:", chatRoomId)
-    
-    if (!userData.user) return
-    
-    // 에러 확인 추가
-    const { data, error } = await supabase
-      .from('chat_room_participants')
-      .update({ unread_count: 0 })
-      .eq('chat_room_id', chatRoomId)
-      .eq('user_id', userData.user.id)
-    
-    // 결과 로깅 추가
-    console.log("업데이트 결과:", { data, error })
-    
-    if (error) {
-      console.error("chat_room_participants 업데이트 실패:", error)
-      return
+    try {
+      const response = await fetch('/api/notifications/mark-chat-read', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({ chatRoomId })
+      })
+
+      if (!response.ok) {
+        console.error('채팅 알림 읽음 처리 실패:', response.statusText)
+        return
+      }
+
+      await get().fetchNotifications()
+    } catch (error) {
+      console.error('채팅 알림 읽음 처리 중 에러:', error)
     }
-    
-    // 해당 채팅방의 메시지 ID 목록 가져오기 (수신자로서 받은 메시지만)
-    const { data: messages } = await supabase
-      .from('messages')
-      .select('id')
-      .eq('chat_room_id', chatRoomId)
-      .eq('receiver_id', userData.user.id)
-    
-    if (messages && messages.length > 0) {
-      const messageIds = messages.map(msg => msg.id)
-      
-      // 메시지 관련 알림 읽음 처리
-      await supabase
-        .from('notifications')
-        .update({ is_read: true })
-        .eq('user_id', userData.user.id)
-        .eq('type', 'message')
-        .eq('is_read', false)
-        .in('related_id', messageIds)
-    }
-    
-    await get().fetchNotifications()
   },
   
   markTaskNotificationsAsRead: async () => {
-    const supabase = createClient()
-    const { data: userData } = await supabase.auth.getUser()
-    
-    if (!userData.user) return
-    
-    // 의뢰 관련 알림 읽음 처리
-    await supabase
-      .from('notifications')
-      .update({ is_read: true })
-      .eq('user_id', userData.user.id)
-      .eq('is_read', false)
-      .in('type', ['request', 'accept', 'reject', 'cancel', 'complete'])
-    
-    await get().fetchNotifications()
+    try {
+      const response = await fetch('/api/notifications/mark-task-read', {
+        method: 'POST',
+        credentials: 'include'
+      })
+
+      if (!response.ok) {
+        console.error('태스크 알림 읽음 처리 실패:', response.statusText)
+        return
+      }
+
+      await get().fetchNotifications()
+    } catch (error) {
+      console.error('태스크 알림 읽음 처리 중 에러:', error)
+    }
   },
   
   markHeaderNotificationsAsRead: async () => {
-    const supabase = createClient()
-    const { data: userData } = await supabase.auth.getUser()
-    
-    if (!userData.user) return
-    
-    // 헤더에 표시되는 일반 알림 읽음 처리
-    await supabase
-      .from('notifications')
-      .update({ is_read: true })
-      .eq('user_id', userData.user.id)
-      .eq('is_read', false)
-      .not('type', 'in', ['message', 'request', 'accept', 'reject', 'cancel', 'complete'])
-    
-    await get().fetchNotifications()
+    try {
+      const response = await fetch('/api/notifications/mark-header-read', {
+        method: 'POST',
+        credentials: 'include'
+      })
+
+      if (!response.ok) {
+        console.error('헤더 알림 읽음 처리 실패:', response.statusText)
+        return
+      }
+
+      await get().fetchNotifications()
+    } catch (error) {
+      console.error('헤더 알림 읽음 처리 중 에러:', error)
+    }
   },
   
-  // Realtime 구독 설정을 위한 새 함수
+  // Realtime 구독 설정을 위한 새 함수 (보안 강화)
   setupNotificationSubscription: () => {
-    const supabase = createClient()
-    
-    const channel = supabase
-      .channel('public:notifications')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',  // INSERT, UPDATE, DELETE 모두 처리
-          schema: 'public',
-          table: 'notifications'
-        },
-        () => {
-          // 알림 변경 시 상태 갱신
-          get().fetchNotifications()
-        }
-      )
-      .subscribe()
-    
+    // Server-Sent Events를 사용한 실시간 구독
+    const eventSource = new EventSource('/api/notifications/subscribe')
+
+    eventSource.onmessage = (event) => {
+      if (event.data === 'notification_update') {
+        get().fetchNotifications()
+      }
+    }
+
+    eventSource.onerror = (error) => {
+      console.error('알림 구독 에러:', error)
+    }
+
     // 구독 해제 함수 반환
-    return () => supabase.removeChannel(channel)
+    return () => {
+      eventSource.close()
+    }
   }
 }))
