@@ -1,6 +1,7 @@
 import { ArrowDown } from "lucide-react";
 
-const Arrow = ({ extraStyle }) => {
+type ArrowProps = { extraStyle?: string }
+const Arrow = ({ extraStyle = '' }: ArrowProps) => {
   return (
     <ArrowDown
       className={`shrink-0 w-12 stroke-neutral-content opacity-70 ${extraStyle}`}
@@ -8,7 +9,8 @@ const Arrow = ({ extraStyle }) => {
   );
 };
 
-const Step = ({ emoji, text }) => {
+type StepProps = { emoji: string; text: string }
+const Step = ({ emoji, text }: StepProps) => {
   return (
     <div className="w-full md:w-48 flex flex-col gap-2 items-center justify-center">
       <span className="text-4xl">{emoji}</span>
