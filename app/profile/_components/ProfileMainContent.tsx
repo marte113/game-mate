@@ -1,13 +1,10 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 
-import { createClient } from "@/libs/supabase/client";
-import {
-  PrefetchedProfileData,
-  ProfileMainContentProps,
-} from "@/app/profile/_types/profile.types";
+import { ProfileMainContentProps } from "@/app/profile/_types/profile.types";
 import { useAuthStore } from "@/stores/authStore"; // isOwner 확인용
+import { usePublicProfileQuery } from "@/hooks/api/profile/usePublicProfileQuery";
 
 import ProfileTabNav from "./ProfileTabNav";
 import ProfileAlbumCarousel from "./ProfileAlbumCarousel";
@@ -20,64 +17,18 @@ import ProfileReviewSection from "./ProfileReviewSection";
 // 탭 종류 정의
 export type ProfileTabType = "profile"; // | 'videos' | 'reviews'; // 추후 확장
 
-// 클라이언트 사이드 데이터 페칭 함수 (ProfileHeader와 동일, 추후 분리 권장)
-async function fetchClientProfile(supabase: ReturnType<typeof createClient>, publicProfileId: number): Promise<PrefetchedProfileData | null> {
-  console.log(`[Client Fetch] Fetching profile for public_id: ${publicProfileId}`);
-  const { data: profileInfo, error: profileError } = await supabase
-    .from('profiles')
-    .select('user_id, nickname, follower_count, description, selected_tags, youtube_urls, selected_games')
-    .eq('public_id', publicProfileId)
-    .single();
-
-  if (profileError || !profileInfo || !profileInfo.user_id) {
-    console.error(`[Client Fetch] Error fetching profile or profile/user_id not found for public_id ${publicProfileId}:`, profileError);
-    return null;
-  }
-
-  const { data: userInfo, error: userError } = await supabase
-    .from('users')
-    .select('id, name, profile_circle_img, is_online')
-    .eq('id', profileInfo.user_id)
-    .single();
-
-  if (userError || !userInfo) {
-    console.error(`[Client Fetch] Error fetching user for user_id ${profileInfo.user_id}:`, userError);
-    return null;
-  }
-
-  return {
-    ...userInfo,
-    ...profileInfo,
-    user_id: userInfo.id,
-    public_id: publicProfileId,
-  };
-}
+// 클라이언트 직접 페칭 로직 제거 (API+Service+Hook 레이어 사용)
 
 export default function ProfileMainContent({
   profileId,
 }: ProfileMainContentProps) {
   const { user: loggedInUser } = useAuthStore(); // isOwner 확인용
-  const supabase = createClient(); // 클라이언트 컴포넌트용 Supabase 클라이언트 생성
 
   // Prefetch된 프로필 데이터 가져오기 (하위 컴포넌트에 전달 목적)
-  const queryKey = ["profile", profileId];
-  const numericProfileId = Number(profileId); // queryFn에서 사용
-
-  const {
-    data: profileData,
-    isLoading,
-    error,
-  } = useQuery<PrefetchedProfileData | null>({
-    queryKey: queryKey,
-    queryFn: async () => {
-      if (isNaN(numericProfileId)) {
-        console.error(`[Client QueryFn] Invalid profileId: ${profileId}`);
-        return null;
-      }
-      return fetchClientProfile(supabase, numericProfileId);
-    },
+  const numericProfileId = useMemo(() => Number(profileId), [profileId]);
+  const { data: profileData, isLoading, error } = usePublicProfileQuery(numericProfileId, {
+    enabled: Number.isFinite(numericProfileId),
     staleTime: 5 * 60 * 1000,
-    enabled: !isNaN(numericProfileId), // 유효한 숫자 ID일 때만 쿼리 활성화
   });
 
   // isOwner 계산 (GameList 등에 전달)

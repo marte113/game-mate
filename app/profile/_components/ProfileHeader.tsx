@@ -3,16 +3,14 @@
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Star, MessageCircle, Heart, Share2 } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
-import { createClient } from '@/libs/supabase/client'
 import { toast } from 'react-hot-toast'
 
 import { useAuthStore } from '@/stores/authStore'
 import { useChatStore } from '@/stores/chatStore'
-import { chatApi } from '@/app/dashboard/chat/_api/chatApi' // chatApi 경로 확인
 import Badge from '@/components/Badge' // Badge 컴포넌트 경로 확인
-import { PrefetchedProfileData, ProfileHeaderProps } from '@/app/profile/_types/profile.types'
-import { Database } from '@/types/database.types'
+import { ProfileHeaderProps } from '@/app/profile/_types/profile.types'
+import { usePublicProfileQuery } from '@/hooks/api/profile/usePublicProfileQuery'
+import { useStartChat } from '@/hooks/chat/useStartChat'
 
 // --- 임시 Mock 데이터 (필요시 제거) ---
 const mockProfileDataExtras = {
@@ -22,63 +20,20 @@ const mockProfileDataExtras = {
 }
 // --- 임시 Mock 데이터 끝 ---
 
-// 클라이언트 사이드 데이터 페칭 함수 (서버 함수와 유사하게 구현)
-async function fetchClientProfile(supabase: ReturnType<typeof createClient>, publicProfileId: number): Promise<PrefetchedProfileData | null> {
-  console.log(`[Client Fetch] Fetching profile for public_id: ${publicProfileId}`);
-  const { data: profileInfo, error: profileError } = await supabase
-    .from('profiles')
-    .select('user_id, nickname, follower_count, description, selected_tags, youtube_urls, selected_games')
-    .eq('public_id', publicProfileId)
-    .single();
-
-  if (profileError || !profileInfo || !profileInfo.user_id) {
-    console.error(`[Client Fetch] Error fetching profile or profile/user_id not found for public_id ${publicProfileId}:`, profileError);
-    return null;
-  }
-
-  const { data: userInfo, error: userError } = await supabase
-    .from('users')
-    .select('id, name, profile_circle_img, is_online')
-    .eq('id', profileInfo.user_id)
-    .single();
-
-  if (userError || !userInfo) {
-    console.error(`[Client Fetch] Error fetching user for user_id ${profileInfo.user_id}:`, userError);
-    return null;
-  }
-
-  return {
-    ...userInfo,
-    ...profileInfo,
-    user_id: userInfo.id,
-    public_id: publicProfileId,
-  };
-}
+// 클라이언트 직접 페칭 로직 제거 (API+Service+Hook 레이어 사용)
 
 
 export default function ProfileHeader({ profileId }: ProfileHeaderProps) {
   const router = useRouter()
-  const supabase = createClient() // 클라이언트 컴포넌트용 Supabase 클라이언트 생성
   const { user: loggedInUser } = useAuthStore() // 로그인한 사용자 정보
-  const { findOrCreateChatWithUser, isLoading: chatLoading, setSelectedChat } = useChatStore()
+  const { isLoading: chatLoading } = useChatStore()
+  const { startChatWithUser } = useStartChat()
 
   // Prefetch된 프로필 데이터 가져오기
-  const queryKey = ['profile', profileId]
-  const numericProfileId = Number(profileId) // queryFn에서 사용하기 위해 변환
-
-  const { data: profileData, isLoading, error } = useQuery<PrefetchedProfileData | null>({
-    queryKey: queryKey,
-    // queryFn 추가: 클라이언트에서 데이터를 refetch할 때 사용됨
-    queryFn: async () => {
-      if (isNaN(numericProfileId)) {
-         console.error(`[Client QueryFn] Invalid profileId: ${profileId}`)
-         return null
-      }
-      // 클라이언트용 fetch 함수 호출
-      return fetchClientProfile(supabase, numericProfileId)
-    },
-    staleTime: 5 * 60 * 1000, // 5분
-    enabled: !isNaN(numericProfileId), // 유효한 숫자 ID일 때만 쿼리 활성화
+  const numericProfileId = Number(profileId)
+  const { data: profileData, isLoading, error } = usePublicProfileQuery(numericProfileId, {
+    enabled: Number.isFinite(numericProfileId),
+    staleTime: 5 * 60 * 1000,
   })
 
   // --- 로딩 및 에러 처리 (헤더 부분에 간단히 표시하거나, page.tsx 레벨에서 처리) ---
@@ -88,39 +43,7 @@ export default function ProfileHeader({ profileId }: ProfileHeaderProps) {
 
   // 채팅 시작 핸들러 (기존 로직 유지)
   const handleStartChat = async () => {
-     if (!loggedInUser) {
-        toast.error('먼저 로그인이 필요합니다')
-        router.push('/login')
-        return
-     }
-      // profileData가 로드되기 전이거나 user_id가 없을 수 있으므로 nullish coalescing 사용
-      const targetUserId = profileData?.user_id
-      if (!targetUserId) {
-         toast.error('상대방 정보를 찾을 수 없습니다.')
-         return
-      }
-
-    try {
-      toast.loading('채팅방으로 이동 중...')
-      const chatRoomId = await findOrCreateChatWithUser(targetUserId) // null 체크 후 사용
-      toast.dismiss()
-      if (chatRoomId) {
-        // TODO: chatApi.getChatRoom 반환 타입 확인 및 적용
-        const chatRoom = await chatApi.getChatRoom(chatRoomId)
-        if (chatRoom) {
-          setSelectedChat(chatRoom) // chatStore의 setSelectedChat 사용
-          router.push('/dashboard/chat')
-        } else {
-           toast.error('채팅방 정보를 가져오는데 실패했습니다.')
-        }
-      } else {
-        toast.error('채팅방을 생성하는 데 문제가 발생했습니다')
-      }
-    } catch (err: any) {
-      console.error('채팅 시작 오류:', err)
-      toast.dismiss()
-      toast.error(`채팅을 시작하는 데 문제가 발생했습니다: ${err.message}`)
-    }
+    await startChatWithUser(profileData?.user_id)
   }
 
   // 팔로우 핸들러 (추후 구현)
