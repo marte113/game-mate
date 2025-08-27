@@ -1,14 +1,14 @@
 'use client'
 
 import { Bell } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, memo } from "react";
 import Link from 'next/link'
 import { formatDistanceToNow } from 'date-fns'
 import { ko } from 'date-fns/locale'
 
 import { useNotificationStore } from '@/stores/notificationStore'
 
-export default function AlarmDropdown() {
+export default memo(function AlarmDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   
@@ -32,7 +32,7 @@ export default function AlarmDropdown() {
     return () => {
       unsubscribe()
     }
-  }, [])
+  }, [fetchNotifications, subscribeToNotifications])
 
   // 드롭다운 외부 클릭 감지
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function AlarmDropdown() {
   }, [])
 
   // 알림 클릭 처리
-  const handleNotificationClick = (id: string, type: string | null, relatedId: string | null) => {
+  const handleNotificationClick = (id: string, _type: string | null, _relatedId: string | null) => {
     markAsRead(id)
     setIsOpen(false)
   }
@@ -94,12 +94,12 @@ export default function AlarmDropdown() {
         className="btn btn-ghost btn-circle"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <div className="indicator rounded-full hover:text-gray-300">
+        <span className="indicator rounded-full hover:text-gray-300">
           <Bell className="w-6 h-6" />
           {unreadCount.total > 0 && (
             <span className="badge badge-xs badge-primary indicator-item">{unreadCount.total}</span>
           )}
-        </div>
+        </span>
       </button>
 
       {isOpen && (
@@ -160,4 +160,4 @@ export default function AlarmDropdown() {
       )}
     </div>
   );
-} 
+})
