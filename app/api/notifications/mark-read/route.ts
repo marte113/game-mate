@@ -1,6 +1,6 @@
 // app/api/notifications/mark-read/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClientComponent } from '@/libs/supabase/server'
+import { createServerClientComponent } from '@/supabase/functions/server'
 
 export async function POST(request: NextRequest) {
   try {

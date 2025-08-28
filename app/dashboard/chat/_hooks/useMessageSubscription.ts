@@ -2,7 +2,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { createClient } from '@/libs/supabase/client'
+import { createClient } from '@/supabase/functions/client'
 import { useQueryClient } from '@tanstack/react-query'
 import { RealtimeChannel, RealtimePostgresChangesPayload } from '@supabase/supabase-js'
 

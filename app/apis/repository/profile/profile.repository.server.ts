@@ -1,4 +1,4 @@
-import { createServerClientComponent } from '@/libs/supabase/server'
+import { createServerClientComponent } from '@/supabase/functions/server'
 
 export async function repoGetProfileUserIdByPublicId(publicId: number) {
   const supabase = await createServerClientComponent()

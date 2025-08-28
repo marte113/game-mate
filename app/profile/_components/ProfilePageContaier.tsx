@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 
-import { createServerClientComponent } from '@/libs/supabase/server';
+import { createServerClientComponent } from '@/supabase/functions/server';
 import { PrefetchedProfileData } from '@/app/profile/_types/profile.types';
 
 // 컴포넌트 Props 타입 정의

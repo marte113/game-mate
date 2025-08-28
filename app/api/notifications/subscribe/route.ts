@@ -1,7 +1,7 @@
 // app/api/notifications/subscribe/route.ts
 import { NextRequest } from 'next/server'
 
-import { createServerClientComponent } from '@/libs/supabase/server'
+import { createServerClientComponent } from '@/supabase/functions/server'
 
 export async function GET(request: NextRequest) {
   const encoder = new TextEncoder()

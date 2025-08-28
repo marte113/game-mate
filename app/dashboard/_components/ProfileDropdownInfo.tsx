@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { createClient } from "@/libs/supabase/client";
+import { createClient } from "@/supabase/functions/client";
 
 interface ProfileInfo {
   nickname: string;

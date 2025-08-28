@@ -1,6 +1,6 @@
 // app/api/notifications/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClientComponent } from '@/libs/supabase/server'
+import { createServerClientComponent } from '@/supabase/functions/server'
 import { Database } from '@/types/database.types'
 
 type Notification = Database['public']['Tables']['notifications']['Row']

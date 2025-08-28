@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-import { createClient } from '@/libs/supabase/client'
+import { createClient } from '@/supabase/functions/client'
 // UsersRow, ProfilesRow 제거 (충돌 방지)
 import type { Database } from '@/types/database.types'
 
