@@ -34,7 +34,7 @@ export default function TokenHistoryTable() {
             </thead>
             <tbody>
               {transactionsData?.pages.flatMap((page) =>
-                page.data.map((transaction: any) => (
+                page.map((transaction: any) => (
                   <TokenHistoryTr
                     key={transaction.transaction_id}
                     transaction={transaction}
