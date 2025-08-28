@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   const res = NextResponse.json(
-    { success: false, message: "/api/token/detailUsage is removed. Use /api/token/transactions." },
+    { success: false, code: 'GONE', message: "/api/token/detailUsage is removed. Use /api/token/transactions." },
     { status: 410 }
   )
   res.headers.set('X-Deprecated-Endpoint', '/api/token/detailUsage is removed; use /api/token/transactions')
