@@ -12,6 +12,13 @@ export class ServiceError extends Error {
   }
 }
 
+export class UnauthorizedError extends Error {
+  constructor(message = 'Unauthorized') {
+    super(message)
+    this.name = 'UnauthorizedError'
+  }
+}
+
 export async function wrapRepo<T>(context: string, fn: () => Promise<T>): Promise<T> {
   try {
     return await fn()

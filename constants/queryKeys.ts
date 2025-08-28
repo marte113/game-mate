@@ -9,6 +9,7 @@ export const queryKeys = {
     balance: () => ['balance'] as const,
     usage: () => ['usage'] as const,
     detailUsage: () => ['detailUsage'] as const,
+    transactions: () => ['tokenTransactions'] as const,
   },
 
   orders: {
@@ -55,6 +56,7 @@ export type QueryKey = ReturnType<
   | typeof queryKeys.token.balance
   | typeof queryKeys.token.usage
   | typeof queryKeys.token.detailUsage
+  | typeof queryKeys.token.transactions
   | typeof queryKeys.orders.requested
   | typeof queryKeys.orders.received
   | typeof queryKeys.orders.providerReservations

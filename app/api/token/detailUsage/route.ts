@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getMyDetailUsage } from '@/app/apis/service/token/detailUsageService'
+import { getMyTokenTransactions } from '@/app/apis/service/token/transactionsService'
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
     const pageParam = searchParams.get('pageParam') ?? undefined
-    const limit = Number(searchParams.get('limit') ?? '20')
-    const result = await getMyDetailUsage({ pageParam, limit: Number.isFinite(limit) ? limit : 20 })
-    return NextResponse.json(result)
+    const limit = Number(searchParams.get('limit') ?? '10')
+    const result = await getMyTokenTransactions({ pageParam, limit: Number.isFinite(limit) ? limit : 10 })
+    const res = NextResponse.json(result)
+    res.headers.set('X-Deprecated-Endpoint', '/api/token/detailUsage is deprecated; use /api/token/transactions')
+    return res
   } catch (error) {
     console.error("토큰 조회 중 오류 발생:", error)
     return NextResponse.json(
@@ -16,4 +18,3 @@ export async function GET(request: NextRequest) {
     )
   }
 }
-

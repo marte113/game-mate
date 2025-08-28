@@ -1,38 +1,14 @@
 "use client";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useTokenTransactionsInfiniteQuery } from "@/hooks/api/token/useTokenTransactionsInfiniteQuery";
 
 import { Button } from "@/components/ui";
 
 import TokenHistoryTr from "./TokenHistoryTr";
 export default function TokenHistoryTable() {
   
-  const {
-    data: transactionsData,
-    fetchNextPage,
-    hasNextPage,
-    error,
-  } = useInfiniteQuery({
-    queryKey: ["detailUsage"],
-    queryFn: ({ pageParam }) => fetchTransactions(pageParam),
-    initialPageParam: undefined,
-    getNextPageParam: (lastPage) => {
-      if (!lastPage.data || lastPage.data.length < 10) return undefined;
-      return lastPage.data[lastPage.data.length - 1].created_at;
-    },
-  });
-
-  const fetchTransactions = async (pageParam?: string) => {
-    const url = new URL("/api/token/detailUsage", window.location.origin);
-    if (pageParam) url.searchParams.append("pageParam", pageParam);
-
-    const res = await fetch(url, { credentials: "include" });
-    if (!res.ok) {
-      throw new Error("Failed to fetch transactions");
-    }
-    const json = await res.json();
-    return json; // { success: true, data: [] }
-  };
+  const { data: transactionsData, fetchNextPage, hasNextPage, error } =
+    useTokenTransactionsInfiniteQuery();
 
   if (error) {
     return <div>에러가 발생하였습니다.</div>;
