@@ -1,12 +1,10 @@
-//여기에 로직을 구현해서 가져다 사용하는 것으로
-//합시다.
+'use client'
 
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { createClient } from '@/libs/supabase/client';
+import { createClient } from '@/supabase/functions/client';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 
-import { Database } from '@/types/database.types';
 import { useAuthStore } from '@/stores/authStore'; // Auth 스토어 임포트
 
 // 타입 정의: 훅의 인자 (콜백 대신 내부에서 invalidate 사용)
