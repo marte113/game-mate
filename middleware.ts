@@ -55,6 +55,6 @@ export const config = {
     /*
      * _next/static, _next/image 등 정적 리소스는 제외하고 미들웨어 적용
      */
-    '/((?!_next/static|_next/image|icons|public|favicon.ico).*)',
+    '/((?!api|_next/static|_next/image|icons|public|favicon.ico).*)',
   ],
 };
