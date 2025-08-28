@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAlbumGallery, uploadAlbumImage, deleteAlbumImage, setThumbnail } from "@/app/apis/service/profile/albumService";
+import { toErrorResponse, UnauthorizedError, BadRequestError } from "@/app/apis/base";
 
 // GET: 앨범 이미지 목록 조회
 export async function GET() {
@@ -8,11 +9,12 @@ export async function GET() {
     return NextResponse.json({ success: true, data: formatted, thumbnailIndex });
 
   } catch (error: any) {
-    console.error('GET /api/profile/image/image_gallery Error:', error);
-    return NextResponse.json(
-      { success: false, error: error.message || '앨범 이미지 조회 실패' },
-      { status: error.message === '사용자 인증 오류' ? 401 : 500 }
-    );
+    if (typeof error?.message === 'string') {
+      if (error.message === '사용자 인증 오류') {
+        return toErrorResponse(new UnauthorizedError(error.message));
+      }
+    }
+    return toErrorResponse(error);
   }
 }
 
@@ -24,11 +26,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, data: newImage });
 
   } catch (error: any) {
-    console.error('POST /api/profile/image/image_gallery Error:', error);
-    return NextResponse.json(
-      { success: false, error: error.message || '앨범 이미지 업로드 실패' },
-      { status: error.message === '사용자 인증 오류' ? 401 : (error.message.includes('필수 정보') || error.message.includes('인덱스')) ? 400 : 500 }
-    );
+    if (typeof error?.message === 'string') {
+      if (error.message === '사용자 인증 오류') {
+        return toErrorResponse(new UnauthorizedError(error.message));
+      }
+      if (error.message.includes('필수 정보') || error.message.includes('인덱스')) {
+        return toErrorResponse(new BadRequestError(error.message));
+      }
+    }
+    return toErrorResponse(error);
   }
 }
 
@@ -36,16 +42,17 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const { imageId } = await request.json();
-    if (!imageId) throw new Error('이미지 ID가 누락되었습니다.');
+    if (!imageId) throw new BadRequestError('이미지 ID가 누락되었습니다.');
     const result = await deleteAlbumImage(imageId);
     return NextResponse.json({ success: true, ...result });
 
   } catch (error: any) {
-    console.error('DELETE /api/profile/image/image_gallery Error:', error);
-    return NextResponse.json(
-      { success: false, error: error.message || '앨범 이미지 삭제 실패' },
-      { status: error.message === '사용자 인증 오류' ? 401 : error.message.includes('ID가 누락') ? 400 : 500 }
-    );
+    if (typeof error?.message === 'string') {
+      if (error.message === '사용자 인증 오류') {
+        return toErrorResponse(new UnauthorizedError(error.message));
+      }
+    }
+    return toErrorResponse(error);
   }
 }
 
@@ -53,14 +60,16 @@ export async function DELETE(request: Request) {
 export async function PATCH(request: Request) {
   try {
     const { imageUrl } = await request.json();
+    if (!imageUrl) throw new BadRequestError('URL이 누락되었습니다.');
     const result = await setThumbnail(imageUrl);
     return NextResponse.json({ success: true, ...result });
 
   } catch (error: any) {
-    console.error('PATCH /api/profile/image/image_gallery Error:', error);
-    return NextResponse.json(
-      { success: false, error: error.message || '썸네일 설정 실패' },
-      { status: error.message === '사용자 인증 오류' ? 401 : error.message.includes('URL이 누락') ? 400 : 500 }
-    );
+    if (typeof error?.message === 'string') {
+      if (error.message === '사용자 인증 오류') {
+        return toErrorResponse(new UnauthorizedError(error.message));
+      }
+    }
+    return toErrorResponse(error);
   }
 }

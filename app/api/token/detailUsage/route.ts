@@ -1,20 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getMyTokenTransactions } from '@/app/apis/service/token/transactionsService'
+import { NextResponse } from "next/server";
 
-export async function GET(request: NextRequest) {
-  try {
-    const searchParams = request.nextUrl.searchParams
-    const pageParam = searchParams.get('pageParam') ?? undefined
-    const limit = Number(searchParams.get('limit') ?? '10')
-    const result = await getMyTokenTransactions({ pageParam, limit: Number.isFinite(limit) ? limit : 10 })
-    const res = NextResponse.json(result)
-    res.headers.set('X-Deprecated-Endpoint', '/api/token/detailUsage is deprecated; use /api/token/transactions')
-    return res
-  } catch (error) {
-    console.error("토큰 조회 중 오류 발생:", error)
-    return NextResponse.json(
-      { success: false, message: "토큰 거래 조회 중 오류가 발생했습니다." },
-      { status: 500 }
-    )
-  }
+export async function GET() {
+  const res = NextResponse.json(
+    { success: false, message: "/api/token/detailUsage is removed. Use /api/token/transactions." },
+    { status: 410 }
+  )
+  res.headers.set('X-Deprecated-Endpoint', '/api/token/detailUsage is removed; use /api/token/transactions')
+  res.headers.set('Link', '</api/token/transactions>; rel="successor-version"')
+  return res
 }

@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server'
 
 import { Database } from '@/types/database.types'
 import { SendMessageRequest } from '@/app/dashboard/chat/_types/chatTypes'
+import { toErrorResponse, BadRequestError, UnauthorizedError, ServiceError } from '@/app/apis/base'
 
 export async function GET(request: Request) {
   try {
@@ -30,13 +31,13 @@ export async function GET(request: Request) {
     const roomId = searchParams.get('roomId')
     
     if (!roomId) {
-      return NextResponse.json({ error: '채팅방 ID가 필요합니다' }, { status: 400 })
+      throw new BadRequestError('채팅방 ID가 필요합니다')
     }
     
     // 현재 사용자 확인
     const { data: userData, error: userError } = await supabase.auth.getUser()
-    if (userError) {
-      return NextResponse.json({ error: '인증 오류' }, { status: 401 })
+    if (userError || !userData?.user) {
+      throw new UnauthorizedError('인증 오류')
     }
     
     // 메시지 가져오기
@@ -47,7 +48,7 @@ export async function GET(request: Request) {
       .order('created_at', { ascending: true })
     
     if (messagesError) {
-      return NextResponse.json({ error: messagesError.message }, { status: 500 })
+      throw new ServiceError('메시지 조회 실패', messagesError)
     }
     
     // 자동으로 읽음 처리
@@ -59,8 +60,7 @@ export async function GET(request: Request) {
     
     return NextResponse.json({ messages: messagesData || [] })
   } catch (error) {
-    const message = error instanceof Error ? error.message : '메시지를 가져오는 중 오류가 발생했습니다'
-    return NextResponse.json({ error: message }, { status: 500 })
+    return toErrorResponse(error)
   }
 }
 
@@ -89,13 +89,13 @@ export async function POST(request: Request) {
     const { content, receiverId, chatRoomId } = requestData
     
     if (!content || !receiverId) {
-      return NextResponse.json({ error: '메시지 내용과 수신자 ID가 필요합니다' }, { status: 400 })
+      throw new BadRequestError('메시지 내용과 수신자 ID가 필요합니다')
     }
     
     // 현재 사용자 확인
     const { data: userData, error: userError } = await supabase.auth.getUser()
-    if (userError) {
-      return NextResponse.json({ error: '인증 오류' }, { status: 401 })
+    if (userError || !userData?.user) {
+      throw new UnauthorizedError('인증 오류')
     }
     
     const senderId = userData.user.id
@@ -115,7 +115,7 @@ export async function POST(request: Request) {
       .select()
     
     if (messageError) {
-      return NextResponse.json({ error: messageError.message }, { status: 500 })
+      throw new ServiceError('메시지 전송 실패', messageError)
     }
     
     return NextResponse.json({ 
@@ -124,7 +124,6 @@ export async function POST(request: Request) {
       chatRoomId: messageData[0]?.chat_room_id
     })
   } catch (error) {
-    const message = error instanceof Error ? error.message : '메시지 전송 중 오류가 발생했습니다'
-    return NextResponse.json({ error: message }, { status: 500 })
+    return toErrorResponse(error)
   }
 }
