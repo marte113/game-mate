@@ -4,16 +4,17 @@ import { useInfiniteQuery, UseInfiniteQueryOptions, InfiniteData } from "@tansta
 
 import { queryKeys } from "@/constants/queryKeys"
 import type { Database } from "@/types/database.types"
+import { fetchJson } from "@/libs/api/fetchJson"
 
 export type TokenTransaction = Database['public']['Tables']['token_transactions']['Row']
-export type TokenTransactionsResponse = { success: boolean; data: TokenTransaction[] }
+export type TokenTransactions = TokenTransaction[]
 
 export function useTokenTransactionsInfiniteQuery(
   options?: UseInfiniteQueryOptions<
-    TokenTransactionsResponse,
+    TokenTransactions,
     Error,
-    InfiniteData<TokenTransactionsResponse>,
-    TokenTransactionsResponse,
+    InfiniteData<TokenTransactions>,
+    TokenTransactions,
     ReturnType<typeof queryKeys.token.transactions>
   >
 ) {
@@ -22,14 +23,12 @@ export function useTokenTransactionsInfiniteQuery(
     queryFn: async ({ pageParam }) => {
       const url = new URL('/api/token/transactions', window.location.origin)
       if (pageParam) url.searchParams.append('pageParam', String(pageParam))
-      const res = await fetch(url.toString(), { credentials: 'include' })
-      if (!res.ok) throw new Error('Failed to fetch token transactions')
-      return res.json() as Promise<TokenTransactionsResponse>
+      return fetchJson<TokenTransactions>(url.toString(), { credentials: 'include' })
     },
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => {
-      if (!lastPage?.data || lastPage.data.length < 10) return undefined
-      return lastPage.data[lastPage.data.length - 1].created_at
+      if (!lastPage || lastPage.length < 10) return undefined
+      return lastPage[lastPage.length - 1].created_at
     },
     staleTime: 60_000,
     ...options,
