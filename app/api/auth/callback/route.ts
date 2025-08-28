@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
+export const dynamic = 'force-dynamic'
+
 // OAuth provider redirect target
 // Handles code exchange, sets auth cookies, and redirects user
 export async function GET(request: NextRequest) {
