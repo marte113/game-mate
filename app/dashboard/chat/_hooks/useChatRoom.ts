@@ -1,9 +1,10 @@
 import { useEffect, useRef } from "react";
-import { useQueryClient , useQuery , useMutation } from "@tanstack/react-query";
+import { useQueryClient , useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-import { ChatQueryKeys } from "../_api";
 import { chatApi } from "../_api/chatApi";
+import { useAppQuery } from "@/hooks/api/core/useAppQuery";
+import { queryKeys } from "@/constants/queryKeys";
 
 
 // 메시지 전송 파라미터 타입 정의
@@ -19,8 +20,8 @@ export function useChatRoom(roomId: string, userId?: string) {
   // 디바운싱을 위한 타이머 ref
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const { data: messages = [], isLoading } = useQuery({
-    queryKey: ChatQueryKeys.messages(roomId),
+  const { data: messages = [], isLoading } = useAppQuery({
+    queryKey: queryKeys.chat.messages(roomId),
     queryFn: () => chatApi.getMessages(roomId),
     enabled: !!roomId,
   });
@@ -31,9 +32,9 @@ export function useChatRoom(roomId: string, userId?: string) {
       chatApi.sendMessage(params.content, params.receiverId, roomId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ChatQueryKeys.messages(roomId),
+        queryKey: queryKeys.chat.messages(roomId),
       });
-      queryClient.invalidateQueries({ queryKey: ChatQueryKeys.chatRooms });
+      queryClient.invalidateQueries({ queryKey: queryKeys.chat.chatRooms() });
     },
     onError: (error) => {
       toast.error("메시지 전송에 실패했습니다.");
@@ -44,7 +45,7 @@ export function useChatRoom(roomId: string, userId?: string) {
   const markAsReadMutation = useMutation({
     mutationFn: chatApi.markAsRead,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ChatQueryKeys.chatRooms });
+      queryClient.invalidateQueries({ queryKey: queryKeys.chat.chatRooms() });
     },
   });
 
