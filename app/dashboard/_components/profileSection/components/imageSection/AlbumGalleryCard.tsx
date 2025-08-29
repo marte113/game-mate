@@ -25,10 +25,7 @@ export default function AlbumGalleryCard() {
     isError,
     error,
     refetch,
-  } = useAlbumImagesQuery({
-    staleTime: 1000 * 60 * 5, // 5분 동안 데이터를 신선하게 유지
-    refetchOnWindowFocus: false, // 창 포커스 시 자동 리페치 비활성화
-  });
+  } = useAlbumImagesQuery();
 
   // 로딩 상태 처리
   if (isLoading) {
