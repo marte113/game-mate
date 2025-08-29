@@ -1,6 +1,7 @@
 import type { QueryFunctionContext } from '@tanstack/react-query'
 
 import type { MatesApiResponse } from '@/app/category/_types/categoryPage.types'
+import { fetchJson } from '@/libs/api/fetchJson'
 
 // queryKey 타입을 readonly ['mates', string] 형태로 수정하고, pageParam 타입을 number로 명시
 export const fetchMates = async (
@@ -19,21 +20,5 @@ export const fetchMates = async (
   }
 
   // API 경로 수정 ('mates'로 변경 제안했었으나, 현재 파일명 'mate' 유지)
-  const response = await fetch(`/api/category/${categoryId}/mate?page=${pageParam}`) // 파일명이 route.ts면 /mate, 폴더명이면 /mates
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}))
-    // 에러 메시지를 좀 더 구체적으로 표시
-    const errorMessage = errorData.error || `Failed to fetch mates for category ${categoryId}`
-    console.error(`HTTP error! status: ${response.status}, message: ${errorMessage}`)
-    throw new Error(errorMessage) // 실제 에러 객체 throw
-  }
-
-  try {
-    const data: MatesApiResponse = await response.json()
-    return data
-  } catch (e) {
-    console.error('Failed to parse JSON response:', e)
-    throw new Error('Invalid response from server')
-  }
+  return fetchJson<MatesApiResponse>(`/api/category/${categoryId}/mate?page=${pageParam}`)
 }

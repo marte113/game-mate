@@ -29,7 +29,7 @@ export default function RecommendedMates() {
   })
 
   const allThemes = useMemo(() =>
-    data?.pages.flatMap(page => page.themes) || [],
+    data?.pages.flatMap(page => page.items) || [],
     [data]
   )
   const uniqueThemes = useMemo(() => {

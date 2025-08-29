@@ -6,7 +6,7 @@ import { Fragment } from 'react' // useEffect 제거
 
 import { useMatesByCategoryInfiniteQuery } from '@/hooks/api/category/useCategoryQueries'
 
-import type { MatesApiResponse, MateCardData } from '../_types/categoryPage.types'
+import type { MateCardData } from '../_types/categoryPage.types'
 import LoadingSpinner from '../_components/LoadingSpinner' // 로딩 스피너 임포트
 import { MateCard } from '../_components/MateCard' // MateCard 임포트 경로 확인
 import CategoryHeader from '../_components/CategoryHeader'
@@ -67,7 +67,7 @@ export default function CategoryIdPage() {
   }
 
   // 데이터가 없을 경우 (초기 로딩 후)
-  const allMates = data?.pages.flatMap(page => page.mates) ?? []
+  const allMates = data?.pages.flatMap(page => page.items) ?? []
   const noMatesFound = !isLoading && allMates.length === 0
 
   return (
@@ -82,9 +82,9 @@ export default function CategoryIdPage() {
         <>
           {/* 메이트 목록 - 5열 그리드 */}
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-            {data?.pages.map((page: MatesApiResponse, i) => (
+            {data?.pages.map((page, i) => (
               <Fragment key={i}>
-                {page.mates?.map((mate: MateCardData) => (
+                {page.items?.map((mate: MateCardData) => (
                   <MateCard key={mate.id} mate={mate} />
                 ))}
               </Fragment>

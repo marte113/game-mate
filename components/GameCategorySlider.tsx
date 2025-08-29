@@ -4,9 +4,7 @@ import React, { useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
-
-import { fetchPopularGames } from '@/app/category/_api/CategoryApi'
+import { usePopularGamesQuery } from '@/hooks/api/category/useCategoryQueries'
 
 interface GameCategoryItemProps {
   image: string
@@ -101,11 +99,8 @@ const GameCategorySlider = () => {
   const carouselRef = useRef<HTMLDivElement>(null)
 
   // React Query로 인기 게임 데이터 조회
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['popular-games'],
-    queryFn: () => fetchPopularGames(6), // limit 6개로 설정
-    staleTime: 5 * 60 * 1000, // 5분간 신선하다고 간주
-    retry: 1, // 실패 시 1번만 재시도
+  const { data, isLoading, error } = usePopularGamesQuery(6, {
+    staleTime: 5 * 60 * 1000, // 기존 컴포넌트 동작 보존(5분)
   })
 
   const scrollLeft = () => {

@@ -1,4 +1,5 @@
 import { RecommendedThemeResponse } from "@/app/(home)/_types/homePage.types";
+import { fetchJson } from "@/libs/api/fetchJson";
 
 export async function fetchRecommendedThemes({ 
   pageParam = 0 
@@ -6,11 +7,5 @@ export async function fetchRecommendedThemes({
   pageParam: number 
 }): Promise<RecommendedThemeResponse> {
   const pageNum = Number(pageParam) || 0;
-  const response = await fetch(`/api/category/recommend?page=${pageNum}`);
-  
-  if (!response.ok) {
-    throw new Error('Failed to fetch recommended themes');
-  }
-  
-  return response.json();
+  return fetchJson<RecommendedThemeResponse>(`/api/category/recommend?page=${pageNum}`);
 }

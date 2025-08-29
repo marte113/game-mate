@@ -8,6 +8,8 @@ import type { Database } from '@/types/database.types' // Database 타입 추가
 
 import { GameHeader } from '../_types/categoryPage.types'
 
+import { fetchJson } from '@/libs/api/fetchJson'
+
 export interface GamesApiResponse {
   games: GamesRow[] // 실제 Games 테이블 Row 타입 사용
   nextPage: number | undefined
@@ -31,40 +33,17 @@ export const fetchGames = async (
 ): Promise<GamesApiResponse> => {
   // context 객체에서 pageParam 추출 (첫 페이지는 undefined일 수 있으므로 기본값 0 설정)
   const { pageParam = 0 } = context
-
-  const response = await fetch(`/api/category?page=${pageParam}`)
-
-  if (!response.ok) {
-    // 실제 프로덕션에서는 status code에 따른 분기 처리 고려
-    throw new Error(`HTTP error! status: ${response.status}`)
-  }
-
-  const data: GamesApiResponse = await response.json()
-  return data
+  return fetchJson<GamesApiResponse>(`/api/category?page=${pageParam}`)
 }
 
 export const fetchGameHeader = async (
    // readonly 추가
    categoryId: string
 ) => {
-
-  const response = await fetch(`/api/category/${categoryId}/header`)
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`)
-  }
-
-  const data: GameHeader = await response.json()
-  return data;
+  return fetchJson<GameHeader>(`/api/category/${categoryId}/header`)
 }
 
 // 인기 게임 목록 조회 함수
 export const fetchPopularGames = async (limit: number = 6): Promise<PopularGamesResponse> => {
-  const response = await fetch(`/api/category/popular?limit=${limit}`)
-  
-  if (!response.ok) {
-    throw new Error(`Failed to fetch popular games: ${response.status}`)
-  }
-  
-  return response.json()
+  return fetchJson<PopularGamesResponse>(`/api/category/popular?limit=${limit}`)
 }
