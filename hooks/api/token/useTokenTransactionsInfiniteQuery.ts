@@ -6,13 +6,10 @@ import { queryKeys } from "@/constants/queryKeys"
 import type { Database } from "@/types/database.types"
 import { fetchJson } from "@/libs/api/fetchJson"
 import { useAppInfiniteQuery } from "@/hooks/api/core/useAppInfiniteQuery"
+import { AppPage } from "@/libs/api/pagination"
 
 export type TokenTransaction = Database['public']['Tables']['token_transactions']['Row']
-export type TokenTransactionsPage = {
-  items: TokenTransaction[]
-  nextCursor?: string
-  hasMore: boolean
-}
+export type TokenTransactionsPage = AppPage<TokenTransaction>
 
 export function useTokenTransactionsInfiniteQuery(
   options?: UseInfiniteQueryOptions<
@@ -36,7 +33,7 @@ export function useTokenTransactionsInfiniteQuery(
       return fetchJson<TokenTransactionsPage>(url.toString(), { credentials: 'include' })
     },
     initialPageParam: undefined,
-    getNextPageParam: (lastPage) => lastPage?.nextCursor,
+    getNextPageParam: (lastPage) => typeof lastPage?.nextCursor === 'string' ? lastPage.nextCursor : undefined,
     ...opts,
   })
 }
