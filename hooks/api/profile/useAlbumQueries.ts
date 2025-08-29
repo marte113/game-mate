@@ -17,6 +17,7 @@ export function useAlbumImagesQuery(
     queryKey: queryKeys.profile.albumImages(),
     queryFn: fetchAlbumImages,
     staleTime: 300_000, // 5분
+    refetchOnWindowFocus: false,
     ...options,
   })
 }

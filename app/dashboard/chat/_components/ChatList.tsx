@@ -7,10 +7,10 @@ import { useChatStore } from '@/stores/chatStore'
 import { chatApi } from '@/app/dashboard/chat/_api'
 import { ChatRoom } from '@/app/dashboard/chat/_types'
 import { useMessageSubscription } from '@/app/dashboard/chat/_hooks/useMessageSubscription'
-import { useAppQuery } from '@/hooks/api/core/useAppQuery'
 import { queryKeys } from '@/constants/queryKeys'
 
 import { formatMessageTime } from '../_utils/formatters'
+import { useQuery } from '@tanstack/react-query'
 
 // 로딩 중 스켈레톤 UI 컴포넌트
 function ChatSkeleton() {
@@ -43,7 +43,7 @@ export default function ChatList({ searchTerm = '' }: ChatListProps) {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   
   // React Query로 채팅방 목록 가져오기 (코어 훅 사용)
-  const { data: chatRooms, isLoading } = useAppQuery({
+  const { data: chatRooms, isLoading } = useQuery({
     queryKey: queryKeys.chat.chatRooms(),
     queryFn: chatApi.getChatRooms,
   })

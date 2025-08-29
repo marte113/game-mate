@@ -99,9 +99,7 @@ const GameCategorySlider = () => {
   const carouselRef = useRef<HTMLDivElement>(null)
 
   // React Query로 인기 게임 데이터 조회
-  const { data, isLoading, error } = usePopularGamesQuery(6, {
-    staleTime: 5 * 60 * 1000, // 기존 컴포넌트 동작 보존(5분)
-  })
+  const { data, isLoading, error } = usePopularGamesQuery()
 
   const scrollLeft = () => {
     carouselRef.current?.scrollBy({ left: -200, behavior: 'smooth' })

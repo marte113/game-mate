@@ -1,9 +1,8 @@
 import { useEffect, useRef } from "react";
-import { useQueryClient , useMutation } from "@tanstack/react-query";
+import { useQueryClient , useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 import { chatApi } from "../_api/chatApi";
-import { useAppQuery } from "@/hooks/api/core/useAppQuery";
 import { queryKeys } from "@/constants/queryKeys";
 
 
@@ -20,7 +19,7 @@ export function useChatRoom(roomId: string, userId?: string) {
   // 디바운싱을 위한 타이머 ref
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const { data: messages = [], isLoading } = useAppQuery({
+  const { data: messages = [], isLoading } = useQuery({
     queryKey: queryKeys.chat.messages(roomId),
     queryFn: () => chatApi.getMessages(roomId),
     enabled: !!roomId,
