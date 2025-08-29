@@ -67,7 +67,7 @@ export default function CategoryIdPage() {
   }
 
   // 데이터가 없을 경우 (초기 로딩 후)
-  const allMates = data?.pages.flatMap(page => page.items) ?? []
+  const allMates = data?.pages.flatMap(page => page.mates) ?? []
   const noMatesFound = !isLoading && allMates.length === 0
 
   return (
@@ -84,7 +84,7 @@ export default function CategoryIdPage() {
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-4">
             {data?.pages.map((page, i) => (
               <Fragment key={i}>
-                {page.items?.map((mate: MateCardData) => (
+                {page.mates?.map((mate: MateCardData) => (
                   <MateCard key={mate.id} mate={mate} />
                 ))}
               </Fragment>

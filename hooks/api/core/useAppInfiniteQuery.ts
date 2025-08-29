@@ -1,6 +1,6 @@
 "use client"
 
-import { useInfiniteQuery, UseInfiniteQueryOptions, QueryKey, QueryFunctionContext } from "@tanstack/react-query"
+import { useInfiniteQuery, UseInfiniteQueryOptions, UseInfiniteQueryResult, QueryKey, QueryFunctionContext } from "@tanstack/react-query"
 import type { AppError } from "@/libs/api/errors"
 import { defaultRetry } from "@/libs/api/errors"
 
@@ -21,7 +21,7 @@ export function useAppInfiniteQuery<
   TData = TQueryFnData,
   TKey extends QueryKey = QueryKey,
   TPageParam = unknown
->(params: AppInfiniteQueryParams<TQueryFnData, TError, TData, TKey, TPageParam>) {
+>(params: AppInfiniteQueryParams<TQueryFnData, TError, TData, TKey, TPageParam>): UseInfiniteQueryResult<TData, TError> {
   return useInfiniteQuery({
     retry: defaultRetry,
     staleTime: 60_000,

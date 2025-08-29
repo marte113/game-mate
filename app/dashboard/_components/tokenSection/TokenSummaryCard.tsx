@@ -33,21 +33,19 @@ export default function TokenSummaryCard() {
               <div className="stat-title">보유 토큰</div>
               <div className="stat-value">{balance ?? 0}</div>
               <div className="stat-desc">
-                {usageData
+                {usageData && typeof usageData.diff === 'number' && !isNaN(usageData.diff)
                   ? usageData.diff >= 0
-                    ? `↗︎ ${Math.abs(
-                        usageData.diff
-                      ).toLocaleString()} (지난달 대비)`
-                    : `↘︎ ${Math.abs(
-                        usageData.diff
-                      ).toLocaleString()} (지난달 대비)`
+                    ? `↗︎ ${Math.abs(usageData.diff).toLocaleString()} (지난달 대비)`
+                    : `↘︎ ${Math.abs(usageData.diff).toLocaleString()} (지난달 대비)`
                   : "-"}
               </div>
             </div>
             <div className="stat">
               <div className="stat-title">사용 토큰</div>
               <div className="stat-value">
-                {usageData ? usageData.usageThisMonth.toLocaleString() : 0}
+                {usageData && typeof usageData.usageThisMonth === 'number' && !isNaN(usageData.usageThisMonth)
+                  ? usageData.usageThisMonth.toLocaleString()
+                  : 0}
               </div>
               <div className="stat-desc">이번 달 사용량</div>
             </div>

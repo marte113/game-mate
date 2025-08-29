@@ -20,7 +20,7 @@ export default function CategoryPage() {
     status,
   } = useGamesInfiniteQuery();
 
-  const allGames = (data?.pages ?? []).flatMap((p) => p.items);
+  const allGames = (data?.pages ?? []).flatMap((p) => p.games);
   const total = allGames.length;
 
   const { ref } = useInView({
@@ -55,7 +55,7 @@ export default function CategoryPage() {
       <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
         {(data?.pages ?? []).map((page, i: number) => (
           <Fragment key={i}>
-            {page.items.map((game: GamesRow) => (
+            {page.games.map((game: GamesRow) => (
               <CategoryCard
                 key={game.id}
                 id={game.id}

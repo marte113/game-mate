@@ -5,9 +5,10 @@ import { useTokenTransactionsInfiniteQuery, type TokenTransaction } from "@/hook
 import { Button } from "@/components/ui";
 
 import TokenHistoryTr from "./TokenHistoryTr";
+import LoadingSpinner from "@/app/category/_components/LoadingSpinner";
 export default function TokenHistoryTable() {
   
-  const { data: transactionsData, fetchNextPage, hasNextPage, error } =
+  const { data: transactionsData, fetchNextPage, hasNextPage, error, isFetchingNextPage  } =
     useTokenTransactionsInfiniteQuery();
 
   if (error) {
@@ -15,7 +16,12 @@ export default function TokenHistoryTable() {
   }
 
   if (transactionsData) {
-    console.log(transactionsData);
+    console.log("전체 transactionsData:", transactionsData);
+    console.log("pages 배열:", transactionsData.pages);
+    transactionsData.pages.forEach((page, index) => {
+      console.log(`page ${index}:`, page);
+      console.log(`page ${index} items:`, page.items);
+    });
   }
 
   return (
@@ -34,7 +40,7 @@ export default function TokenHistoryTable() {
             </thead>
             <tbody>
               {transactionsData?.pages.flatMap((page) =>
-                page.items.map((transaction: TokenTransaction) => (
+                (page.items || []).map((transaction : TokenTransaction) => (
                   <TokenHistoryTr
                     key={transaction.transaction_id}
                     transaction={transaction}
@@ -44,6 +50,7 @@ export default function TokenHistoryTable() {
             </tbody>
           </table>
           <div className="flex justify-end">
+            
             {hasNextPage && (
               <Button
                 variant="default"
@@ -51,7 +58,8 @@ export default function TokenHistoryTable() {
                 className="mt-2"
                 onClick={() => fetchNextPage()}
               >
-                더 보기
+                {isFetchingNextPage ? <LoadingSpinner size="sm" color="second"/> : "더 보기"}
+                
               </Button>
             )}
           </div>
