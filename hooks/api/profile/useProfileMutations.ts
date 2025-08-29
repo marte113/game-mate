@@ -16,14 +16,14 @@ export function useUpdateProfileMutation(
 
   return useMutation({
     mutationFn: updateProfileInfo,
-    onSuccess: (data, variables) => {
+    ...options,
+    onSuccess: (data, variables, context) => {
       // 성공 시 프로필 정보 쿼리 무효화
       queryClient.invalidateQueries({ queryKey: queryKeys.profile.info() })
 
       // 옵션의 onSuccess도 실행
-      options?.onSuccess?.(data, variables, undefined)
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options,
   })
 }
 
@@ -34,13 +34,13 @@ export function useUpdateProfileImageMutation(
 
   return useMutation({
     mutationFn: updateProfileImage,
-    onSuccess: (data, variables) => {
+    ...options,
+    onSuccess: (data, variables, context) => {
       // 성공 시 프로필 이미지 쿼리 무효화
       queryClient.invalidateQueries({ queryKey: queryKeys.profile.image() })
 
       // 옵션의 onSuccess도 실행
-      options?.onSuccess?.(data, variables, undefined)
+      options?.onSuccess?.(data, variables, context)
     },
-    ...options,
   })
 }
