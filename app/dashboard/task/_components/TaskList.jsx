@@ -1,16 +1,13 @@
 'use client'
 
 import { useState, useCallback, useEffect, useMemo } from 'react'
-import { 
-  useQuery, 
-} from '@tanstack/react-query'
-import { orderApi } from '@/app/dashboard/_api/orderApi'
 import TaskSection from './TaskSection'
 import TaskDetailModal from './TaskDetailModal'
 import ReviewModal from './ReviewModal'
 import { useNotificationStore } from '@/stores/notificationStore'
 import { useTaskStore } from '../store/useTaskStore'
 import { useTaskSubscription } from '../_hooks/useTaskSubscription'
+import { useReceivedOrdersQuery, useRequestedOrdersQuery } from '@/hooks/api/orders/useOrdersQueries'
 
 export default function TaskList() {
   const [activeTab, setActiveTab] = useState('received') // received 또는 requested
@@ -27,9 +24,7 @@ export default function TaskList() {
   const { 
     data: receivedData,
     error: receivedError
-  } = useQuery({
-    queryKey: ['receivedOrders'],
-    queryFn: () => orderApi.getReceivedOrders(),
+  } = useReceivedOrdersQuery({
     enabled: activeTab === 'received',
     staleTime: 300000, // 5분 (60 * 1000ms)
   })
@@ -38,11 +33,9 @@ export default function TaskList() {
   const { 
     data: requestedData,
     error: requestedError
-  } = useQuery({
-    queryKey: ['requestedOrders'],
-    queryFn: () => orderApi.getRequestedOrders(),
+  } = useRequestedOrdersQuery({
     enabled: activeTab === 'requested',
-    staleTime: 300000, // 1분 (60 * 1000ms)
+    staleTime: 300000, // 5분
   })
   
   // Zustand 스토어에서 모달 열림 상태만 가져오기

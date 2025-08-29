@@ -3,9 +3,20 @@
 import { useQuery, UseQueryOptions, useInfiniteQuery, UseInfiniteQueryOptions, InfiniteData } from "@tanstack/react-query"
 
 import { queryKeys } from "@/constants/queryKeys"
-import { fetchGameHeader, fetchPopularGames, PopularGamesResponse } from "@/app/category/_api/CategoryApi"
+import { fetchGameHeader, fetchPopularGames, PopularGamesResponse, fetchGames } from "@/app/category/_api/CategoryApi"
 import { fetchMates } from "@/app/category/_api/mateApi"
-import { GameHeader, MatesApiResponse } from "@/app/category/_types/categoryPage.types"
+import { GameHeader, MateCardData } from "@/app/category/_types/categoryPage.types"
+import type { GamesRow } from "@/types/database.table.types"
+
+export type MatesApiResponse = {
+  mates: MateCardData[]
+  nextPage?: number
+}
+
+export type GamesApiResponse = {
+  games: GamesRow[]
+  nextPage?: number
+}
 
 export function useGameHeaderQuery(
   categoryId: string | undefined,
@@ -32,6 +43,26 @@ export function usePopularGamesQuery(
   })
 }
 
+export function useGamesInfiniteQuery(
+  options?: UseInfiniteQueryOptions<
+    GamesApiResponse,
+    Error,
+    InfiniteData<GamesApiResponse>,
+    GamesApiResponse,
+    ReturnType<typeof queryKeys.category.games>,
+    number
+  >
+) {
+  return useInfiniteQuery({
+    queryKey: queryKeys.category.games(),
+    queryFn: (context) => fetchGames(context),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    staleTime: 300_000, // 5분
+    ...options,
+  })
+}
+
 export function useMatesByCategoryInfiniteQuery(
   categoryId: string | undefined,
   options?: UseInfiniteQueryOptions<
@@ -39,7 +70,8 @@ export function useMatesByCategoryInfiniteQuery(
     Error,
     InfiniteData<MatesApiResponse>,
     MatesApiResponse,
-    ReturnType<typeof queryKeys.category.mates>
+    ReturnType<typeof queryKeys.category.mates>,
+    number
   >
 ) {
   return useInfiniteQuery({

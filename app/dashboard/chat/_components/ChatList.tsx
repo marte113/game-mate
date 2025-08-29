@@ -1,14 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/supabase/functions/client'
 
 import { useChatStore } from '@/stores/chatStore'
-import { chatApi, ChatQueryKeys } from '@/app/dashboard/chat/_api'
+import { chatApi } from '@/app/dashboard/chat/_api'
 import { ChatRoom } from '@/app/dashboard/chat/_types'
 import { useMessageSubscription } from '@/app/dashboard/chat/_hooks/useMessageSubscription'
-
+import { useAppQuery } from '@/hooks/api/core/useAppQuery'
+import { queryKeys } from '@/constants/queryKeys'
 
 import { formatMessageTime } from '../_utils/formatters'
 
@@ -42,9 +42,9 @@ export default function ChatList({ searchTerm = '' }: ChatListProps) {
   const [filteredChatRooms, setFilteredChatRooms] = useState<ChatRoom[]>([])
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   
-  // React Query로 채팅방 목록 가져오기
-  const { data: chatRooms, isLoading } = useQuery({
-    queryKey: ChatQueryKeys.chatRooms,
+  // React Query로 채팅방 목록 가져오기 (코어 훅 사용)
+  const { data: chatRooms, isLoading } = useAppQuery({
+    queryKey: queryKeys.chat.chatRooms(),
     queryFn: chatApi.getChatRooms,
   })
   

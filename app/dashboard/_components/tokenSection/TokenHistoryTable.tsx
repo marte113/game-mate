@@ -1,45 +1,27 @@
 "use client";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useTokenTransactionsInfiniteQuery, type TokenTransaction } from "@/hooks/api/token/useTokenTransactionsInfiniteQuery";
 
 import { Button } from "@/components/ui";
 
 import TokenHistoryTr from "./TokenHistoryTr";
+import LoadingSpinner from "@/app/category/_components/LoadingSpinner";
 export default function TokenHistoryTable() {
   
-  const {
-    data: transactionsData,
-    fetchNextPage,
-    hasNextPage,
-    error,
-  } = useInfiniteQuery({
-    queryKey: ["detailUsage"],
-    queryFn: ({ pageParam }) => fetchTransactions(pageParam),
-    initialPageParam: undefined,
-    getNextPageParam: (lastPage) => {
-      if (!lastPage.data || lastPage.data.length < 10) return undefined;
-      return lastPage.data[lastPage.data.length - 1].created_at;
-    },
-  });
-
-  const fetchTransactions = async (pageParam?: string) => {
-    const url = new URL("/api/token/detailUsage", window.location.origin);
-    if (pageParam) url.searchParams.append("pageParam", pageParam);
-
-    const res = await fetch(url, { credentials: "include" });
-    if (!res.ok) {
-      throw new Error("Failed to fetch transactions");
-    }
-    const json = await res.json();
-    return json; // { success: true, data: [] }
-  };
+  const { data: transactionsData, fetchNextPage, hasNextPage, error, isFetchingNextPage  } =
+    useTokenTransactionsInfiniteQuery();
 
   if (error) {
     return <div>에러가 발생하였습니다.</div>;
   }
 
   if (transactionsData) {
-    console.log(transactionsData);
+    console.log("전체 transactionsData:", transactionsData);
+    console.log("pages 배열:", transactionsData.pages);
+    transactionsData.pages.forEach((page, index) => {
+      console.log(`page ${index}:`, page);
+      console.log(`page ${index} items:`, page.items);
+    });
   }
 
   return (
@@ -58,7 +40,7 @@ export default function TokenHistoryTable() {
             </thead>
             <tbody>
               {transactionsData?.pages.flatMap((page) =>
-                page.data.map((transaction: any) => (
+                (page.items || []).map((transaction : TokenTransaction) => (
                   <TokenHistoryTr
                     key={transaction.transaction_id}
                     transaction={transaction}
@@ -68,6 +50,7 @@ export default function TokenHistoryTable() {
             </tbody>
           </table>
           <div className="flex justify-end">
+            
             {hasNextPage && (
               <Button
                 variant="default"
@@ -75,7 +58,8 @@ export default function TokenHistoryTable() {
                 className="mt-2"
                 onClick={() => fetchNextPage()}
               >
-                더 보기
+                {isFetchingNextPage ? <LoadingSpinner size="sm" color="second"/> : "더 보기"}
+                
               </Button>
             )}
           </div>

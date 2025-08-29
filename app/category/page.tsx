@@ -1,14 +1,12 @@
 "use client";
 
-import { useInfiniteQuery, type InfiniteData } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { Fragment } from "react";
 
-import { queryKeys } from "@/constants/queryKeys";
 import type { GamesRow } from "@/types/database.table.types";
+import { useGamesInfiniteQuery } from "@/hooks/api/category/useCategoryQueries";
 
 import CategoryCard from "./_components/CategoryCard";
-import { fetchGames, GamesApiResponse } from "./_api/CategoryApi";
 import LoadingSpinner from "./_components/LoadingSpinner";
 
 export default function CategoryPage() {
@@ -20,21 +18,10 @@ export default function CategoryPage() {
     isLoading,
     isFetchingNextPage,
     status,
-  } = useInfiniteQuery<
-    GamesApiResponse,
-    Error,
-    InfiniteData<GamesApiResponse, number>,
-    ReturnType<typeof queryKeys.category.games>,
-    number
-  >({
-    queryKey: queryKeys.category.games(),
-    queryFn: fetchGames,
-    initialPageParam: 0,
-    getNextPageParam: (lastPage) => lastPage.nextPage,
-    staleTime: 60_000,
-    gcTime: 5 * 60_000,
-    retry: 1,
-  });
+  } = useGamesInfiniteQuery();
+
+  const allGames = (data?.pages ?? []).flatMap((p) => p.games);
+  const total = allGames.length;
 
   const { ref } = useInView({
     threshold: 0,
@@ -66,7 +53,7 @@ export default function CategoryPage() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">게임 카테고리</h1>
       <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-        {(data?.pages ?? []).map((page: GamesApiResponse, i: number) => (
+        {(data?.pages ?? []).map((page, i: number) => (
           <Fragment key={i}>
             {page.games.map((game: GamesRow) => (
               <CategoryCard
@@ -88,16 +75,11 @@ export default function CategoryPage() {
           <LoadingSpinner />
         ) : hasNextPage ? (
           <span className="text-gray-500">스크롤하여 더 보기...</span>
+        ) : total > 0 ? (
+          <p className="text-sm text-gray-500">모든 게임을 불러왔습니다.</p>
         ) : (
-          (data?.pages?.[0]?.games.length ?? 0) > 0 && (
-            <p className="text-sm text-gray-500">모든 게임을 불러왔습니다.</p>
-          )
+          <p className="text-sm text-gray-500">등록된 게임이 없습니다.</p>
         )}
-        {!hasNextPage &&
-          (data?.pages?.length ?? 0) > 0 &&
-          (data?.pages?.[0]?.games.length ?? 0) === 0 && (
-            <p className="text-sm text-gray-500">등록된 게임이 없습니다.</p>
-          )}
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 import { Database } from "@/types/database.types";
+import { toErrorResponse, UnauthorizedError, BadRequestError, ServiceError } from "@/app/apis/base";
 
 // 프로필 이미지 정보 가져오기
 export async function GET() {
@@ -28,10 +29,7 @@ export async function GET() {
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
-      return NextResponse.json(
-        { success: false, error: "사용자 인증 오류" }, 
-        { status: 401 }
-      );
+      throw new UnauthorizedError("사용자 인증 오류");
     }
 
     const { data, error } = await supabase
@@ -41,10 +39,7 @@ export async function GET() {
       .single();
     
     if (error) {
-      return NextResponse.json(
-        { success: false, error: error.message }, 
-        { status: 500 }
-      );
+      throw new ServiceError('프로필 이미지 조회 실패', error);
     }
 
     return NextResponse.json({ 
@@ -55,10 +50,7 @@ export async function GET() {
       }
     });
   } catch (error) {
-    return NextResponse.json(
-      { success: false, error: "서버 오류가 발생했습니다" }, 
-      { status: 500 }
-    );
+    return toErrorResponse(error);
   }
 }
 
@@ -85,19 +77,13 @@ export async function POST(request: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
-      return NextResponse.json(
-        { success: false, error: "사용자 인증 오류" }, 
-        { status: 401 }
-      );
+      throw new UnauthorizedError("사용자 인증 오류");
     }
 
     const { imageUrl } = await request.json();
 
     if (!imageUrl) {
-      return NextResponse.json(
-        { success: false, error: "이미지 URL이 제공되지 않았습니다" }, 
-        { status: 400 }
-      );
+      throw new BadRequestError("이미지 URL이 제공되지 않았습니다");
     }
 
     // 사용자 정보 업데이트
@@ -111,10 +97,7 @@ export async function POST(request: Request) {
       .eq("id", user.id);
 
     if (error) {
-      return NextResponse.json(
-        { success: false, error: error.message }, 
-        { status: 500 }
-      );
+      throw new ServiceError('프로필 이미지 업데이트 실패', error);
     }
 
     return NextResponse.json({ 
@@ -122,9 +105,6 @@ export async function POST(request: Request) {
       data: { imageUrl } 
     });
   } catch (error) {
-    return NextResponse.json(
-      { success: false, error: "서버 오류가 발생했습니다" }, 
-      { status: 500 }
-    );
+    return toErrorResponse(error);
   }
 }

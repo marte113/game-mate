@@ -4,7 +4,7 @@ import { useInfiniteQuery, UseInfiniteQueryOptions, InfiniteData } from "@tansta
 
 import { queryKeys } from "@/constants/queryKeys"
 import { fetchRecommendedThemes } from "@/app/(home)/_api/homeApi"
-import { RecommendedThemeResponse } from "@/app/(home)/_types/homePage.types"
+import { RecommendedThemeResponse, ThemeWithMates } from "@/app/(home)/_types/homePage.types"
 
 export function useRecommendedThemesInfiniteQuery(
   options?: UseInfiniteQueryOptions<
@@ -12,15 +12,17 @@ export function useRecommendedThemesInfiniteQuery(
     Error,
     InfiniteData<RecommendedThemeResponse>,
     RecommendedThemeResponse,
-    ReturnType<typeof queryKeys.category.recommendedThemes>
+    ReturnType<typeof queryKeys.category.recommendedThemes>,
+    number
   >
 ) {
   return useInfiniteQuery({
     queryKey: queryKeys.category.recommendedThemes(),
-    queryFn: ({ pageParam }) => fetchRecommendedThemes({ pageParam: Number(pageParam ?? 0) }),
+    queryFn: ({ pageParam }) =>
+      fetchRecommendedThemes({ pageParam: Number(pageParam ?? 0) }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextPage,
-    staleTime: 300_000, // 5분 (추천 테마는 자주 변하지 않음)
+    staleTime: 300_000, // 5분
     ...options,
   })
 }
