@@ -1,6 +1,6 @@
 "use client";
 
-import { useTokenTransactionsInfiniteQuery } from "@/hooks/api/token/useTokenTransactionsInfiniteQuery";
+import { useTokenTransactionsInfiniteQuery, type TokenTransaction } from "@/hooks/api/token/useTokenTransactionsInfiniteQuery";
 
 import { Button } from "@/components/ui";
 
@@ -34,7 +34,7 @@ export default function TokenHistoryTable() {
             </thead>
             <tbody>
               {transactionsData?.pages.flatMap((page) =>
-                page.map((transaction: any) => (
+                page.items.map((transaction: TokenTransaction) => (
                   <TokenHistoryTr
                     key={transaction.transaction_id}
                     transaction={transaction}

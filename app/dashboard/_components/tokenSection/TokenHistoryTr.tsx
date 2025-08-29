@@ -1,4 +1,8 @@
-export default function TokenHistoryTr({ transaction }: { transaction: any }) {
+import type { Database } from "@/types/database.types";
+
+type TokenTransaction = Database['public']['Tables']['token_transactions']['Row'];
+
+export default function TokenHistoryTr({ transaction }: { transaction: TokenTransaction }) {
   return (
     <tr key={transaction.transaction_id}>
       <td>{new Date(transaction.created_at).toLocaleDateString()}</td>

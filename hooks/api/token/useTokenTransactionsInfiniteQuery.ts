@@ -1,36 +1,42 @@
 "use client"
 
-import { useInfiniteQuery, UseInfiniteQueryOptions, InfiniteData } from "@tanstack/react-query"
+import { UseInfiniteQueryOptions } from "@tanstack/react-query"
 
 import { queryKeys } from "@/constants/queryKeys"
 import type { Database } from "@/types/database.types"
 import { fetchJson } from "@/libs/api/fetchJson"
+import { useAppInfiniteQuery } from "@/hooks/api/core/useAppInfiniteQuery"
 
 export type TokenTransaction = Database['public']['Tables']['token_transactions']['Row']
-export type TokenTransactions = TokenTransaction[]
+export type TokenTransactionsPage = {
+  items: TokenTransaction[]
+  nextCursor?: string
+  hasMore: boolean
+}
 
 export function useTokenTransactionsInfiniteQuery(
   options?: UseInfiniteQueryOptions<
-    TokenTransactions,
+    TokenTransactionsPage,
     Error,
-    InfiniteData<TokenTransactions>,
-    TokenTransactions,
-    ReturnType<typeof queryKeys.token.transactions>
-  >
+    TokenTransactionsPage,
+    ReturnType<typeof queryKeys.token.transactions>,
+    string | undefined
+  > & { pageSize?: number }
 ) {
-  return useInfiniteQuery({
+  const pageSize = options?.pageSize ?? 10
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { pageSize: _omit, ...opts } = options ?? {}
+
+  return useAppInfiniteQuery({
     queryKey: queryKeys.token.transactions(),
     queryFn: async ({ pageParam }) => {
       const url = new URL('/api/token/transactions', window.location.origin)
       if (pageParam) url.searchParams.append('pageParam', String(pageParam))
-      return fetchJson<TokenTransactions>(url.toString(), { credentials: 'include' })
+      url.searchParams.append('limit', String(pageSize))
+      return fetchJson<TokenTransactionsPage>(url.toString(), { credentials: 'include' })
     },
     initialPageParam: undefined,
-    getNextPageParam: (lastPage) => {
-      if (!lastPage || lastPage.length < 10) return undefined
-      return lastPage[lastPage.length - 1].created_at
-    },
-    staleTime: 60_000,
-    ...options,
+    getNextPageParam: (lastPage) => lastPage?.nextCursor,
+    ...opts,
   })
 }

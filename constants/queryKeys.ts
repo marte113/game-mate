@@ -4,11 +4,11 @@
 export const queryKeys = {
   token: {
     // Header token display uses ['tokenBalance', userId]
-    balanceHeader: (userId: string) => ['tokenBalance', userId] as const,
+    balanceHeader: (userId: string) => ['token', 'balanceHeader', userId] as const,
     // Token summary card currently uses ['balance']
-    balance: () => ['balance'] as const,
-    usage: () => ['usage'] as const,
-    transactions: () => ['tokenTransactions'] as const,
+    balance: () => ['token', 'balance'] as const,
+    usage: () => ['token', 'usage'] as const,
+    transactions: () => ['token', 'transactions'] as const,
   },
 
   orders: {
