@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, type QueryKey } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 
 import { 
@@ -15,7 +15,7 @@ import ThumbnailItem from './ThumbnailItem';
 
 interface ThumbnailGridProps {
   albumImages: (AlbumImage | null)[];
-  queryKey: string[];
+  queryKey: QueryKey;
 }
 
 export default function ThumbnailGrid({ albumImages, queryKey }: ThumbnailGridProps) {

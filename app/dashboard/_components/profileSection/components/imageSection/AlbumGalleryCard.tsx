@@ -1,8 +1,7 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-
-import { fetchAlbumImages } from '@/app/dashboard/_api/profileSectionApi';
+import { queryKeys } from '@/constants/queryKeys';
+import { useAlbumImagesQuery } from '@/hooks/api/profile/useAlbumQueries';
 import MainCarousel from '@/components/MainCarousel';
 
 import ThumbnailGrid from './ThumbnailGrid';
@@ -17,7 +16,7 @@ export interface AlbumImage {
   isThumbnail: boolean;
 }
 
-const ALBUM_IMAGES_QUERY_KEY = ['albumImages'];
+const QUERY_KEY = queryKeys.profile.albumImages();
 
 export default function AlbumGalleryCard() {
   const {
@@ -26,9 +25,7 @@ export default function AlbumGalleryCard() {
     isError,
     error,
     refetch,
-  } = useQuery({
-    queryKey: ALBUM_IMAGES_QUERY_KEY,
-    queryFn: fetchAlbumImages,
+  } = useAlbumImagesQuery({
     staleTime: 1000 * 60 * 5, // 5분 동안 데이터를 신선하게 유지
     refetchOnWindowFocus: false, // 창 포커스 시 자동 리페치 비활성화
   });
@@ -45,9 +42,8 @@ export default function AlbumGalleryCard() {
 
   // 데이터가 없는 경우 또는 배열이 아닌 경우 (API 응답 형식 오류 등)
   if (!albumData || !Array.isArray(albumData.images)) {
-     return <EmptyState sectionTitle="앨범 관리" message="앨범 데이터를 불러올 수 없습니다." />;
+    return <EmptyState sectionTitle="앨범 관리" message="앨범 데이터를 불러올 수 없습니다." />;
   }
-
 
   console.log("albumdata", albumData);
   const { images: albumImages, thumbnailIndex } = albumData;
@@ -87,8 +83,8 @@ export default function AlbumGalleryCard() {
         )}
 
         {/* ThumbnailGrid에 필요한 데이터와 쿼리 키 전달 */}
-        <ThumbnailGrid albumImages={albumImages} queryKey={ALBUM_IMAGES_QUERY_KEY} />
+        <ThumbnailGrid albumImages={albumImages} queryKey={QUERY_KEY} />
       </div>
     </div>
   );
-} 
+}
