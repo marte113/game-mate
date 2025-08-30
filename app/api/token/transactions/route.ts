@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getMyTokenTransactions } from '@/app/apis/service/token/transactionsService'
-import { toErrorResponse } from '@/app/apis/base'
+import { handleApiError } from '@/app/apis/base'
 
 export async function GET(request: NextRequest) {
   try {
@@ -25,6 +25,6 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    return toErrorResponse(error)
+    return handleApiError(error)
   }
 }

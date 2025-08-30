@@ -1,7 +1,8 @@
 // app/api/notifications/route.ts
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { createServerClientComponent } from '@/supabase/functions/server'
 import { Database } from '@/types/database.types'
+import { handleApiError, createUnauthorizedError, createServiceError } from '@/app/apis/base'
 
 type Notification = Database['public']['Tables']['notifications']['Row']
 
@@ -13,10 +14,7 @@ export async function GET() {
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      throw createUnauthorizedError('로그인이 필요합니다')
     }
 
     // 알림 데이터 조회
@@ -27,11 +25,7 @@ export async function GET() {
       .order('created_at', { ascending: false })
 
     if (error) {
-      console.error('알림 조회 실패:', error)
-      return NextResponse.json(
-        { error: 'Failed to fetch notifications' },
-        { status: 500 }
-      )
+      throw createServiceError('알림 조회 실패', error)
     }
 
     // 읽지 않은 알림 집계 계산
@@ -51,10 +45,6 @@ export async function GET() {
     })
 
   } catch (error) {
-    console.error('알림 API 에러:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

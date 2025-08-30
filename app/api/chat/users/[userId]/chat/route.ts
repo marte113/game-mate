@@ -3,7 +3,7 @@ import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
 import { Database } from '@/types/database.types'
-import { toErrorResponse, BadRequestError, UnauthorizedError, ForbiddenError, ServiceError } from '@/app/apis/base'
+import { handleApiError, createBadRequestError, createUnauthorizedError, createForbiddenError, createServiceError } from '@/app/apis/base'
 
 interface RouteParams {
   params: Promise<{ userId: string }>
@@ -33,14 +33,14 @@ export async function POST(request: Request, { params }: RouteParams) {
     // 현재 사용자 확인
     const { data: userData, error: userError } = await supabase.auth.getUser()
     if (userError || !userData?.user) {
-      throw new UnauthorizedError('인증 오류')
+      throw createUnauthorizedError('인증 오류')
     }
     
     const currentUserId = userData.user.id
     
     // 사용자가 자신과 채팅하려는 경우
     if (userId === currentUserId) {
-      throw new BadRequestError('자신과는 대화할 수 없습니다')
+      throw createBadRequestError('자신과는 대화할 수 없습니다')
     }
     
     // 이미 존재하는 채팅방 찾기
@@ -86,9 +86,9 @@ export async function POST(request: Request, { params }: RouteParams) {
     if (createRoomError) {
       // RLS 오류 감지 및 특별 처리
       if ((createRoomError as any).code === '42501') {
-        throw new ForbiddenError('권한 오류: 채팅방 생성 권한이 없습니다. 관리자에게 문의하세요.')
+        throw createForbiddenError('권한 오류: 채팅방 생성 권한이 없습니다. 관리자에게 문의하세요.')
       }
-      throw new ServiceError('채팅방 생성 실패', createRoomError)
+      throw createServiceError('채팅방 생성 실패', createRoomError)
     }
     
     // 참가자 추가
@@ -100,7 +100,7 @@ export async function POST(request: Request, { params }: RouteParams) {
       ])
     
     if (participantsError) {
-      throw new ServiceError('채팅방 참가자 추가 실패', participantsError)
+      throw createServiceError('채팅방 참가자 추가 실패', participantsError)
     }
     
     // 첫 메시지 추가
@@ -115,11 +115,11 @@ export async function POST(request: Request, { params }: RouteParams) {
       })
     
     if (messageError) {
-      throw new ServiceError('첫 메시지 추가 실패', messageError)
+      throw createServiceError('첫 메시지 추가 실패', messageError)
     }
     
     return NextResponse.json({ chatRoomId: newRoom.id })
   } catch (error) {
-    return toErrorResponse(error)
+    return handleApiError(error)
   }
 }

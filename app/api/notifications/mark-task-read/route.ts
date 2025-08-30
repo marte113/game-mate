@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server'
 
 import { createServerClientComponent } from '@/supabase/functions/server'
+import { handleApiError, createUnauthorizedError, createServiceError } from '@/app/apis/base'
 
 export async function POST() {
   try {
@@ -11,10 +12,7 @@ export async function POST() {
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      throw createUnauthorizedError('로그인이 필요합니다')
     }
 
     // 의뢰 관련 알림 읽음 처리
@@ -26,20 +24,12 @@ export async function POST() {
       .in('type', ['request', 'accept', 'reject', 'cancel', 'complete'])
 
     if (error) {
-      console.error('태스크 알림 읽음 처리 실패:', error)
-      return NextResponse.json(
-        { error: 'Failed to mark task notifications as read' },
-        { status: 500 }
-      )
+      throw createServiceError('태스크 알림 읽음 처리 실패', error)
     }
 
     return NextResponse.json({ success: true })
 
   } catch (error) {
-    console.error('태스크 알림 읽음 처리 API 에러:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

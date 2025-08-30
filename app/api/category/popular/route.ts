@@ -4,7 +4,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { toErrorResponse, BadRequestError, ServiceError } from '@/app/apis/base'
+import { handleApiError, createBadRequestError, createServiceError } from '@/app/apis/base'
 
 import { Database } from "@/types/database.types";
 import type { PopularGame } from "@/app/category/_api/CategoryApi";
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
   const limit = limitParam ? parseInt(limitParam, 10) : 6; // 기본 6개
 
   if (isNaN(limit) || limit < 1 || limit > 20) {
-    throw new BadRequestError("Invalid limit parameter (1-20)");
+    throw createBadRequestError("Invalid limit parameter (1-20)");
   }
 
   const cookieStore = await cookies();
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
       .limit(limit);
 
     if (popularError) {
-      throw new ServiceError('Failed to fetch popular games', popularError);
+      throw createServiceError('Failed to fetch popular games', popularError);
     }
 
     const latestGames = (popularGamesRaw as unknown as RecommendedGamesLatestRow[] | null) ?? [];
@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
       .in("id", gameIds);
 
     if (gamesError) {
-      throw new ServiceError('Failed to fetch game details', gamesError);
+      throw createServiceError('Failed to fetch game details', gamesError);
     }
 
     // 3) player_count와 함께 게임 정보 병합, 순서 보장
@@ -106,6 +106,6 @@ export async function GET(request: NextRequest) {
       games: popularGames,
     });
   } catch (error) {
-    return toErrorResponse(error)
+    return handleApiError(error)
   }
 }

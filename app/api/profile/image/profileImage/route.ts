@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 import { Database } from "@/types/database.types";
-import { toErrorResponse, UnauthorizedError, BadRequestError, ServiceError } from "@/app/apis/base";
+import { handleApiError, createUnauthorizedError, createBadRequestError, createServiceError } from "@/app/apis/base";
 
 // 프로필 이미지 정보 가져오기
 export async function GET() {
@@ -29,7 +29,7 @@ export async function GET() {
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
-      throw new UnauthorizedError("사용자 인증 오류");
+      throw createUnauthorizedError("사용자 인증 오류");
     }
 
     const { data, error } = await supabase
@@ -39,7 +39,7 @@ export async function GET() {
       .single();
     
     if (error) {
-      throw new ServiceError('프로필 이미지 조회 실패', error);
+      throw createServiceError('프로필 이미지 조회 실패', error);
     }
 
     return NextResponse.json({ 
@@ -50,7 +50,7 @@ export async function GET() {
       }
     });
   } catch (error) {
-    return toErrorResponse(error);
+    return handleApiError(error);
   }
 }
 
@@ -77,13 +77,13 @@ export async function POST(request: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
-      throw new UnauthorizedError("사용자 인증 오류");
+      throw createUnauthorizedError("사용자 인증 오류");
     }
 
     const { imageUrl } = await request.json();
 
     if (!imageUrl) {
-      throw new BadRequestError("이미지 URL이 제공되지 않았습니다");
+      throw createBadRequestError("이미지 URL이 제공되지 않았습니다");
     }
 
     // 사용자 정보 업데이트
@@ -97,7 +97,7 @@ export async function POST(request: Request) {
       .eq("id", user.id);
 
     if (error) {
-      throw new ServiceError('프로필 이미지 업데이트 실패', error);
+      throw createServiceError('프로필 이미지 업데이트 실패', error);
     }
 
     return NextResponse.json({ 
@@ -105,6 +105,6 @@ export async function POST(request: Request) {
       data: { imageUrl } 
     });
   } catch (error) {
-    return toErrorResponse(error);
+    return handleApiError(error);
   }
 }

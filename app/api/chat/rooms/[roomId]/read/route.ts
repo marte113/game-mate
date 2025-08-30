@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
 import { Database } from '@/types/database.types'
+import { handleApiError, createUnauthorizedError, createServiceError } from '@/app/apis/base'
 
 interface RouteParams {
   params: Promise<{ roomId: string }>
@@ -32,7 +33,7 @@ export async function POST(request: Request, { params }: RouteParams) {
     // 현재 사용자 확인
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json({ error: '인증되지 않은 사용자' }, { status: 401 })
+      throw createUnauthorizedError('인증되지 않은 사용자')
     }
     
     // 1. 채팅방 참가자 정보 업데이트
@@ -43,8 +44,7 @@ export async function POST(request: Request, { params }: RouteParams) {
       .eq('user_id', user.id)
     
     if (error) {
-      console.error('읽음 처리 오류:', error)
-      return NextResponse.json({ error: '읽음 처리 실패' }, { status: 500 })
+      throw createServiceError('읽음 처리 실패', error)
     }
     
     // 2. 해당 채팅방의 메시지 ID 목록 가져오기
@@ -69,7 +69,6 @@ export async function POST(request: Request, { params }: RouteParams) {
     
     return NextResponse.json({ success: true })
   } catch (error) {
-    const message = error instanceof Error ? error.message : '메시지 읽음 처리 중 오류가 발생했습니다'
-    return NextResponse.json({ error: message }, { status: 500 })
+    return handleApiError(error)
   }
 }

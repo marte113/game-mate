@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCategoryHeader } from '@/app/apis/service/category/headerService'
+import { handleApiError, createNotFoundError, createServiceError } from '@/app/apis/base'
 
 export async function GET(
   request: NextRequest,
@@ -9,13 +10,12 @@ export async function GET(
 
   try {
     const result = await getCategoryHeader(categoryId)
-    if ('error' in result) return NextResponse.json({ error: result.error }, { status: result.status })
+    if ('error' in result) {
+      if (result.status === 404) throw createNotFoundError(result.error)
+      throw createServiceError(result.error)
+    }
     return NextResponse.json(result)
   } catch (err) {
-    console.error("Unexpected error fetching mates:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return handleApiError(err)
   }
 }

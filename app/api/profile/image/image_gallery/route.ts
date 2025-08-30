@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAlbumGallery, uploadAlbumImage, deleteAlbumImage, setThumbnail } from "@/app/apis/service/profile/albumService";
-import { toErrorResponse, UnauthorizedError, BadRequestError } from "@/app/apis/base";
+import { handleApiError, createUnauthorizedError, createBadRequestError } from "@/app/apis/base";
 
 // GET: 앨범 이미지 목록 조회
 export async function GET() {
@@ -11,10 +11,10 @@ export async function GET() {
   } catch (error: any) {
     if (typeof error?.message === 'string') {
       if (error.message === '사용자 인증 오류') {
-        return toErrorResponse(new UnauthorizedError(error.message));
+        return handleApiError(createUnauthorizedError(error.message));
       }
     }
-    return toErrorResponse(error);
+    return handleApiError(error);
   }
 }
 
@@ -28,13 +28,13 @@ export async function POST(request: Request) {
   } catch (error: any) {
     if (typeof error?.message === 'string') {
       if (error.message === '사용자 인증 오류') {
-        return toErrorResponse(new UnauthorizedError(error.message));
+        return handleApiError(createUnauthorizedError(error.message));
       }
       if (error.message.includes('필수 정보') || error.message.includes('인덱스')) {
-        return toErrorResponse(new BadRequestError(error.message));
+        return handleApiError(createBadRequestError(error.message));
       }
     }
-    return toErrorResponse(error);
+    return handleApiError(error);
   }
 }
 
@@ -42,17 +42,17 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const { imageId } = await request.json();
-    if (!imageId) throw new BadRequestError('이미지 ID가 누락되었습니다.');
+    if (!imageId) throw createBadRequestError('이미지 ID가 누락되었습니다.');
     const result = await deleteAlbumImage(imageId);
     return NextResponse.json({ success: true, ...result });
 
   } catch (error: any) {
     if (typeof error?.message === 'string') {
       if (error.message === '사용자 인증 오류') {
-        return toErrorResponse(new UnauthorizedError(error.message));
+        return handleApiError(createUnauthorizedError(error.message));
       }
     }
-    return toErrorResponse(error);
+    return handleApiError(error);
   }
 }
 
@@ -60,16 +60,16 @@ export async function DELETE(request: Request) {
 export async function PATCH(request: Request) {
   try {
     const { imageUrl } = await request.json();
-    if (!imageUrl) throw new BadRequestError('URL이 누락되었습니다.');
+    if (!imageUrl) throw createBadRequestError('URL이 누락되었습니다.');
     const result = await setThumbnail(imageUrl);
     return NextResponse.json({ success: true, ...result });
 
   } catch (error: any) {
     if (typeof error?.message === 'string') {
       if (error.message === '사용자 인증 오류') {
-        return toErrorResponse(new UnauthorizedError(error.message));
+        return handleApiError(createUnauthorizedError(error.message));
       }
     }
-    return toErrorResponse(error);
+    return handleApiError(error);
   }
 }

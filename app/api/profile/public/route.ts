@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClientComponent } from '@/supabase/functions/server'
+import { handleApiError, createBadRequestError, createNotFoundError } from '@/app/apis/base'
 
 export async function GET(req: NextRequest) {
   try {
@@ -8,7 +9,7 @@ export async function GET(req: NextRequest) {
     const publicId = Number(publicIdParam)
 
     if (!publicIdParam || Number.isNaN(publicId)) {
-      return NextResponse.json({ error: 'Invalid publicId' }, { status: 400 })
+      throw createBadRequestError('Invalid publicId')
     }
 
     const supabase = await createServerClientComponent()
@@ -20,7 +21,7 @@ export async function GET(req: NextRequest) {
       .single()
 
     if (profileError || !profileInfo || !profileInfo.user_id) {
-      return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
+      throw createNotFoundError('Profile not found')
     }
 
     const { data: userInfo, error: userError } = await supabase
@@ -30,7 +31,7 @@ export async function GET(req: NextRequest) {
       .single()
 
     if (userError || !userInfo) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      throw createNotFoundError('User not found')
     }
 
     const data = {
@@ -42,8 +43,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ data }, { status: 200 })
   } catch (err) {
-    console.error('[GET /api/profile/public] error:', err)
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+    return handleApiError(err)
   }
 }
 

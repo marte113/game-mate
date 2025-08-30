@@ -2,52 +2,25 @@
 // 검증 필요 없음.
 // recommend 
 
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-import { Database } from "@/types/database.types";
-import { ThemeWithMates, MateData, RecommendedThemeResponse } from "@/app/(home)/_types/homePage.types";
+import { RecommendedThemeResponse } from "@/app/(home)/_types/homePage.types";
 import { buildRecommendedThemes } from "@/app/apis/service/category/recommendService";
-
-type GameRow = { id: string; name: string; description: string | null; image_url: string | null };
-type RecommendedGameLatestRow = { game_id: string; player_count: number };
-type UserRef = { is_online: boolean | null; profile_thumbnail_img: string | null };
-type ProfileCandidate = {
-  id: string;
-  user_id: string | null;
-  nickname: string | null;
-  description: string | null;
-  rating: number | null;
-  public_id: number;
-  follower_count: number | null;
-  created_at: string | null;
-  selected_games: string[] | null;
-  is_mate: boolean | null;
-  users: UserRef | null;
-};
-
+import { handleApiError, createBadRequestError, createServiceError } from '@/app/apis/base'
 
 export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const page = parseInt(searchParams.get("page") ?? "0", 10);
-
-  if (isNaN(page) || page < 0) {
-    return NextResponse.json(
-      { error: "Invalid page number" },
-      { status: 400 }
-    );
-  }
-
   try {
+    const searchParams = request.nextUrl.searchParams;
+    const page = parseInt(searchParams.get("page") ?? "0", 10);
+
+    if (isNaN(page) || page < 0) {
+      throw createBadRequestError('Invalid page number')
+    }
+
     const { themes, nextPage } = await buildRecommendedThemes(page);
     const response: RecommendedThemeResponse = { themes, nextPage };
     return NextResponse.json(response);
   } catch (err) {
-    console.error("Unexpected error fetching recommended mates:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return handleApiError(createServiceError('Unexpected error fetching recommended mates', err))
   }
 }
