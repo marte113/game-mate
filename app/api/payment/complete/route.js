@@ -1,34 +1,25 @@
-'use client'
-
 import { NextResponse } from "next/server";
+import { z } from 'zod'
 
 // 포트원 V2 버전 API 호출 예시
 // 내부 PG사는 토스페이먼츠 사용
 export async function GET(req) {
-  // 서버 로그에 명확하게 표시
-  console.log("=== 결제 리다이렉트 수신 (GET 함수 실행) ===");
-  console.log("요청 URL:", req.url);
-  console.log("요청 메서드:", req.method);
-
   try {
-    // URL에서 paymentId 쿼리 파라미터 추출
+    const url = new URL(req.url)
+    const { searchParams } = url
 
-    const { searchParams } = new URL(req.url);
-    const paymentId = searchParams.get("paymentId");
+    // Zod로 쿼리 검증
+    const parsed = z.object({
+      paymentId: z.string().min(1, { message: 'paymentId is required' })
+    }).safeParse({ paymentId: searchParams.get('paymentId') })
 
-    console.log("리다이렉트 수신: paymentId =", paymentId);
-
-    if (!paymentId) {
-      console.log("paymentId가 없습니다.");
-      return NextResponse.redirect(
-        `${url.origin}/dashboard?error=missing-payment-id`
-      );
+    if (!parsed.success) {
+      return NextResponse.redirect(new URL('/dashboard?error=missing-payment-id', url))
     }
 
- 
-    // 1. 포트원 결제내역 단건조회 API 호출
-    // (중요) PORTONE_V2_API_SECRET는 포트원 콘솔 > 결제 연동 > API Keys > V2 API에서 발급 후 사용 가능
-    console.log("포트원 API 호출 시작...");
+    const { paymentId } = parsed.data
+
+    // 포트원 결제내역 단건조회 API 호출
     const paymentResponse = await fetch(
       `https://api.portone.io/payments/${encodeURIComponent(paymentId)}`,
       {
@@ -36,39 +27,19 @@ export async function GET(req) {
           Authorization: `PortOne ${process.env.PORTONE_V2_API_SECRET}`,
         },
       }
-    );
+    )
 
-    // 결제 호출시 에러 발생 시 예외 처리
     if (!paymentResponse.ok) {
-      const errorData = await paymentResponse.json();
-      console.log("결제 정보 조회 실패:", errorData);
-      return NextResponse.redirect(
-        `${url.origin}/dashboard?error=payment-verification-failed`
-      );
+      // 실패 시 에러 코드로 리다이렉트
+      return NextResponse.redirect(new URL('/dashboard?error=payment-verification-failed', url))
     }
 
-    const payment = await paymentResponse.json();
-
-    // 결제 내역 콘솔 출력
-    console.log("결제 정보 조회 성공!");
-    console.log("결제 상태:", payment.status);
-    console.log("결제 금액:", payment.amount?.total);
-    console.log("주문명:", payment.orderName);
-
     // 성공 페이지로 리다이렉트
-    console.log("대시보드로 리다이렉트 중...");
-    return NextResponse.redirect(
-      `${url.origin}/dashboard?payment=success&paymentId=${paymentId}`
-    );
-  } catch (error) {
-    console.error("결제 처리 중 오류 발생:", error);
-    return NextResponse.redirect(
-      `${
-        url.origin
-      }/dashboard?error=processing-error&message=${encodeURIComponent(
-        error.message
-      )}`
-    );
+    return NextResponse.redirect(new URL(`/dashboard?payment=success&paymentId=${encodeURIComponent(paymentId)}`, url))
+  } catch (e) {
+    const url = new URL(req.url)
+    const message = e && typeof e === 'object' && 'message' in e ? String(e.message) : 'unknown'
+    return NextResponse.redirect(new URL(`/dashboard?error=processing-error&message=${encodeURIComponent(message)}`, url))
   }
 }
 
