@@ -5,31 +5,32 @@ import { NextResponse } from 'next/server'
 
 import { Database } from '@/types/database.types'
 import { ChatRoom, ChatRoomsResponse } from '@/app/dashboard/chat/_types/chatTypes'
+import { handleApiError, createUnauthorizedError, createServiceError } from '@/app/apis/base'
 
 export async function GET(): Promise<NextResponse> {
   try {
     const cookieStore = await cookies()
-  const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
+    const supabase = createServerClient<Database>(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options)
+            })
+          },
         },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options)
-          })
-        },
-      },
-    }
-  )
+      }
+    )
     
     // 현재 사용자 확인
     const { data: userData, error: userError } = await supabase.auth.getUser()
     if (userError) {
-      return NextResponse.json({ error: '인증 오류' }, { status: 401 })
+      throw createUnauthorizedError('인증 오류')
     }
     
     const userId = userData.user.id
@@ -46,7 +47,7 @@ export async function GET(): Promise<NextResponse> {
       .order('last_message_time', { ascending: false })
     
     if (roomsError) {
-      return NextResponse.json({ error: roomsError.message }, { status: 500 })
+      throw createServiceError('채팅방 목록 조회 실패', roomsError)
     }
     
     // 각 채팅방의 다른 참가자 정보 가져오기
@@ -87,7 +88,6 @@ export async function GET(): Promise<NextResponse> {
     const response: ChatRoomsResponse = { chatRooms }
     return NextResponse.json(response)
   } catch (error) {
-    const message = error instanceof Error ? error.message : '채팅방 목록을 가져오는 중 오류가 발생했습니다'
-    return NextResponse.json({ error: message }, { status: 500 })
+    return handleApiError(error)
   }
 }

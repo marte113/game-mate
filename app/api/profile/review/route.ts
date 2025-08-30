@@ -1,21 +1,21 @@
 import { NextResponse, NextRequest } from 'next/server'
 import { getProfileReviewsByPublicId } from '@/app/apis/service/profile/reviewService'
+import { handleApiError, createBadRequestError } from '@/app/apis/base'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const publicProfileIdString = searchParams.get('profileId')
   if (!publicProfileIdString) {
-    return NextResponse.json({ error: 'Profile ID is required' }, { status: 400 })
+    throw createBadRequestError('Profile ID is required')
   }
   const publicProfileId = Number(publicProfileIdString)
   if (isNaN(publicProfileId)) {
-    return NextResponse.json({ error: 'Invalid Profile ID format' }, { status: 400 })
+    throw createBadRequestError('Invalid Profile ID format')
   }
   try {
     const result = await getProfileReviewsByPublicId(publicProfileId)
     return NextResponse.json(result, { status: 200 })
   } catch (error: any) {
-    console.error('[API Review] Unexpected error:', error)
-    return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 })
+    return handleApiError(error)
   }
 }

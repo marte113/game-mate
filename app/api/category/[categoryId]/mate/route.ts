@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import type { MatesApiResponse } from "@/app/category/_types/categoryPage.types";
 import { getCategoryMates } from '@/app/apis/service/category/mateService'
-import { toErrorResponse, BadRequestError } from '@/app/apis/base'
+import { handleApiError, createBadRequestError } from '@/app/apis/base'
 
 // 페이지 크기 및 쿼리 결과 타입은 Service로 이동
 
@@ -15,7 +15,7 @@ export async function GET(
   const page = parseInt(searchParams.get("page") ?? "0", 10);
 
   if (!categoryId || isNaN(page) || page < 0) {
-    throw new BadRequestError("Invalid category ID or page number");
+    throw createBadRequestError("Invalid category ID or page number");
   }
 
   try {
@@ -23,7 +23,7 @@ export async function GET(
     const response: MatesApiResponse = result
     return NextResponse.json(response)
   } catch (err) {
-    return toErrorResponse(err)
+    return handleApiError(err)
   }
 }
 

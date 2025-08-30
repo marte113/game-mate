@@ -1,67 +1,84 @@
 import 'server-only'
 
-export class RepositoryError extends Error {
-  constructor(public readonly context: string, public readonly cause?: unknown) {
-    super(`[Repository] ${context}`)
-  }
+// 함수형 에러 생성 함수들
+export function createRepositoryError(context: string, cause?: unknown): Error {
+  const error = new Error(`[Repository] ${context}`)
+  error.name = 'RepositoryError'
+  ;(error as any).cause = cause
+  return error
 }
 
-export class ServiceError extends Error {
-  constructor(public readonly context: string, public readonly cause?: unknown) {
-    super(`[Service] ${context}`)
-  }
+export function createServiceError(context: string, cause?: unknown): Error {
+  const error = new Error(`[Service] ${context}`)
+  error.name = 'ServiceError'
+  ;(error as any).cause = cause
+  return error
 }
 
-export class UnauthorizedError extends Error {
-  constructor(message = 'Unauthorized') {
-    super(message)
-    this.name = 'UnauthorizedError'
-  }
+export function createUnauthorizedError(message = 'Unauthorized'): Error {
+  const error = new Error(message)
+  error.name = 'UnauthorizedError'
+  return error
 }
 
-export class ForbiddenError extends Error {
-  constructor(message = 'Forbidden') {
-    super(message)
-    this.name = 'ForbiddenError'
-  }
+export function createForbiddenError(message = 'Forbidden'): Error {
+  const error = new Error(message)
+  error.name = 'ForbiddenError'
+  return error
 }
 
-export class BadRequestError extends Error {
-  constructor(message = 'Bad Request') {
-    super(message)
-    this.name = 'BadRequestError'
-  }
+export function createBadRequestError(message = 'Bad Request'): Error {
+  const error = new Error(message)
+  error.name = 'BadRequestError'
+  return error
 }
 
-export class NotFoundError extends Error {
-  constructor(message = 'Not Found') {
-    super(message)
-    this.name = 'NotFoundError'
-  }
+export function createNotFoundError(message = 'Not Found'): Error {
+  const error = new Error(message)
+  error.name = 'NotFoundError'
+  return error
 }
 
-export class ConflictError extends Error {
-  constructor(message = 'Conflict') {
-    super(message)
-    this.name = 'ConflictError'
-  }
+export function createGoneError(message = 'Gone'): Error {
+  const error = new Error(message)
+  error.name = 'GoneError'
+  return error
 }
 
-export class ValidationError extends Error {
-  constructor(
-    message = 'Validation Error',
-    public readonly details?: Record<string, string[]>
-  ) {
-    super(message)
-    this.name = 'ValidationError'
-  }
+export function createConflictError(message = 'Conflict'): Error {
+  const error = new Error(message)
+  error.name = 'ConflictError'
+  return error
+}
+
+export function createValidationError(
+  message = 'Validation Error',
+  details?: Record<string, string[]>
+): Error {
+  const error = new Error(message)
+  error.name = 'ValidationError'
+  ;(error as any).details = details
+  return error
+}
+
+// 타입 가드 함수들
+export function isRepositoryError(error: unknown): error is Error & { cause?: unknown } {
+  return error instanceof Error && error.name === 'RepositoryError'
+}
+
+export function isServiceError(error: unknown): error is Error & { cause?: unknown } {
+  return error instanceof Error && error.name === 'ServiceError'
+}
+
+export function isValidationError(error: unknown): error is Error & { details?: Record<string, string[]> } {
+  return error instanceof Error && error.name === 'ValidationError'
 }
 
 export async function wrapRepo<T>(context: string, fn: () => Promise<T>): Promise<T> {
   try {
     return await fn()
   } catch (e) {
-    throw new RepositoryError(context, e)
+    throw createRepositoryError(context, e)
   }
 }
 
@@ -69,7 +86,7 @@ export async function wrapService<T>(context: string, fn: () => Promise<T>): Pro
   try {
     return await fn()
   } catch (e) {
-    throw new ServiceError(context, e)
+    throw createServiceError(context, e)
   }
 }
 

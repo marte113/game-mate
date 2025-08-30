@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server'
 
 import { Database } from '@/types/database.types'
 import { ChatRoom } from '@/app/dashboard/chat/_types/chatTypes'
+import { handleApiError, createBadRequestError, createUnauthorizedError, createForbiddenError, createNotFoundError, createServiceError } from '@/app/apis/base'
 
 export async function GET(
   request: Request,
@@ -14,34 +15,31 @@ export async function GET(
     const { roomId } = await params
     
     if (!roomId) {
-      return NextResponse.json(
-        { error: '채팅방 ID가 필요합니다' },
-        { status: 400 }
-      )
+      throw createBadRequestError('채팅방 ID가 필요합니다')
     }
     
     const cookieStore = await cookies()
-  const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
+    const supabase = createServerClient<Database>(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options)
+            })
+          },
         },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options)
-          })
-        },
-      },
-    }
-  )
+      }
+    )
     
     // 현재 사용자 확인
     const { data: userData, error: userError } = await supabase.auth.getUser()
     if (userError) {
-      return NextResponse.json({ error: '인증 오류' }, { status: 401 })
+      throw createUnauthorizedError('인증 오류')
     }
     
     const userId = userData.user.id
@@ -59,10 +57,10 @@ export async function GET(
       .single()
     
     if (roomError) {
-      return NextResponse.json(
-        { error: roomError.message },
-        { status: roomError.code === 'PGRST116' ? 404 : 500 }
-      )
+      if ((roomError as any).code === 'PGRST116') {
+        throw createNotFoundError('채팅방을 찾을 수 없습니다')
+      }
+      throw createServiceError('채팅방 조회 실패', roomError)
     }
     
     // 권한 확인: 현재 사용자가 이 채팅방의 참가자인지 확인
@@ -71,10 +69,7 @@ export async function GET(
     )
     
     if (!isParticipant) {
-      return NextResponse.json(
-        { error: '해당 채팅방에 접근 권한이 없습니다' },
-        { status: 403 }
-      )
+      throw createForbiddenError('해당 채팅방에 접근 권한이 없습니다')
     }
     
     // 현재 사용자가 아닌 다른 참가자 찾기
@@ -105,10 +100,6 @@ export async function GET(
     
     return NextResponse.json(chatRoom)
   } catch (error) {
-    const message = error instanceof Error 
-      ? error.message 
-      : '채팅방 정보를 가져오는 중 오류가 발생했습니다'
-    
-    return NextResponse.json({ error: message }, { status: 500 })
+    return handleApiError(error)
   }
 }
