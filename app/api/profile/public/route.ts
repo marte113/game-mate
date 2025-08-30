@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClientComponent } from '@/supabase/functions/server'
-import { handleApiError, createBadRequestError, createNotFoundError } from '@/app/apis/base'
+import { handleApiError, createValidationError, createNotFoundError } from '@/app/apis/base'
+import { profilePublicGetQuerySchema } from '@/libs/schemas/server/profile.schema'
 
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url)
-    const publicIdParam = searchParams.get('publicId')
-    const publicId = Number(publicIdParam)
-
-    if (!publicIdParam || Number.isNaN(publicId)) {
-      throw createBadRequestError('Invalid publicId')
+    const rawQuery = Object.fromEntries(new URL(req.url).searchParams)
+    const parsed = profilePublicGetQuerySchema.safeParse(rawQuery)
+    if (!parsed.success) {
+      const details = parsed.error.flatten().fieldErrors
+      throw createValidationError('요청 파라미터가 유효하지 않습니다.', details)
     }
+    const { publicId } = parsed.data
 
     const supabase = await createServerClientComponent()
 

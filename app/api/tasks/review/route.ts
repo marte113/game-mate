@@ -1,17 +1,18 @@
 import { NextResponse } from 'next/server'
 import { createReview } from '@/app/apis/service/tasks/reviewService'
-import { handleApiError, createBadRequestError } from '@/app/apis/base'
+import { handleApiError, createValidationError } from '@/app/apis/base'
+import { createReviewBodySchema } from '@/libs/schemas/server/review.schema'
 
 // POST: 새 리뷰 생성
 export async function POST(request: Request) {
   try {
-    const { rating, content, requestId, reviewedId } = await request.json()
-    if (rating === null || rating < 1 || rating > 5) {
-      throw createBadRequestError('유효하지 않은 평점입니다.')
+    const body = await request.json().catch(() => undefined)
+    const parsed = createReviewBodySchema.safeParse(body)
+    if (!parsed.success) {
+      const details = parsed.error.flatten().fieldErrors
+      throw createValidationError('요청 본문이 유효하지 않습니다.', details)
     }
-    if (!requestId || !reviewedId) {
-      throw createBadRequestError('필수 정보 누락 (의뢰 ID 또는 리뷰 대상 ID)')
-    }
+    const { rating, content, requestId, reviewedId } = parsed.data
     const result = await createReview({ rating, content, requestId, reviewedId })
     return NextResponse.json(result)
   } catch (error) {

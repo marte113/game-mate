@@ -2,11 +2,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { createServerClientComponent } from '@/supabase/functions/server'
-import { handleApiError, createUnauthorizedError, createServiceError } from '@/app/apis/base'
+import { handleApiError, createUnauthorizedError, createServiceError, createValidationError } from '@/app/apis/base'
+import { markChatReadPostBodySchema } from '@/libs/schemas/server/notification.schema'
 
 export async function POST(request: NextRequest) {
   try {
-    const { chatRoomId } = await request.json()
+    const json = await request.json()
+    const parsed = markChatReadPostBodySchema.safeParse(json)
+    if (!parsed.success) {
+      throw createValidationError('요청 바디가 유효하지 않습니다.', parsed.error.flatten().fieldErrors)
+    }
+    const { chatRoomId } = parsed.data
     const supabase = await createServerClientComponent()
 
     // 현재 사용자 확인

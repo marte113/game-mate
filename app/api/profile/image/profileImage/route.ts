@@ -4,7 +4,8 @@ import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 import { Database } from "@/types/database.types";
-import { handleApiError, createUnauthorizedError, createBadRequestError, createServiceError } from "@/app/apis/base";
+import { handleApiError, createUnauthorizedError, createValidationError, createServiceError } from "@/app/apis/base";
+import { profileImageUpdateBodySchema } from '@/libs/schemas/server/profile.schema'
 
 // 프로필 이미지 정보 가져오기
 export async function GET() {
@@ -80,11 +81,13 @@ export async function POST(request: Request) {
       throw createUnauthorizedError("사용자 인증 오류");
     }
 
-    const { imageUrl } = await request.json();
-
-    if (!imageUrl) {
-      throw createBadRequestError("이미지 URL이 제공되지 않았습니다");
+    const body = await request.json().catch(() => undefined)
+    const parsed = profileImageUpdateBodySchema.safeParse(body)
+    if (!parsed.success) {
+      const details = parsed.error.flatten().fieldErrors
+      throw createValidationError('요청 본문이 유효하지 않습니다.', details)
     }
+    const { imageUrl } = parsed.data
 
     // 사용자 정보 업데이트
     const { error } = await supabase

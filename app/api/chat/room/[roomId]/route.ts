@@ -5,18 +5,21 @@ import { NextResponse } from 'next/server'
 
 import { Database } from '@/types/database.types'
 import { ChatRoom } from '@/app/dashboard/chat/_types/chatTypes'
-import { handleApiError, createBadRequestError, createUnauthorizedError, createForbiddenError, createNotFoundError, createServiceError } from '@/app/apis/base'
+import { handleApiError, createUnauthorizedError, createForbiddenError, createNotFoundError, createServiceError, createValidationError } from '@/app/apis/base'
+import { chatRoomParamsSchema } from '@/libs/schemas/server/chat.schema'
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ roomId: string }> }
 ): Promise<NextResponse> {
   try {
-    const { roomId } = await params
-    
-    if (!roomId) {
-      throw createBadRequestError('채팅방 ID가 필요합니다')
+    const rawParams = await params
+    const parsed = chatRoomParamsSchema.safeParse(rawParams)
+    if (!parsed.success) {
+      const details = parsed.error.flatten().fieldErrors
+      throw createValidationError('요청 경로 파라미터가 유효하지 않습니다.', details)
     }
+    const { roomId } = parsed.data
     
     const cookieStore = await cookies()
     const supabase = createServerClient<Database>(

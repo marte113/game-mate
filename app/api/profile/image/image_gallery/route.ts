@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAlbumGallery, uploadAlbumImage, deleteAlbumImage, setThumbnail } from "@/app/apis/service/profile/albumService";
-import { handleApiError, createUnauthorizedError, createBadRequestError } from "@/app/apis/base";
+import { handleApiError, createUnauthorizedError, createValidationError } from "@/app/apis/base";
+import { albumUploadFormDataSchema, albumDeleteBodySchema, albumSetThumbnailBodySchema } from '@/libs/schemas/server/album.schema'
 
 // GET: 앨범 이미지 목록 조회
 export async function GET() {
@@ -22,6 +23,14 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
+    const parsed = albumUploadFormDataSchema.safeParse({
+      file: formData.get('file'),
+      index: formData.get('index')
+    })
+    if (!parsed.success) {
+      const details = parsed.error.flatten().fieldErrors
+      return handleApiError(createValidationError('요청 본문이 유효하지 않습니다.', details))
+    }
     const newImage = await uploadAlbumImage(formData);
     return NextResponse.json({ success: true, data: newImage });
 
@@ -31,7 +40,7 @@ export async function POST(request: Request) {
         return handleApiError(createUnauthorizedError(error.message));
       }
       if (error.message.includes('필수 정보') || error.message.includes('인덱스')) {
-        return handleApiError(createBadRequestError(error.message));
+        return handleApiError(createValidationError(error.message));
       }
     }
     return handleApiError(error);
@@ -41,9 +50,13 @@ export async function POST(request: Request) {
 // DELETE: 앨범 이미지 삭제
 export async function DELETE(request: Request) {
   try {
-    const { imageId } = await request.json();
-    if (!imageId) throw createBadRequestError('이미지 ID가 누락되었습니다.');
-    const result = await deleteAlbumImage(imageId);
+    const body = await request.json().catch(() => undefined)
+    const parsed = albumDeleteBodySchema.safeParse(body)
+    if (!parsed.success) {
+      const details = parsed.error.flatten().fieldErrors
+      return handleApiError(createValidationError('요청 본문이 유효하지 않습니다.', details))
+    }
+    const result = await deleteAlbumImage(parsed.data.imageId);
     return NextResponse.json({ success: true, ...result });
 
   } catch (error: any) {
@@ -59,9 +72,13 @@ export async function DELETE(request: Request) {
 // PATCH: 이미지를 썸네일로 설정
 export async function PATCH(request: Request) {
   try {
-    const { imageUrl } = await request.json();
-    if (!imageUrl) throw createBadRequestError('URL이 누락되었습니다.');
-    const result = await setThumbnail(imageUrl);
+    const body = await request.json().catch(() => undefined)
+    const parsed = albumSetThumbnailBodySchema.safeParse(body)
+    if (!parsed.success) {
+      const details = parsed.error.flatten().fieldErrors
+      return handleApiError(createValidationError('요청 본문이 유효하지 않습니다.', details))
+    }
+    const result = await setThumbnail(parsed.data.imageUrl);
     return NextResponse.json({ success: true, ...result });
 
   } catch (error: any) {
