@@ -1,17 +1,17 @@
 import { NextResponse, NextRequest } from 'next/server'
 import { getProfileReviewsByPublicId } from '@/app/apis/service/profile/reviewService'
-import { handleApiError, createBadRequestError } from '@/app/apis/base'
+import { handleApiError, createValidationError } from '@/app/apis/base'
+import { profileReviewsGetQuerySchema } from '@/libs/schemas/server/review.schema'
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url)
-  const publicProfileIdString = searchParams.get('profileId')
-  if (!publicProfileIdString) {
-    throw createBadRequestError('Profile ID is required')
+  const rawQuery = Object.fromEntries(new URL(request.url).searchParams)
+  const parsed = profileReviewsGetQuerySchema.safeParse(rawQuery)
+  if (!parsed.success) {
+    const details = parsed.error.flatten().fieldErrors
+    throw createValidationError('요청 파라미터가 유효하지 않습니다.', details)
   }
-  const publicProfileId = Number(publicProfileIdString)
-  if (isNaN(publicProfileId)) {
-    throw createBadRequestError('Invalid Profile ID format')
-  }
+  const { profileId } = parsed.data
+  const publicProfileId = profileId
   try {
     const result = await getProfileReviewsByPublicId(publicProfileId)
     return NextResponse.json(result, { status: 200 })

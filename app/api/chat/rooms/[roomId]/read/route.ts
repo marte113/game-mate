@@ -3,7 +3,8 @@ import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
 import { Database } from '@/types/database.types'
-import { handleApiError, createUnauthorizedError, createServiceError } from '@/app/apis/base'
+import { handleApiError, createUnauthorizedError, createServiceError, createValidationError } from '@/app/apis/base'
+import { chatRoomParamsSchema } from '@/libs/schemas/server/chat.schema'
 
 interface RouteParams {
   params: Promise<{ roomId: string }>
@@ -28,7 +29,12 @@ export async function POST(request: Request, { params }: RouteParams) {
         },
       }
     )
-    const { roomId } = await params
+    const rawParams = await params
+    const parsed = chatRoomParamsSchema.safeParse(rawParams)
+    if (!parsed.success) {
+      throw createValidationError('잘못된 경로 파라미터', parsed.error.flatten().fieldErrors)
+    }
+    const { roomId } = parsed.data
     
     // 현재 사용자 확인
     const { data: { user } } = await supabase.auth.getUser()

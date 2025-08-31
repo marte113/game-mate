@@ -3,7 +3,8 @@ import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
 import { Database } from '@/types/database.types'
-import { handleApiError, createBadRequestError, createUnauthorizedError, createForbiddenError, createServiceError } from '@/app/apis/base'
+import { handleApiError, createBadRequestError, createUnauthorizedError, createForbiddenError, createServiceError, createValidationError } from '@/app/apis/base'
+import { chatUserParamsSchema } from '@/libs/schemas/server/chat.schema'
 
 interface RouteParams {
   params: Promise<{ userId: string }>
@@ -28,7 +29,13 @@ export async function POST(request: Request, { params }: RouteParams) {
       },
     }
   )
-    const { userId } = await params
+    const rawParams = await params
+    const parsed = chatUserParamsSchema.safeParse(rawParams)
+    if (!parsed.success) {
+      const details = parsed.error.flatten().fieldErrors
+      throw createValidationError('요청 경로 파라미터가 유효하지 않습니다.', details)
+    }
+    const { userId } = parsed.data
     
     // 현재 사용자 확인
     const { data: userData, error: userError } = await supabase.auth.getUser()

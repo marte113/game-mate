@@ -4,7 +4,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { handleApiError, createBadRequestError, createServiceError } from '@/app/apis/base'
+import { handleApiError, createValidationError, createServiceError } from '@/app/apis/base'
+import { categoryPopularGetQuerySchema } from '@/libs/schemas/server/category.schema'
 
 import { Database } from "@/types/database.types";
 import type { PopularGame } from "@/app/category/_api/CategoryApi";
@@ -14,13 +15,13 @@ type RecommendedGamesLatestRow = Database['public']['Views']['recommended_games_
 type GamesTableRow = Database['public']['Tables']['games']['Row'];
 
 export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const limitParam = searchParams.get("limit");
-  const limit = limitParam ? parseInt(limitParam, 10) : 6; // 기본 6개
-
-  if (isNaN(limit) || limit < 1 || limit > 20) {
-    throw createBadRequestError("Invalid limit parameter (1-20)");
+  const rawQuery = Object.fromEntries(request.nextUrl.searchParams)
+  const parsed = categoryPopularGetQuerySchema.safeParse(rawQuery)
+  if (!parsed.success) {
+    const details = parsed.error.flatten().fieldErrors
+    throw createValidationError('요청 파라미터가 유효하지 않습니다.', details)
   }
+  const { limit } = parsed.data
 
   const cookieStore = await cookies();
   const supabase = createServerClient<Database>(

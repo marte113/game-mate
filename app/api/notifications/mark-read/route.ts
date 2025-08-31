@@ -1,12 +1,18 @@
 // app/api/notifications/mark-read/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClientComponent } from '@/supabase/functions/server'
-import { handleApiError, createUnauthorizedError, createServiceError } from '@/app/apis/base'
+import { handleApiError, createUnauthorizedError, createServiceError, createValidationError } from '@/app/apis/base'
+import { markReadPostBodySchema } from '@/libs/schemas/server/notification.schema'
 
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createServerClientComponent()
-    const { notificationId } = await request.json()
+    const json = await request.json()
+    const parsed = markReadPostBodySchema.safeParse(json)
+    if (!parsed.success) {
+      throw createValidationError('요청 바디가 유효하지 않습니다.', parsed.error.flatten().fieldErrors)
+    }
+    const { notificationId } = parsed.data
 
     // 현재 사용자 확인
     const { data: { user }, error: authError } = await supabase.auth.getUser()
