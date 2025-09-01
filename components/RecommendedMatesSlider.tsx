@@ -1,10 +1,9 @@
-
 'use client'
 
 import React, { useMemo, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, Star } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Star, UserRound } from 'lucide-react'
 
 import { MateData } from '@/app/(home)/_types/homePage.types'
 
@@ -23,17 +22,24 @@ interface RecommendedMatesSliderProps {
 
 export const MateCard = ({ mate }: MateCardProps) => {
   return (
-    <Link href={`/profile/${mate.public_id}`} className="carousel-item w-[20%] group">
+    <Link href={`/profile/${mate.public_id}`} className="carousel-item w-[20%] min-w-[220px] group">
       <div className="card bg-base-100 shadow-md hover:shadow-lg transition-all duration-300">
         <div className="relative">
           <div className="relative aspect-[4/3] w-full overflow-hidden rounded-t-xl">
-            <Image
-              src={mate.image}
-              alt={mate.name}
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-cover"
-            />
+            {mate.image !== "/default-avatar.png" ? (
+              <Image
+                src={mate.image}
+                alt={`${mate.name} 프로필 이미지`}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                className="object-cover"
+                priority={false}
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center bg-base-200">
+                <UserRound color="#ffffff" className="w-12 h-12 text-base-content/60" aria-hidden="true" />
+              </div>
+            )}
             {mate.isOnline ? (
               <div className="absolute top-3 left-3 bg-emerald-500 text-white text-xs font-medium px-2 py-1 rounded-full">
                 온라인
