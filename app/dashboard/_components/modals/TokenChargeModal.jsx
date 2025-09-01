@@ -105,13 +105,15 @@ export default function TokenChargeModal({ isOpen, onClose }) {
         totalAmount: selectedOption.totalAmount,
         currency: "KRW",
         payMethod: "CARD",
-        // customer: {
-        //   customerId: user.id,
-        //   email: user.email || '',
-        // },
-        // customData: {
-        //   userId: user.id,
-        // },
+        customer: (() => {
+          const obj = { customerId: user.id };
+          const email = user?.email;
+          if (typeof email === 'string' && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+            obj.email = email;
+          }
+          return obj;
+        })(),
+        customData: JSON.stringify({ userId: user.id }),
       };
 
       console.log("결제 요청 정보:", paymentRequest);
