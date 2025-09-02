@@ -138,7 +138,7 @@ export async function buildRecommendedThemes(page: number) {
   })
 
   const hasMore = total != null ? offset + themesPerPage < total : themes.length > 0 && themes.length === themesPerPage
-  const nextPage = await calcNextPage(hasMore, page)
+  const nextPage = calcNextPage(hasMore, page)
   return { themes, nextPage: nextPage ?? null }
 }
 
