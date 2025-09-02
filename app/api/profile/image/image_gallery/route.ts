@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { getAlbumGallery, uploadAlbumImage, deleteAlbumImage, setThumbnail } from "@/app/apis/service/profile/albumService";
 import { handleApiError, createUnauthorizedError, createValidationError } from "@/app/apis/base";
 import { albumUploadFormDataSchema, albumDeleteBodySchema, albumSetThumbnailBodySchema } from '@/libs/schemas/server/album.schema'

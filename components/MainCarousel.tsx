@@ -135,7 +135,7 @@ export default function MainCarousel({
                     alt={slide.alt}
                     fill
                     sizes="100vw"
-                    className="object-cover object-center"
+                    className="object-cover object-fill"
                     priority={index === 0}
                   />
                   {slide.text ? (
