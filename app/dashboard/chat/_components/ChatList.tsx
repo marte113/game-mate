@@ -1,16 +1,16 @@
-'use client'
+"use client"
 
-import { useEffect, useState } from 'react'
-import { createClient } from '@/supabase/functions/client'
+import { useEffect, useMemo, useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 
-import { useChatStore } from '@/stores/chatStore'
-import { chatApi } from '@/app/dashboard/chat/_api'
-import { ChatRoom } from '@/app/dashboard/chat/_types'
-import { useMessageSubscription } from '@/app/dashboard/chat/_hooks/useMessageSubscription'
-import { queryKeys } from '@/constants/queryKeys'
-
-import { formatMessageTime } from '../_utils/formatters'
-import { useQuery } from '@tanstack/react-query'
+import { createClient } from "@/supabase/functions/client"
+import { useChatStore } from "@/stores/chatStore"
+import { useChatUiStore } from "@/stores/chatUiStore"
+import { chatApi } from "@/app/dashboard/chat/_api"
+import type { ChatRoom } from "@/app/dashboard/chat/_types"
+import { useMessageSubscription } from "@/app/dashboard/chat/_hooks/useMessageSubscription"
+import { queryKeys } from "@/constants/queryKeys"
+import { formatMessageTime } from "../_utils/formatters"
 
 // 로딩 중 스켈레톤 UI 컴포넌트
 function ChatSkeleton() {
@@ -31,47 +31,37 @@ function ChatSkeleton() {
   )
 }
 
-interface ChatListProps {
-  searchTerm?: string;
-}
-
 // 채팅방 목록 컴포넌트
-export default function ChatList({ searchTerm = '' }: ChatListProps) {
+export default function ChatList() {
   // useChatStore에서 필요한 상태만 가져오기 (UI 상태만)
   const { selectedChat, setSelectedChat } = useChatStore()
-  const [filteredChatRooms, setFilteredChatRooms] = useState<ChatRoom[]>([])
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
-  
+  // 전역 검색어 사용 (Zustand)
+  const globalSearchTerm = useChatUiStore((s) => s.searchTerm)
+
   // React Query로 채팅방 목록 가져오기 (코어 훅 사용)
   const { data: chatRooms, isLoading } = useQuery({
     queryKey: queryKeys.chat.chatRooms(),
     queryFn: chatApi.getChatRooms,
   })
-  
+
   // 현재 선택된 채팅방 ID (실시간 구독에 사용)
-  console.log("selectedChat", selectedChat);
   const currentChatRoomId = selectedChat?.id || null
-  
+
   // 실시간 메시지 구독 훅 사용
   useMessageSubscription(currentChatRoomId)
-  
-  // 채팅방 필터링 처리
-  useEffect(() => {
-    if (!searchTerm.trim() || !chatRooms) {
-      setFilteredChatRooms(chatRooms || [])
-      return
-    }
-    
-    const filtered = chatRooms.filter(room => {
-      const otherUserName = room.otherUser?.name?.toLowerCase() || ''
-      const lastMessage = room.last_message?.toLowerCase() || ''
-      const query = searchTerm.toLowerCase()
-      
-      return otherUserName.includes(query) || lastMessage.includes(query)
+
+  // 파생된 필터링 목록은 useMemo로 계산
+  const filteredChatRooms = useMemo<ChatRoom[]>(() => {
+    if (!chatRooms) return []
+    const q = (globalSearchTerm || "").trim().toLowerCase()
+    if (!q) return chatRooms
+    return chatRooms.filter((room) => {
+      const otherUserName = room.otherUser?.name?.toLowerCase() || ""
+      const lastMessage = room.last_message?.toLowerCase() || ""
+      return otherUserName.includes(q) || lastMessage.includes(q)
     })
-    
-    setFilteredChatRooms(filtered)
-  }, [searchTerm, chatRooms])
+  }, [chatRooms, globalSearchTerm])
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -81,14 +71,14 @@ export default function ChatList({ searchTerm = '' }: ChatListProps) {
         setCurrentUserId(data.user.id)
       }
     }
-    
+
     fetchCurrentUser()
   }, [])
-  
+
   const handleSelectChat = (chatRoom: ChatRoom) => {
     setSelectedChat(chatRoom)
   }
-  
+
   const renderChatRooms = () => {
     if (filteredChatRooms.length === 0) {
       return (
@@ -111,9 +101,13 @@ export default function ChatList({ searchTerm = '' }: ChatListProps) {
             <div className="flex items-center gap-3">
               <div className="avatar">
                 <div className="w-12 rounded-full relative">
-                  <img 
-                    src={chatRoom.otherUser?.profile_circle_img || `https://api.dicebear.com/7.x/avataaars/svg?seed=${chatRoom.otherUser?.name || 'Unknown'}`} 
-                    alt="avatar" 
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={
+                      chatRoom.otherUser?.profile_circle_img ||
+                      `https://api.dicebear.com/7.x/avataaars/svg?seed=${chatRoom.otherUser?.name || "Unknown"}`
+                    }
+                    alt="avatar"
                   />
                   {chatRoom.otherUser?.is_online && (
                     <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-base-100"></span>
@@ -122,16 +116,25 @@ export default function ChatList({ searchTerm = '' }: ChatListProps) {
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-bold">{chatRoom.otherUser?.name || '알 수 없는 사용자'}</h3>
-                  <span className="text-xs text-base-content/60">{formatMessageTime(chatRoom.last_message_time)}</span>
+                  <h3 className="font-bold">{chatRoom.otherUser?.name || "알 수 없는 사용자"}</h3>
+                  <span className="text-xs text-base-content/60">
+                    {formatMessageTime(chatRoom.last_message_time)}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-base-content/70 truncate">
-                    {chatRoom.last_message || '새로운 대화를 시작하세요'}
+                    {chatRoom.last_message || "새로운 대화를 시작하세요"}
                   </p>
-                  {chatRoom.participants.some(p => p.user_id === currentUserId && p.unread_count !== null && p.unread_count > 0) && (
+                  {chatRoom.participants.some(
+                    (p) =>
+                      p.user_id === currentUserId && p.unread_count !== null && p.unread_count > 0,
+                  ) && (
                     <span className="badge badge-primary badge-sm ml-2">
-                      {chatRoom.participants.find(p => p.user_id === currentUserId && p.unread_count !== null)?.unread_count}
+                      {
+                        chatRoom.participants.find(
+                          (p) => p.user_id === currentUserId && p.unread_count !== null,
+                        )?.unread_count
+                      }
                     </span>
                   )}
                 </div>
@@ -145,11 +148,7 @@ export default function ChatList({ searchTerm = '' }: ChatListProps) {
 
   return (
     <div className="w-full h-full overflow-y-auto">
-      {isLoading ? (
-        <ChatSkeleton />
-      ) : (
-        renderChatRooms()
-      )}
+      {isLoading ? <ChatSkeleton /> : renderChatRooms()}
     </div>
   )
-} 
+}

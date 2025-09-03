@@ -1,24 +1,18 @@
-'use client'
+"use client"
 
-import { Dispatch, SetStateAction } from "react"
+import type { ReactNode } from "react"
+import { useEffect } from "react"
 
-import SearchChatInput from "./SearchChatInput"
-import ChatList from "./ChatList"
+import { useChatUiStore } from "@/stores/chatUiStore"
 
-interface LeftSectionProps {
-  searchTerm: string;
-  setSearchTerm: Dispatch<SetStateAction<string>>;
+export default function LeftSection({ children }: { children: ReactNode }) {
+  const reset = useChatUiStore((s) => s.reset)
+
+  // 페이지 입장/이탈 시 검색어 초기화
+  useEffect(() => {
+    reset()
+    return () => reset()
+  }, [reset])
+
+  return <div className="w-80 bg-base-100 rounded-lg shadow-xl flex flex-col">{children}</div>
 }
-
-export default function LeftSection({ searchTerm, setSearchTerm }: LeftSectionProps) {
-  const handleSearch = (query: string) => {
-    setSearchTerm(query)
-  }
-
-  return (
-    <div className="w-80 bg-base-100 rounded-lg shadow-xl flex flex-col">
-      <SearchChatInput onSearch={handleSearch} />
-      <ChatList searchTerm={searchTerm} />
-    </div>
-  )
-} 
