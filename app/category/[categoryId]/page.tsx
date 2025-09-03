@@ -7,7 +7,7 @@ import { Fragment } from 'react' // useEffect 제거
 import { useMatesByCategoryInfiniteQuery } from '@/hooks/api/category/useCategoryQueries'
 
 import type { MateCardData } from '../_types/categoryPage.types'
-import LoadingSpinner from '../_components/LoadingSpinner' // 로딩 스피너 임포트
+import LoadingSpinner from '../../../components/ui/LoadingSpinner' // 로딩 스피너 임포트
 import { MateCard } from '../_components/MateCard' // MateCard 임포트 경로 확인
 import CategoryHeader from '../_components/CategoryHeader'
 
