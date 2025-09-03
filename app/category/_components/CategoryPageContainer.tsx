@@ -40,6 +40,16 @@ export default function CategoryPageContainer({
     },
   });
 
+  const gamesValue = useMemo(() => ({ games }), [games]);
+  const paginationValue = useMemo(
+    () => ({
+      total,
+      hasNextPage: !!hasNextPage,
+      isFetchingNextPage,
+    }),
+    [total, hasNextPage, isFetchingNextPage]
+  );
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -55,16 +65,6 @@ export default function CategoryPageContainer({
       </div>
     );
   }
-
-  const gamesValue = useMemo(() => ({ games }), [games]);
-  const paginationValue = useMemo(
-    () => ({
-      total,
-      hasNextPage: !!hasNextPage,
-      isFetchingNextPage,
-    }),
-    [total, hasNextPage, isFetchingNextPage]
-  );
 
   return (
     <div className="container mx-auto px-4 py-8">
