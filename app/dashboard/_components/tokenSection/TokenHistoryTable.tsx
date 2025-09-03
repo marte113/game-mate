@@ -5,7 +5,7 @@ import { useTokenTransactionsInfiniteQuery, type TokenTransaction } from "@/hook
 import { Button } from "@/components/ui";
 
 import TokenHistoryTr from "./TokenHistoryTr";
-import LoadingSpinner from "@/app/category/_components/LoadingSpinner";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 export default function TokenHistoryTable() {
   
   const { data: transactionsData, fetchNextPage, hasNextPage, error, isFetchingNextPage  } =
