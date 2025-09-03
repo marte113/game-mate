@@ -1,86 +1,15 @@
-"use client";
+import CategoryPageContainer from "./_components/CategoryPageContainer";
+import CategoryCardList from "./_components/CategoryCardList";
 
-import { useInView } from "react-intersection-observer";
-import { Fragment } from "react";
-
-import type { GamesRow } from "@/types/database.table.types";
-import { useGamesInfiniteQuery } from "@/hooks/api/category/useCategoryQueries";
-
-import CategoryCard from "./_components/CategoryCard";
-import LoadingSpinner from "./_components/LoadingSpinner";
+export const metadata = {
+  title: "게임 카테고리 - Game Mate",
+  description: "게임 카테고리를 탐색하고 메이트를 찾아보세요.",
+};
 
 export default function CategoryPage() {
-  const {
-    data,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isLoading,
-    isFetchingNextPage,
-    status,
-  } = useGamesInfiniteQuery();
-
-  const allGames = (data?.pages ?? []).flatMap((p) => p.games);
-  const total = allGames.length;
-
-  const { ref } = useInView({
-    threshold: 0,
-    // 뷰포트 진입(onEnter) / 이탈(onLeave) 시 호출
-    onChange: (inView) => {
-      if (inView && hasNextPage && !isFetchingNextPage) {
-        fetchNextPage();
-      }
-    },
-  });
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
-  }
-
-  if (status === "error") {
-    return (
-      <div className="text-center text-red-500 py-10">
-        Error loading games: {error.message}
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">게임 카테고리</h1>
-      <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-        {(data?.pages ?? []).map((page, i: number) => (
-          <Fragment key={i}>
-            {page.games.map((game: GamesRow) => (
-              <CategoryCard
-                key={game.id}
-                id={game.id}
-                name={game.name}
-                description={game.description}
-                genre={game.genre || []}
-                image_url={game.image_url || "/images/default-game-icon.webp"}
-              />
-            ))}
-          </Fragment>
-        ))}
-      </ul>
-
-      {/* 무한 스크롤 트리거 및 로딩 표시 */}
-      <div ref={ref} className="h-20 flex justify-center items-center mt-8">
-        {isFetchingNextPage ? (
-          <LoadingSpinner />
-        ) : hasNextPage ? (
-          <span className="text-gray-500">스크롤하여 더 보기...</span>
-        ) : total > 0 ? (
-          <p className="text-sm text-gray-500">모든 게임을 불러왔습니다.</p>
-        ) : (
-          <p className="text-sm text-gray-500">등록된 게임이 없습니다.</p>
-        )}
-      </div>
-    </div>
+    <CategoryPageContainer>
+      <CategoryCardList />
+    </CategoryPageContainer>
   );
 }
