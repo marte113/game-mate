@@ -29,20 +29,20 @@ export default function TaskList() {
   
   // 받은 의뢰 데이터 가져오기
   const { 
-    data: receivedData,
-    error: receivedError
+    data: receivedData
   } = useReceivedOrdersQuery({
     enabled: activeTab === 'received',
     staleTime: 300000, // 5분 (60 * 1000ms)
+    suspense : true
   })
   
   // 신청한 의뢰 데이터 가져오기
   const { 
-    data: requestedData,
-    error: requestedError
+    data: requestedData
   } = useRequestedOrdersQuery({
     enabled: activeTab === 'requested',
     staleTime: 300000, // 5분
+    suspense : true
   })
   
   // Zustand 스토어에서 모달 열림 상태만 가져오기
@@ -83,26 +83,16 @@ export default function TaskList() {
   }, [idParam, activeTab, receivedData, requestedData, taskDetailModalIsOpen, openTaskDetailModal])
   
   // 로딩 처리
-  if ((activeTab === 'received' && !receivedData) || 
-      (activeTab === 'requested' && !requestedData)) {
-    return (
-      <div className="p-6 flex justify-center items-center min-h-screen">
-        <div className="loading loading-spinner loading-lg text-primary"></div>
-      </div>
-    )
-  }
+  // if ((activeTab === 'received' && !receivedData) || 
+  //     (activeTab === 'requested' && !requestedData)) {
+  //   return (
+  //     <div className="p-6 flex justify-center items-center min-h-screen">
+  //       <div className="loading loading-spinner loading-lg text-primary"></div>
+  //     </div>
+  //   )
+  // }
   
-  // 에러 처리
-  if ((activeTab === 'received' && receivedError) || 
-      (activeTab === 'requested' && requestedError)) {
-    return (
-      <div className="p-6">
-        <div className="alert alert-error">
-          <div>의뢰 목록을 불러오는 중 오류가 발생했습니다</div>
-        </div>
-      </div>
-    )
-  }
+  
 
   const renderContent = () => {
     if (activeTab === 'received') {
