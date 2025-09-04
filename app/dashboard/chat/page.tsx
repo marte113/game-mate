@@ -4,6 +4,9 @@ import RightSection from './_components/RightSection'
 import ChatRoom from './_components/ChatRoom'
 import SearchChatInput from './_components/SearchChatInput'
 import ChatList from './_components/ChatList'
+
+
+export const dynamic = 'force-dynamic'
 export const metadata = {
   title: '채팅 - Game Mate',
   description: '게임 메이트와 채팅으로 소통하세요',
