@@ -98,7 +98,7 @@ function ProfileMenu() {
               토큰
             </Link>
             <Link
-              href="/dashboard/task"
+              href="/dashboard/task?tab=received"
               className="w-full px-4 py-2 flex items-center gap-3 hover:bg-base-200 text-left"
               onClick={close}
             >

@@ -66,7 +66,7 @@ export default function Sidebar() {
           icon: <LayoutDashboard className="w-5 h-5" />,
         },
         {
-          href: "/dashboard/task",
+          href: "/dashboard/task?tab=received",
           label: "의뢰",
           icon: <ClipboardList className="w-5 h-5" />,
           badge:
@@ -167,7 +167,7 @@ export default function Sidebar() {
                         href={item.href}
                         className={`flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-base-200 text-base-content/80 hover:text-base-content
                         ${
-                          pathname === item.href
+                          pathname === item.href.split('?')[0]
                             ? "bg-warning text-warning-content"
                             : ""
                         }`}
@@ -216,7 +216,7 @@ export default function Sidebar() {
                       href={item.href}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-base-200 text-base-content/80 hover:text-base-content
                          ${
-                           pathname === item.href
+                           pathname === item.href.split('?')[0]
                              ? "bg-warning text-warning-content"
                              : ""
                          }`}

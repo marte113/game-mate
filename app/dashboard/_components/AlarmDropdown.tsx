@@ -70,10 +70,13 @@ export default memo(function AlarmDropdown() {
       case 'message':
         return `/dashboard/chat`
       case 'request':
+        // 누군가 내게 보낸 의뢰 -> 받은 의뢰 탭으로 이동
+        return `/dashboard/task?tab=received&id=${relatedId}`
       case 'accept':
       case 'reject':
       case 'cancel':
-        return `/dashboard/task?id=${relatedId}`
+        // 내가 신청한 의뢰의 상태 변화 -> 신청한 의뢰 탭으로 이동
+        return `/dashboard/task?tab=requested&id=${relatedId}`
       case 'follow':
         return `/dashboard/follow`
       default:

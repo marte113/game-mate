@@ -1,16 +1,23 @@
 'use client'
 
-import { useState, useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useSearchParams } from 'next/navigation'
+
+import { useNotificationStore } from '@/stores/notificationStore'
+import { useReceivedOrdersQuery, useRequestedOrdersQuery } from '@/hooks/api/orders/useOrdersQueries'
+
+import { useTaskStore } from '../store/useTaskStore'
+import { useTaskSubscription } from '../_hooks/useTaskSubscription'
+
 import TaskSection from './TaskSection'
 import TaskDetailModal from './TaskDetailModal'
 import ReviewModal from './ReviewModal'
-import { useNotificationStore } from '@/stores/notificationStore'
-import { useTaskStore } from '../store/useTaskStore'
-import { useTaskSubscription } from '../_hooks/useTaskSubscription'
-import { useReceivedOrdersQuery, useRequestedOrdersQuery } from '@/hooks/api/orders/useOrdersQueries'
+
 
 export default function TaskList() {
-  const [activeTab, setActiveTab] = useState('received') // received 또는 requested
+  const searchParams = useSearchParams()
+  const activeTab = (searchParams.get('tab') ?? 'received')
+  const idParam = searchParams.get('id')
   const { markTaskNotificationsAsRead } = useNotificationStore()
   
   useEffect(() => {
@@ -22,25 +29,27 @@ export default function TaskList() {
   
   // 받은 의뢰 데이터 가져오기
   const { 
-    data: receivedData,
-    error: receivedError
+    data: receivedData
   } = useReceivedOrdersQuery({
     enabled: activeTab === 'received',
     staleTime: 300000, // 5분 (60 * 1000ms)
+    suspense : true
   })
   
   // 신청한 의뢰 데이터 가져오기
   const { 
-    data: requestedData,
-    error: requestedError
+    data: requestedData
   } = useRequestedOrdersQuery({
     enabled: activeTab === 'requested',
     staleTime: 300000, // 5분
+    suspense : true
   })
   
   // Zustand 스토어에서 모달 열림 상태만 가져오기
   const taskDetailModalIsOpen = useTaskStore((state) => state.taskDetailModal.isOpen)
+  const openTaskDetailModal = useTaskStore((state) => state.openTaskDetailModal)
   const reviewModalIsOpen = useTaskStore((state) => state.reviewModal.isOpen)
+  const openedByIdRef = useRef(null)
   
   // 의뢰를 상태별로 분류하는 함수
   const categorizeOrders = useCallback((orders) => {
@@ -56,28 +65,34 @@ export default function TaskList() {
   // 분류된 의뢰 데이터 - useMemo로 메모이제이션 적용
   const receivedOrders = useMemo(() => categorizeOrders(receivedData?.orders), [receivedData, categorizeOrders])
   const requestedOrders = useMemo(() => categorizeOrders(requestedData?.orders), [requestedData, categorizeOrders])
+
+  // URL의 id가 있으면 해당 의뢰 자동 오픈 (탭 데이터 로딩 이후 1회)
+  useEffect(() => {
+    if (!idParam) return
+    if (taskDetailModalIsOpen) return
+    if (openedByIdRef.current === idParam) return
+
+    const orders = activeTab === 'received' ? receivedData?.orders : requestedData?.orders
+    if (!orders) return
+
+    const target = orders.find((o) => o.id === idParam)
+    if (target) {
+      openTaskDetailModal(target)
+      openedByIdRef.current = idParam
+    }
+  }, [idParam, activeTab, receivedData, requestedData, taskDetailModalIsOpen, openTaskDetailModal])
   
   // 로딩 처리
-  if ((activeTab === 'received' && !receivedData) || 
-      (activeTab === 'requested' && !requestedData)) {
-    return (
-      <div className="p-6 flex justify-center items-center min-h-screen">
-        <div className="loading loading-spinner loading-lg text-primary"></div>
-      </div>
-    )
-  }
+  // if ((activeTab === 'received' && !receivedData) || 
+  //     (activeTab === 'requested' && !requestedData)) {
+  //   return (
+  //     <div className="p-6 flex justify-center items-center min-h-screen">
+  //       <div className="loading loading-spinner loading-lg text-primary"></div>
+  //     </div>
+  //   )
+  // }
   
-  // 에러 처리
-  if ((activeTab === 'received' && receivedError) || 
-      (activeTab === 'requested' && requestedError)) {
-    return (
-      <div className="p-6">
-        <div className="alert alert-error">
-          <div>의뢰 목록을 불러오는 중 오류가 발생했습니다</div>
-        </div>
-      </div>
-    )
-  }
+  
 
   const renderContent = () => {
     if (activeTab === 'received') {
@@ -141,21 +156,6 @@ export default function TaskList() {
 
   return (
     <div className="p-6">
-      <div className="tabs tabs-boxed mb-6">
-        <button
-          className={`tab ${activeTab === 'received' ? 'tab-active' : ''}`}
-          onClick={() => setActiveTab('received')}
-        >
-          받은 의뢰
-        </button>
-        <button
-          className={`tab ${activeTab === 'requested' ? 'tab-active' : ''}`}
-          onClick={() => setActiveTab('requested')}
-        >
-          신청한 의뢰
-        </button>
-      </div>
-
       <div className="space-y-8">
         {renderContent()}
       </div>
@@ -173,4 +173,4 @@ export default function TaskList() {
       )}
     </div>
   )
-} 
+}
