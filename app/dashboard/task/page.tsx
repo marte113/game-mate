@@ -1,10 +1,12 @@
-import { Suspense } from "react";
+import { Suspense } from "react"
 
-import TaskList from "./_components/TaskList";
-import TaskPageContainer from "./_components/TaskPageContainer";
-import TaskPageNavTab from "./_components/TaskPageNavTab";
-import TaskPageNavTabSkeleton from "./_components/skeletons/TaskPageNavTabSkeleton";
-import TaskListSkeleton from "./_components/skeletons/TaskListSkeleton";
+import TaskList from "./_components/TaskList"
+import TaskPageContainer from "./_components/TaskPageContainer"
+import TaskPageNavTab from "./_components/TaskPageNavTab"
+import TaskPageNavTabSkeleton from "./_components/skeletons/TaskPageNavTabSkeleton"
+import TaskListSkeleton from "./_components/skeletons/TaskListSkeleton"
+
+export const dynamic = "force-dynamic"
 
 export default function TaskPage() {
   return (
@@ -17,5 +19,5 @@ export default function TaskPage() {
         <TaskList />
       </Suspense>
     </TaskPageContainer>
-  );
+  )
 }
