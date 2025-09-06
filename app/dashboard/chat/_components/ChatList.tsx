@@ -1,15 +1,13 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { useQuery } from "@tanstack/react-query"
 
 import { createClient } from "@/supabase/functions/client"
-import { useChatStore } from "@/stores/chatStore"
 import { useChatUiStore } from "@/stores/chatUiStore"
-import { chatApi } from "@/app/dashboard/chat/_api"
 import type { ChatRoom } from "@/app/dashboard/chat/_types"
-import { useMessageSubscription } from "@/app/dashboard/chat/_hooks/useMessageSubscription"
-import { queryKeys } from "@/constants/queryKeys"
+import { useChatRoomsLegacyQuery } from "@/hooks/api/chat/useChatQueries"
+import { useLegacyChatSubscription } from "@/hooks/api/chat/useChatSubscription"
+
 import { formatMessageTime } from "../_utils/formatters"
 
 // 로딩 중 스켈레톤 UI 컴포넌트
@@ -33,23 +31,18 @@ function ChatSkeleton() {
 
 // 채팅방 목록 컴포넌트
 export default function ChatList() {
-  // useChatStore에서 필요한 상태만 가져오기 (UI 상태만)
-  const { selectedChat, setSelectedChat } = useChatStore()
+  // UI 상태는 chatUiStore에서 가져오기
+  const { selectedChat, setSelectedChat, searchTerm: globalSearchTerm } = useChatUiStore()
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
-  // 전역 검색어 사용 (Zustand)
-  const globalSearchTerm = useChatUiStore((s) => s.searchTerm)
 
-  // React Query로 채팅방 목록 가져오기 (코어 훅 사용)
-  const { data: chatRooms, isLoading } = useQuery({
-    queryKey: queryKeys.chat.chatRooms(),
-    queryFn: chatApi.getChatRooms,
-  })
+  // React Query로 채팅방 목록 가져오기 (새로운 훅 사용)
+  const { data: chatRooms, isLoading } = useChatRoomsLegacyQuery()
 
   // 현재 선택된 채팅방 ID (실시간 구독에 사용)
   const currentChatRoomId = selectedChat?.id || null
 
-  // 실시간 메시지 구독 훅 사용
-  useMessageSubscription(currentChatRoomId)
+  // 실시간 메시지 구독 훅 사용 (새로운 훅으로 교체)
+  useLegacyChatSubscription(currentChatRoomId)
 
   // 파생된 필터링 목록은 useMemo로 계산
   const filteredChatRooms = useMemo<ChatRoom[]>(() => {
