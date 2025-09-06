@@ -22,7 +22,12 @@ export function useChatMessageSubscription(currentRoomId?: string | null) {
     async (payload: RealtimePostgresChangesPayload<MessageRow>) => {
       if (!user?.id) return
 
-      const newMessage = payload.new
+      const rawNew = payload.new
+      // Supabase 타입은 event 타입에 따라 new가 {}일 수 있으므로 런타임 가드로 협소화
+      if (!rawNew || typeof rawNew !== "object" || !("chat_room_id" in rawNew)) {
+        return
+      }
+      const newMessage = rawNew as MessageRow
       const messageRoomId = newMessage.chat_room_id
 
       // 현재 보고 있는 채팅방의 메시지인 경우
@@ -142,7 +147,11 @@ export function useLegacyChatSubscription(currentRoomId?: string | null) {
           table: "messages",
         },
         async (payload: RealtimePostgresChangesPayload<MessageRow>) => {
-          const newMessage = payload.new
+          const rawNew = payload.new
+          if (!rawNew || typeof rawNew !== "object" || !("chat_room_id" in rawNew)) {
+            return
+          }
+          const newMessage = rawNew as MessageRow
           const messageRoomId = newMessage.chat_room_id
 
           if (currentRoomId && currentRoomId === messageRoomId) {
