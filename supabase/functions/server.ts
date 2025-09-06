@@ -1,13 +1,13 @@
-import 'server-only'
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers';
+import "server-only"
+import { createServerClient } from "@supabase/ssr"
+import { cookies } from "next/headers"
 
-import { Database } from '@/types/database.types';
+import type { Database } from "@/types/database.types"
 
 // 서버 컴포넌트에서 사용할 Supabase 클라이언트
 export const createServerClientComponent = async () => {
-  const cookieStore = await cookies();
-  
+  const cookieStore = await cookies()
+
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -22,14 +22,14 @@ export const createServerClientComponent = async () => {
           })
         },
       },
-    }
-  );
-};
+    },
+  )
+}
 
 // 서버 액션에서 사용할 Supabase 클라이언트
 export const createActionClient = async (cookieStore: ReturnType<typeof cookies>) => {
-  const resolvedCookieStore = await cookieStore;
-  
+  const resolvedCookieStore = await cookieStore
+
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -44,6 +44,11 @@ export const createActionClient = async (cookieStore: ReturnType<typeof cookies>
           })
         },
       },
-    }
-  );
-};
+    },
+  )
+}
+
+// API 라우트에서 사용할 간편한 createClient 함수
+export const createClient = async () => {
+  return createServerClientComponent()
+}
