@@ -29,6 +29,8 @@ export const queryKeys = {
     popularGames: () => ["popular-games"] as const,
     // Games by category
     gamesByCategory: (categoryId: string) => ["gamesByCategory", categoryId] as const,
+    // Game images lookup by titles (joined key)
+    gameImagesByTitles: (titlesKey: string) => ["games", "imagesByTitles", titlesKey] as const,
   },
 
   mates: {
@@ -67,6 +69,7 @@ export type QueryKey = ReturnType<
   | typeof queryKeys.category.recommendedThemes
   | typeof queryKeys.category.popularGames
   | typeof queryKeys.category.gamesByCategory
+  | typeof queryKeys.category.gameImagesByTitles
   | typeof queryKeys.mates.recommended
   | typeof queryKeys.mates.partner
   | typeof queryKeys.chat.rooms
