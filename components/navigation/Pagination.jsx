@@ -1,8 +1,8 @@
-import React from "react";
+import React from "react"
 
 const Pagination = ({ totalPages, page, setPage }) => {
-  const startPage = Math.floor((page - 1) / 10) * 10 + 1;
-  const endPage = Math.min(startPage + 9, totalPages);
+  const startPage = Math.floor((page - 1) / 10) * 10 + 1
+  const endPage = Math.min(startPage + 9, totalPages)
 
   return (
     <div className="join">
@@ -20,10 +20,7 @@ const Pagination = ({ totalPages, page, setPage }) => {
       >
         이전
       </button>
-      {Array.from(
-        { length: endPage - startPage + 1 },
-        (_, i) => startPage + i
-      ).map((pageNum) => (
+      {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map((pageNum) => (
         <button
           key={pageNum}
           onClick={() => setPage(pageNum)}
@@ -47,9 +44,7 @@ const Pagination = ({ totalPages, page, setPage }) => {
         마지막 페이지
       </button>
     </div>
-  );
-};
+  )
+}
 
-export default Pagination;
-
-
+export default Pagination

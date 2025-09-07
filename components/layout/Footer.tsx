@@ -1,8 +1,8 @@
-import Link from "next/link";
-import Image from "next/image";
+import Link from "next/link"
+import Image from "next/image"
 
-import config from "@/config";
-import logo from "@/app/icon.png";
+import config from "@/config"
+import logo from "@/app/icon.png"
 
 // 사업자 관련 정보
 
@@ -11,10 +11,9 @@ const companyInfo = {
   company_number: "101-23-45678",
   selling_number: "제2025-서울-01234호",
   owner: "홍길동",
-  address:
-    "서울특별시 강남구 테헤란로 427 위워크타워 10층",
+  address: "서울특별시 강남구 테헤란로 427 위워크타워 10층",
   email: "contact@acetech.com",
-};
+}
 
 const Footer = () => {
   return (
@@ -47,8 +46,8 @@ const Footer = () => {
             </p>
             {/* 사업자 정보 */}
             <p className="mt-3 text-sm text-gray-500">
-              {companyInfo.name} | 사업자등록번호 : {companyInfo.company_number}{" "}
-              | 대표자명 : {companyInfo.owner}
+              {companyInfo.name} | 사업자등록번호 : {companyInfo.company_number} | 대표자명 :{" "}
+              {companyInfo.owner}
             </p>
           </div>
           <div className="flex-grow flex flex-wrap justify-center -mb-10 md:mt-0 mt-10 text-center">
@@ -89,7 +88,7 @@ const Footer = () => {
         </div>
       </div>
     </footer>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer

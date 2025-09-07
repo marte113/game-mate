@@ -1,15 +1,15 @@
-"use client";
+"use client"
 
-import React from "react";
+import React from "react"
 
-import GameCategorySlider from "@/components/GameCategorySlider";
-import MainCarousel from "@/components/MainCarousel";
-import RecommendedMates from "@/components/ui/RecomendedMates";
+import GameCategorySlider from "@/app/category/_components/GameCategorySlider"
+import MainCarousel from "@/app/(home)/_components/MainCarousel"
+import RecommendedMates from "@/components/ui/RecomendedMates"
 
 interface Slide {
-  image: string;
-  alt: string;
-  text?: string;
+  image: string
+  alt: string
+  text?: string
 }
 
 const slides: Slide[] = [
@@ -23,7 +23,7 @@ const slides: Slide[] = [
     alt: "게임 배너 2",
     text: "첫 가입 이벤트 진행 중!",
   },
-];
+]
 
 export default function Home() {
   return (
@@ -36,5 +36,5 @@ export default function Home() {
         </div>
       </main>
     </>
-  );
+  )
 }

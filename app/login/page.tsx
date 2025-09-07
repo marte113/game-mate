@@ -1,56 +1,55 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import toast from "react-hot-toast";
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from "react"
+import { toast } from "react-hot-toast"
+import { useRouter } from "next/navigation"
 
-import HeaderCenter from "@/components/HeaderCenter";
-import ButtonKakaoLogin from "@/components/ButtonKakaoLogin";
-import ButtonGoogleLogin from "@/components/ButtonGoogleLogin";
-import { useAuthStore } from '@/stores/authStore'
-
+import HeaderCenter from "@/components/layout/HeaderCenter"
+import ButtonKakaoLogin from "@/components/auth/ButtonKakaoLogin"
+import ButtonGoogleLogin from "@/components/auth/ButtonGoogleLogin"
+import { useAuthStore } from "@/stores/authStore"
 
 // Supabase 회원가입 및 로그인 페이지
 export default function Login() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const { loginWithKakao, loginWithGoogle, user, checkAuth } = useAuthStore();
-  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false)
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
+  const { loginWithKakao, loginWithGoogle, user, checkAuth } = useAuthStore()
+  const router = useRouter()
 
   // 이미 로그인한 경우 대시보드로 리다이렉트
   useEffect(() => {
     checkAuth().then(() => {
       if (user) {
-        router.push('/dashboard');
+        router.push("/dashboard")
       }
-    });
-  }, [user, router, checkAuth]);
+    })
+  }, [user, router, checkAuth])
 
   const handleKakaoLogin = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+    e.preventDefault()
+    setIsLoading(true)
     try {
-      await loginWithKakao();
+      await loginWithKakao()
       // 리다이렉션이 발생하므로 여기서는 추가 작업 불필요
     } catch (error) {
-      console.error(error);
-      toast.error("로그인 중 오류가 발생했습니다.");
-      setIsLoading(false);
+      console.error(error)
+      toast.error("로그인 중 오류가 발생했습니다.")
+      setIsLoading(false)
     }
-  };
+  }
 
   const handleGoogleLogin = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsGoogleLoading(true);
+    e.preventDefault()
+    setIsGoogleLoading(true)
     try {
-      await loginWithGoogle();
+      await loginWithGoogle()
       // 리다이렉션이 발생하므로 여기서는 추가 작업 불필요
     } catch (error) {
-      console.error(error);
-      toast.error("구글 로그인 중 오류가 발생했습니다.");
-      setIsGoogleLoading(false);
+      console.error(error)
+      toast.error("구글 로그인 중 오류가 발생했습니다.")
+      setIsGoogleLoading(false)
     }
-  };
+  }
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-base-200">
@@ -75,5 +74,5 @@ export default function Login() {
         </div>
       </div>
     </main>
-  );
+  )
 }

@@ -1,20 +1,20 @@
-'use client'
+"use client"
 
-import React, { useMemo, useRef } from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
-import { ChevronLeft, ChevronRight, Star, UserRound } from 'lucide-react'
+import React, { useMemo, useRef } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import { ChevronLeft, ChevronRight, Star, UserRound } from "lucide-react"
 
-import { MateData } from '@/app/(home)/_types/homePage.types'
-import { MateCard } from '@/app/category/_components/MateCard'
+import { MateData } from "@/app/(home)/_types/homePage.types"
+import { MateCard } from "@/app/category/_components/MateCard"
 
 interface RecommendedMatesSliderProps {
   theme: {
-    id: string;
-    name: string;
-    description: string;
-  };
-  mates: MateData[];
+    id: string
+    name: string
+    description: string
+  }
+  mates: MateData[]
 }
 
 // export const MateCard = ({ mate }: MateCardProps) => {
@@ -52,7 +52,7 @@ interface RecommendedMatesSliderProps {
 //             </div>
 //           </div>
 //         </div>
-        
+
 //         <div className="card-body p-4">
 //           <div className="flex justify-between items-start">
 //             <div>
@@ -64,7 +64,7 @@ interface RecommendedMatesSliderProps {
 //               <span className="font-bold text-sm">{mate.rating.toFixed(1)}</span>
 //             </div>
 //           </div>
-          
+
 //           <div className="flex items-center gap-2 mt-3">
 //             <div className="relative w-6 h-6 rounded-full overflow-hidden">
 //               <Image
@@ -77,7 +77,7 @@ interface RecommendedMatesSliderProps {
 //             </div>
 //             <span className="text-sm font-medium">{mate.game}</span>
 //           </div>
-          
+
 //           <div className="flex justify-between items-center mt-3">
 //             <div className="flex items-center gap-1">
 //               <span className="text-primary font-bold">{mate.price.toLocaleString()}</span>
@@ -92,37 +92,39 @@ interface RecommendedMatesSliderProps {
 // }
 
 const RecommendedMatesSlider = ({ theme, mates }: RecommendedMatesSliderProps) => {
-  console.log("props.mates", mates);
-  
+  console.log("props.mates", mates)
+
   // React ref로 DOM 요소 접근
   const carouselRef = useRef<HTMLDivElement>(null)
-  
+
   // 간단 랜덤 셔플
   const shuffledMates = useMemo(() => {
     return [...mates].sort(() => Math.random() - 0.5)
   }, [mates])
-  
+
   const scrollLeft = () => {
-    carouselRef.current?.scrollBy({ left: -500, behavior: 'smooth' })
+    carouselRef.current?.scrollBy({ left: -500, behavior: "smooth" })
   }
 
   const scrollRight = () => {
-    carouselRef.current?.scrollBy({ left: 500, behavior: 'smooth' })
+    carouselRef.current?.scrollBy({ left: 500, behavior: "smooth" })
   }
 
   return (
     <section className="py-8 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl md:text-2xl font-bold text-base-content">{theme.description} 추천 메이트</h2>
+        <h2 className="text-xl md:text-2xl font-bold text-base-content">
+          {theme.description} 추천 메이트
+        </h2>
         <div className="flex gap-2">
-          <button 
+          <button
             onClick={scrollLeft}
             className="btn btn-circle btn-sm bg-base-200 hover:bg-base-300"
             aria-label="이전 메이트"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <button 
+          <button
             onClick={scrollRight}
             className="btn btn-circle btn-sm bg-base-200 hover:bg-base-300"
             aria-label="다음 메이트"
@@ -133,7 +135,7 @@ const RecommendedMatesSlider = ({ theme, mates }: RecommendedMatesSliderProps) =
       </div>
 
       <div className="relative">
-        <div 
+        <div
           ref={carouselRef}
           className="carousel carousel-center gap-4 pb-4 overflow-x-auto scroll-smooth"
         >
@@ -146,4 +148,4 @@ const RecommendedMatesSlider = ({ theme, mates }: RecommendedMatesSliderProps) =
   )
 }
 
-export default RecommendedMatesSlider 
+export default RecommendedMatesSlider

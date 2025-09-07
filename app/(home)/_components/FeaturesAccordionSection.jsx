@@ -1,11 +1,11 @@
-"use client";
+"use client"
 
-import { useState, useRef } from "react";
-import Image from "next/image";
-import { AtSign, CreditCard, UserCircle2, Paintbrush } from "lucide-react";
+import { useState, useRef } from "react"
+import Image from "next/image"
+import { AtSign, CreditCard, UserCircle2, Paintbrush } from "lucide-react"
 
-import CaroselItem from "./CaroselItem";
-import ExpertSection from "./ExpertSection";
+import CaroselItem from "./CaroselItem"
+import ExpertSection from "./ExpertSection"
 
 const features = [
   {
@@ -48,30 +48,24 @@ const features = [
     alt: "component example image",
     svg: <Paintbrush className="w-6 h-6" />,
   },
-];
+]
 
 const Item = ({ feature, isOpen, setFeatureSelected }) => {
-  const accordion = useRef(null);
-  const { title, description, svg } = feature;
+  const accordion = useRef(null)
+  const { title, description, svg } = feature
 
   return (
     <li>
       <button
         className="relative flex gap-2 items-center w-full py-5 text-base font-medium text-left md:text-lg"
         onClick={(e) => {
-          e.preventDefault();
-          setFeatureSelected();
+          e.preventDefault()
+          setFeatureSelected()
         }}
         aria-expanded={isOpen}
       >
-        <span className={`duration-100 ${isOpen ? "text-primary" : ""}`}>
-          {svg}
-        </span>
-        <span
-          className={`flex-1 text-base-content ${
-            isOpen ? "text-primary font-semibold" : ""
-          }`}
-        >
+        <span className={`duration-100 ${isOpen ? "text-primary" : ""}`}>{svg}</span>
+        <span className={`flex-1 text-base-content ${isOpen ? "text-primary font-semibold" : ""}`}>
           <h3 className="inline">{title}</h3>
         </span>
       </button>
@@ -88,16 +82,16 @@ const Item = ({ feature, isOpen, setFeatureSelected }) => {
         <div className="pb-5 leading-relaxed">{description}</div>
       </div>
     </li>
-  );
-};
+  )
+}
 
 const Media = ({ feature }) => {
-  const { type, path, format, alt } = feature;
-  const style = "rounded-2xl aspect-square w-full sm:w-[26rem]";
+  const { type, path, format, alt } = feature
+  const style = "rounded-2xl aspect-square w-full sm:w-[26rem]"
   const size = {
     width: 500,
     height: 500,
-  };
+  }
 
   if (type === "video") {
     return (
@@ -113,7 +107,7 @@ const Media = ({ feature }) => {
       >
         <source src={path} type={format} />
       </video>
-    );
+    )
   } else if (type === "image") {
     return (
       <div className="flex justify-center border rounded-2xl p-4 object-contain object-center">
@@ -125,14 +119,14 @@ const Media = ({ feature }) => {
           height={size.height}
         />
       </div>
-    );
+    )
   } else {
-    return <div className={`${style} !border-none`}></div>;
+    return <div className={`${style} !border-none`}></div>
   }
-};
+}
 
 const FeaturesAccordion = () => {
-  const [featureSelected, setFeatureSelected] = useState(0);
+  const [featureSelected, setFeatureSelected] = useState(0)
 
   return (
     <section
@@ -176,9 +170,7 @@ const FeaturesAccordion = () => {
         </div>
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default FeaturesAccordion;
-
-
+export default FeaturesAccordion
