@@ -17,7 +17,7 @@ export function AutoToast() {
   // - 랜덤 타이밍 메시지
 
   useEffect(() => {
-    let timer
+    let timer: NodeJS.Timeout
     // 사용 가능한 메시지 인덱스 배열 (0번은 제외하고 시작)
     const availableIndices = Array.from({ length: messages.length - 1 }, (_, i) => i + 1)
 
