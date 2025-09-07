@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useCallback, useEffect } from "react"
+import { useState, useMemo, useCallback, useEffect, useRef } from "react"
 import { toast } from "react-hot-toast"
 
 import { useAuthStore } from "@/stores/authStore"
@@ -30,24 +30,33 @@ export default function ChatRoom() {
   // 새로운 React Query 훅들 사용
   const { data: messages = [], isLoading } = useChatMessages(roomId)
   const sendMessageMutation = useSendMessage()
-  const markAsReadMutation = useMarkAsRead()
+  const { mutate: markAsRead } = useMarkAsRead()
 
-  const { markChatNotificationsAsRead } = useNotificationStore()
+  // 알림 스토어는 필요한 액션만 셀렉터로 구독하여 불필요 리렌더 방지
+  const markChatNotificationsAsRead = useNotificationStore((s) => s.markChatNotificationsAsRead)
+
+  // 동일 채팅방 중복 읽음 처리 방지용 ref
+  const lastMarkedRoomIdRef = useRef<string | null>(null)
 
   // 채팅방 입장 시 알림 읽음 처리
   useEffect(() => {
-    if (selectedChat?.id && userId) {
-      console.log("selectedChat?.id 통과")
-      markChatNotificationsAsRead(selectedChat.id)
+    if (!selectedChat?.id || !userId) return
 
-      // API를 통한 읽음 처리도 실행
-      markAsReadMutation.mutate(selectedChat.id)
+    // 같은 채팅방에 대해 중복 호출 방지 (StrictMode 이중 호출 포함)
+    if (lastMarkedRoomIdRef.current === selectedChat.id) return
+    lastMarkedRoomIdRef.current = selectedChat.id
 
-      // 디버깅 로그 추가
-      console.log("읽음 처리 시도:", selectedChat.id)
-      console.log("접속한 유저 ID", userId)
-    }
-  }, [selectedChat?.id, userId, markChatNotificationsAsRead, markAsReadMutation])
+    console.log("selectedChat?.id 통과")
+    // 알림 읽음 처리 (에러는 내부에서 처리)
+    void markChatNotificationsAsRead(selectedChat.id)
+
+    // 채팅방 읽음 처리 (뮤테이션 상태 변경으로 인한 재실행 방지를 위해 의존성에서 제외)
+    markAsRead(selectedChat.id)
+
+    // 디버깅 로그 추가
+    console.log("읽음 처리 시도:", selectedChat.id)
+    console.log("접속한 유저 ID", userId)
+  }, [selectedChat?.id, userId, markChatNotificationsAsRead, markAsRead])
 
   // 메시지 전송 핸들러 - 참조 안정성 확보
   const handleSendMessage = useCallback(
