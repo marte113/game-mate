@@ -1,9 +1,8 @@
-
 type FeatureBoxProps = {
-  number: string;
-  title: string;
-  description: string;
-};
+  number: string
+  title: string
+  description: string
+}
 
 const FeatureBox = ({ number, title, description }: FeatureBoxProps) => {
   return (
@@ -16,8 +15,8 @@ const FeatureBox = ({ number, title, description }: FeatureBoxProps) => {
         <span className="text-2xl font-light text-gray-300">{number}</span>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const ExpertSection = () => {
   return (
@@ -69,7 +68,7 @@ const ExpertSection = () => {
         />
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default ExpertSection;
+export default ExpertSection

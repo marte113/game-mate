@@ -1,14 +1,14 @@
-import React from "react";
-import Link from "next/link";
-import { MoveLeft } from "lucide-react";
+import React from "react"
+import Link from "next/link"
+import { MoveLeft } from "lucide-react"
 
-import config from "@/config";
+import config from "@/config"
 
 type HeaderCenterProps = {
-  content: string;
-  title: string;
-  subtitle: string;
-};
+  content: string
+  title: string
+  subtitle: string
+}
 
 const HeaderCenter = ({ content, title, subtitle }: HeaderCenterProps) => {
   return (
@@ -26,7 +26,7 @@ const HeaderCenter = ({ content, title, subtitle }: HeaderCenterProps) => {
         {subtitle || content || ""}
       </p>
     </>
-  );
-};
+  )
+}
 
-export default HeaderCenter;
+export default HeaderCenter

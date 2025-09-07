@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "next/image"
 
 const avatars = [
   {
@@ -11,7 +11,7 @@ const avatars = [
   },
   {
     alt: "User profile",
-    src: "https://plus.unsplash.com/premium_photo-1678112180514-478cd1218101?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    src: "https://plus.unsplash.com/premium_photo-1678112180514-478cd1218101?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
     alt: "User profile",
@@ -19,7 +19,8 @@ const avatars = [
   },
   {
     alt: "User profile",
-    src: "https://images.unsplash.com/photo-1667023072347-973fba93805b?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"  },
+    src: "https://images.unsplash.com/photo-1667023072347-973fba93805b?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  },
   {
     alt: "User profile",
     src: "https://images.unsplash.com/photo-1649459666115-029794bc4095?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -32,7 +33,7 @@ const avatars = [
     alt: "User profile",
     src: "https://plus.unsplash.com/premium_photo-1667518352065-cd4835cbe7b8?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
-];
+]
 
 const UserComment = ({ priority = false }) => {
   return (
@@ -41,13 +42,7 @@ const UserComment = ({ priority = false }) => {
       <div className={`-space-x-5 avatar-group justy-start`}>
         {avatars.map((image, i) => (
           <div className="avatar w-12 h-12" key={i}>
-            <Image
-              src={image.src}
-              alt={image.alt}
-              priority={priority}
-              width={50}
-              height={50}
-            />
+            <Image src={image.src} alt={image.alt} priority={priority} width={50} height={50} />
           </div>
         ))}
       </div>
@@ -74,13 +69,13 @@ const UserComment = ({ priority = false }) => {
           ))}
         </div>
         <div className="text-base text-base-content/80 flex flex-col items-center md:items-start">
-        <span>게이머 만족도 리뷰!</span>
-          
+          <span>게이머 만족도 리뷰!</span>
+
           <span className="font-semibold text-base-content">현재 1500개</span>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default UserComment;
+export default UserComment

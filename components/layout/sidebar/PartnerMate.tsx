@@ -1,12 +1,12 @@
-'use client'
+"use client"
 
-import { AlertTriangle, Loader2, ExternalLink } from 'lucide-react'
-import React from 'react'
+import { AlertTriangle, Loader2, ExternalLink } from "lucide-react"
+import { memo } from "react"
 
-import MateRow from './MateRow'
-import { usePartnerMatesQuery } from '@/hooks/api/mates/useMateQueries'
+import MateRow from "./MateRow"
+import { usePartnerMatesQuery } from "@/hooks/api/mates/useMateQueries"
 
-const PartnerMate = React.memo(() => {
+const PartnerMate = memo(() => {
   const { data: mates, isLoading, isError, error } = usePartnerMatesQuery()
 
   const renderContent = () => {
@@ -23,13 +23,15 @@ const PartnerMate = React.memo(() => {
         <div className="flex flex-col items-center justify-center h-24 text-center text-error">
           <AlertTriangle className="w-8 h-8 mb-2" />
           <p className="text-sm mb-1">파트너 로딩 실패</p>
-          <p className="text-xs">{(error as Error)?.message || '알 수 없는 오류'}</p>
+          <p className="text-xs">{(error as Error)?.message || "알 수 없는 오류"}</p>
         </div>
       )
     }
 
     if (!mates || mates.length === 0) {
-      return <p className="text-sm text-center text-base-content/60 py-4">파트너 메이트가 없습니다.</p>
+      return (
+        <p className="text-sm text-center text-base-content/60 py-4">파트너 메이트가 없습니다.</p>
+      )
     }
 
     return (
@@ -54,7 +56,7 @@ const PartnerMate = React.memo(() => {
   )
 })
 
-PartnerMate.displayName = 'PartnerMate'
+PartnerMate.displayName = "PartnerMate"
 
 export default PartnerMate
 

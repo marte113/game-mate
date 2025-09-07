@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import Image from "next/image";
+import Image from "next/image"
 
 export default function ButtonKakaoLogin({ isLoading, onClick, disabled }) {
   return (
@@ -22,7 +22,5 @@ export default function ButtonKakaoLogin({ isLoading, onClick, disabled }) {
       )}
       <span className="text-sm font-normal ml-2">카카오 로그인</span>
     </button>
-  );
+  )
 }
-
-

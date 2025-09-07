@@ -1,11 +1,11 @@
-'use client'
+"use client"
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import Image from 'next/image'
-import useEmblaCarousel from 'embla-carousel-react'
-import type { EmblaCarouselType, EmblaOptionsType } from 'embla-carousel'
-import Autoplay from 'embla-carousel-autoplay'
-import { cn } from '@/utils/classname'
+import React, { useCallback, useEffect, useMemo, useState } from "react"
+import Image from "next/image"
+import useEmblaCarousel from "embla-carousel-react"
+import type { EmblaCarouselType, EmblaOptionsType } from "embla-carousel"
+import Autoplay from "embla-carousel-autoplay"
+import { cn } from "@/utils/classname"
 
 interface Slide {
   image: string
@@ -20,7 +20,7 @@ interface MainCarouselProps {
   loop?: boolean
   autoplay?: boolean
   autoplayInterval?: number
-  align?: 'start' | 'center' | 'end'
+  align?: "start" | "center" | "end"
   dragFree?: boolean
   onSlideChange?: (index: number) => void
 }
@@ -32,7 +32,7 @@ export default function MainCarousel({
   loop = true,
   autoplay = true,
   autoplayInterval = 5000,
-  align = 'start',
+  align = "start",
   dragFree = false,
   onSlideChange,
 }: MainCarouselProps) {
@@ -42,7 +42,7 @@ export default function MainCarousel({
   // 1) Embla 옵션: "초기화/재초기화에만" 의미 있는 순수 옵션만
   const options = useMemo<EmblaOptionsType>(
     () => ({ loop, align, dragFree }),
-    [loop, align, dragFree]
+    [loop, align, dragFree],
   )
 
   // 2) 오토플레이 플러그인: 옵션 바뀌면 인스턴스 교체
@@ -55,7 +55,7 @@ export default function MainCarousel({
             stopOnMouseEnter: true,
           })
         : undefined,
-    [autoplay, autoplayInterval, totalSlides]
+    [autoplay, autoplayInterval, totalSlides],
   )
 
   const plugins = useMemo(() => (autoplayPlugin ? [autoplayPlugin] : []), [autoplayPlugin])
@@ -64,7 +64,7 @@ export default function MainCarousel({
   const [emblaRef, emblaApi] = useEmblaCarousel(
     // startIndex는 초기화에만 쓰고, 이후에는 scrollTo로 처리
     { ...options, startIndex: safeInitial },
-    plugins
+    plugins,
   )
 
   // 4) 현재 인덱스 상태 (UI/점 표시)
@@ -77,7 +77,7 @@ export default function MainCarousel({
       setCurrentIndex(idx)
       onSlideChange?.(idx)
     },
-    [onSlideChange]
+    [onSlideChange],
   )
 
   // 6) 이벤트 바인딩 & 재초기화 대응
@@ -87,12 +87,12 @@ export default function MainCarousel({
     handleSelect(emblaApi)
 
     // select/reInit 모두 같은 핸들러로 연결
-    emblaApi.on('select', handleSelect)
-    emblaApi.on('reInit', handleSelect)
+    emblaApi.on("select", handleSelect)
+    emblaApi.on("reInit", handleSelect)
 
     return () => {
-      emblaApi.off('select', handleSelect)
-      emblaApi.off('reInit', handleSelect)
+      emblaApi.off("select", handleSelect)
+      emblaApi.off("reInit", handleSelect)
     }
   }, [emblaApi, handleSelect])
 
@@ -116,7 +116,7 @@ export default function MainCarousel({
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi])
   const scrollTo = useCallback((i: number) => emblaApi?.scrollTo(i), [emblaApi])
 
-  const containerClasses = cn('relative w-full overflow-hidden rounded-lg mb-8 mt-6', className)
+  const containerClasses = cn("relative w-full overflow-hidden rounded-lg mb-8 mt-6", className)
 
   return (
     <div className={containerClasses}>
@@ -167,7 +167,7 @@ export default function MainCarousel({
                     key={index}
                     onClick={() => scrollTo(index)}
                     className={`w-3 h-3 rounded-full transition-colors duration-300 ${
-                      currentIndex === index ? 'bg-white' : 'bg-white/50'
+                      currentIndex === index ? "bg-white" : "bg-white/50"
                     }`}
                     aria-label={`슬라이드 ${index + 1}로 이동`}
                   />
@@ -179,8 +179,7 @@ export default function MainCarousel({
                 className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full transition-colors duration-300"
                 aria-label="이전 슬라이드"
               >
-                {/* …아이콘 생략… */}
-                ‹
+                {/* …아이콘 생략… */}‹
               </button>
               <button
                 onClick={scrollNext}

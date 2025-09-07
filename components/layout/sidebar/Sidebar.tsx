@@ -1,60 +1,60 @@
-"use client";
+"use client"
 
-import { usePathname } from "next/navigation";
-import Link from "next/link";
-import { useState, useEffect } from "react";
-import { Menu, 
+import { usePathname } from "next/navigation"
+import Link from "next/link"
+import { useState, useEffect } from "react"
+import {
+  Menu,
   LayoutDashboard,
   ClipboardList,
   MessageSquare,
   Users,
   Settings,
   HelpCircle,
-} from "lucide-react";
+} from "lucide-react"
 
-import { useNotificationStore } from "@/stores/notificationStore";
-import { useAuthStore } from "@/stores/authStore";
-import { Separator } from "@/components/ui/Separator";
+import { useNotificationStore } from "@/stores/notificationStore"
+import { useAuthStore } from "@/stores/authStore"
+import { Separator } from "@/components/ui/Separator"
 
-import RecommendMate from "./ui/sidebar/RecommendMate";
-import PartnerMate from "./ui/sidebar/PartnerMate";
+import RecommendMate from "./RecommendMate"
+import PartnerMate from "./PartnerMate"
 
 export default function Sidebar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const pathname = usePathname();
-  const isLoggedIn = useAuthStore((state) => state.user);
-  const { unreadCount, fetchNotifications, setupNotificationSubscription } =
-    useNotificationStore();
+  const [isOpen, setIsOpen] = useState(false)
+  const pathname = usePathname()
+  const isLoggedIn = useAuthStore((state) => state.user)
+  const { unreadCount, fetchNotifications, setupNotificationSubscription } = useNotificationStore()
   //isopen에 의해 useNotificationStore가 재생성되더라도 zustand는 안정적인 참조를 제공하기 때문에,
   // 이전 참조를 계속 사용할 수 있습니다. 이 때문에 컴포넌트가 리렌더링되어도 useEffect의 의존성 배열은
   // 변경되지 않기 때문에, useEffect가 재실행되지 않음.
 
   // 알림 데이터 로드
   useEffect(() => {
-    let unsubscribe: (() => void) | undefined; // 구독 해제 함수를 저장할 변수
+    let unsubscribe: (() => void) | undefined // 구독 해제 함수를 저장할 변수
 
     if (isLoggedIn) {
       // 로그인 상태일 때만 알림 로드 및 구독 설정
-      console.log("Sidebar Effect: 로그인됨. 알림 로드 및 구독 시작.");
-      fetchNotifications();
-      unsubscribe = setupNotificationSubscription(); // 구독 설정하고 해제 함수 저장
+      console.log("Sidebar Effect: 로그인됨. 알림 로드 및 구독 시작.")
+      fetchNotifications()
+      unsubscribe = setupNotificationSubscription() // 구독 설정하고 해제 함수 저장
     } else {
       // 로그아웃 상태일 때는 아무 작업 안 함
-      console.log("Sidebar Effect: 로그아웃됨. 알림 관련 작업 건너뜀.");
+      console.log("Sidebar Effect: 로그아웃됨. 알림 관련 작업 건너뜀.")
     }
 
     // 클린업 함수: 컴포넌트 언마운트 시 또는 isLoggedIn 변경 시 이전 effect 정리
     return () => {
       if (unsubscribe) {
         // 저장된 구독 해제 함수가 있다면 호출
-        console.log("Sidebar Effect Cleanup: 알림 구독 해제.");
-        unsubscribe();
+        console.log("Sidebar Effect Cleanup: 알림 구독 해제.")
+        unsubscribe()
       } else {
-        console.log("Sidebar Effect Cleanup: 해제할 구독 없음.");
+        console.log("Sidebar Effect Cleanup: 해제할 구독 없음.")
       }
-    };
+    }
     // 의존성: isLoggedIn 상태와 스토어에서 가져온 안정적인 함수들
-  }, [isLoggedIn, fetchNotifications, setupNotificationSubscription]);
+  }, [isLoggedIn, fetchNotifications, setupNotificationSubscription])
 
   const menuItems = [
     {
@@ -69,10 +69,7 @@ export default function Sidebar() {
           href: "/dashboard/task?tab=received",
           label: "의뢰",
           icon: <ClipboardList className="w-5 h-5" />,
-          badge:
-            unreadCount.request > 0
-              ? unreadCount.request.toString()
-              : undefined,
+          badge: unreadCount.request > 0 ? unreadCount.request.toString() : undefined,
         },
       ],
     },
@@ -83,21 +80,17 @@ export default function Sidebar() {
           href: "/dashboard/chat",
           label: "채팅",
           icon: <MessageSquare className="w-5 h-5" />,
-          badge:
-            unreadCount.message > 0
-              ? unreadCount.message.toString()
-              : undefined,
+          badge: unreadCount.message > 0 ? unreadCount.message.toString() : undefined,
         },
         {
           href: "/dashboard/follow",
           label: "팔로우",
           icon: <Users className="w-5 h-5" />,
-          badge:
-            unreadCount.follow > 0 ? unreadCount.follow.toString() : undefined,
+          badge: unreadCount.follow > 0 ? unreadCount.follow.toString() : undefined,
         },
       ],
     },
-  ];
+  ]
 
   const commonItems = [
     {
@@ -115,7 +108,7 @@ export default function Sidebar() {
         },
       ],
     },
-  ];
+  ]
 
   return (
     <div className="relative md:block">
@@ -167,7 +160,7 @@ export default function Sidebar() {
                         href={item.href}
                         className={`flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-base-200 text-base-content/80 hover:text-base-content
                         ${
-                          pathname === item.href.split('?')[0]
+                          pathname === item.href.split("?")[0]
                             ? "bg-warning text-warning-content"
                             : ""
                         }`}
@@ -216,7 +209,7 @@ export default function Sidebar() {
                       href={item.href}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-base-200 text-base-content/80 hover:text-base-content
                          ${
-                           pathname === item.href.split('?')[0]
+                           pathname === item.href.split("?")[0]
                              ? "bg-warning text-warning-content"
                              : ""
                          }`}
@@ -233,5 +226,5 @@ export default function Sidebar() {
         </div>
       </div>
     </div>
-  );
+  )
 }

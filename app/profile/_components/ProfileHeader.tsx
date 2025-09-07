@@ -1,27 +1,26 @@
-'use client';
+"use client"
 
-import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-import { Star, MessageCircle, Heart, Share2 } from 'lucide-react'
-import { toast } from 'react-hot-toast'
+import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { Star, MessageCircle, Heart, Share2 } from "lucide-react"
+import { toast } from "react-hot-toast"
 
-import { useAuthStore } from '@/stores/authStore'
-import { useChatStore } from '@/stores/chatStore'
-import Badge from '@/components/Badge' // Badge 컴포넌트 경로 확인
-import { ProfileHeaderProps } from '@/app/profile/_types/profile.types'
-import { usePublicProfileQuery } from '@/hooks/api/profile/usePublicProfileQuery'
-import { useStartChat } from '@/hooks/chat/useStartChat'
+import { useAuthStore } from "@/stores/authStore"
+import { useChatStore } from "@/stores/chatStore"
+import Badge from "@/components/ui/Badge" // Badge 컴포넌트 경로 확인
+import { ProfileHeaderProps } from "@/app/profile/_types/profile.types"
+import { usePublicProfileQuery } from "@/hooks/api/profile/usePublicProfileQuery"
+import { useStartChat } from "@/hooks/chat/useStartChat"
 
 // --- 임시 Mock 데이터 (필요시 제거) ---
 const mockProfileDataExtras = {
-  coverImage: '/profilebg/neonlaserbg.avif',
-  badgeLevel: '레전드', // Prefetched 데이터에 없으므로 임시 처리
+  coverImage: "/profilebg/neonlaserbg.avif",
+  badgeLevel: "레전드", // Prefetched 데이터에 없으므로 임시 처리
   rating: 5.0, // Prefetched 데이터에 없으므로 임시 처리
 }
 // --- 임시 Mock 데이터 끝 ---
 
 // 클라이언트 직접 페칭 로직 제거 (API+Service+Hook 레이어 사용)
-
 
 export default function ProfileHeader({ profileId }: ProfileHeaderProps) {
   const router = useRouter()
@@ -31,7 +30,11 @@ export default function ProfileHeader({ profileId }: ProfileHeaderProps) {
 
   // Prefetch된 프로필 데이터 가져오기
   const numericProfileId = Number(profileId)
-  const { data: profileData, isLoading, error } = usePublicProfileQuery(numericProfileId, {
+  const {
+    data: profileData,
+    isLoading,
+    error,
+  } = usePublicProfileQuery(numericProfileId, {
     enabled: Number.isFinite(numericProfileId),
     staleTime: 5 * 60 * 1000,
   })
@@ -49,59 +52,60 @@ export default function ProfileHeader({ profileId }: ProfileHeaderProps) {
   // 팔로우 핸들러 (추후 구현)
   const handleFollow = () => {
     // TODO: 팔로우 API 연동 (useMutation 사용)
-    console.log('Follow button clicked')
-    toast('팔로우 기능은 준비 중입니다.')
+    console.log("Follow button clicked")
+    toast("팔로우 기능은 준비 중입니다.")
   }
 
   // 공유 핸들러 (추후 구현)
-    const handleShare = () => {
-        // TODO: 공유 기능 구현 (navigator.share 또는 링크 복사)
-        console.log('Share button clicked')
-        toast('공유 기능은 준비 중입니다.')
-    }
+  const handleShare = () => {
+    // TODO: 공유 기능 구현 (navigator.share 또는 링크 복사)
+    console.log("Share button clicked")
+    toast("공유 기능은 준비 중입니다.")
+  }
 
   // 프로필 수정 핸들러 (추후 구현)
-    const handleEditProfile = () => {
-        // TODO: 프로필 수정 페이지로 이동 또는 모달
-        console.log('Edit profile button clicked')
-        router.push('/dashboard/settings/profile') // 예시 경로
-    }
+  const handleEditProfile = () => {
+    // TODO: 프로필 수정 페이지로 이동 또는 모달
+    console.log("Edit profile button clicked")
+    router.push("/dashboard/settings/profile") // 예시 경로
+  }
 
   // --- 렌더링 로직 ---
   // 데이터 로딩 중이거나 에러 발생 시 기본적인 스켈레톤 또는 메시지 표시 고려
-  if (isLoading && !profileData) { // 초기 로딩 상태 강화 (hydrate된 데이터가 없을 때만)
-      // 간단한 로딩 상태 표시 (옵션)
-      return (
-          <section className="relative">
-              <div className="relative w-full h-48 md:h-64 lg:h-80 bg-base-300 animate-pulse"></div>
-              <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 -mt-16 md:-mt-20 relative z-10">
-                 <div className="flex flex-col md:flex-row gap-6 items-start">
-                    <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-base-100 bg-base-300 animate-pulse"></div>
-                    <div className="flex-1 pt-2 md:pt-16">
-                       <div className="h-8 bg-base-300 rounded w-1/2 mb-2 animate-pulse"></div>
-                       <div className="h-4 bg-base-300 rounded w-3/4 animate-pulse"></div>
-                    </div>
-                 </div>
-              </div>
-          </section>
-      )
+  if (isLoading && !profileData) {
+    // 초기 로딩 상태 강화 (hydrate된 데이터가 없을 때만)
+    // 간단한 로딩 상태 표시 (옵션)
+    return (
+      <section className="relative">
+        <div className="relative w-full h-48 md:h-64 lg:h-80 bg-base-300 animate-pulse"></div>
+        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 -mt-16 md:-mt-20 relative z-10">
+          <div className="flex flex-col md:flex-row gap-6 items-start">
+            <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-base-100 bg-base-300 animate-pulse"></div>
+            <div className="flex-1 pt-2 md:pt-16">
+              <div className="h-8 bg-base-300 rounded w-1/2 mb-2 animate-pulse"></div>
+              <div className="h-4 bg-base-300 rounded w-3/4 animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
   }
 
   // 에러 상태 처리 (Refetch 실패 등)
   if (error) {
     return (
-        <section className="relative py-10 text-center">
-            <p className="text-error">프로필 헤더 정보를 불러오는 중 오류가 발생했습니다.</p>
-         </section>
+      <section className="relative py-10 text-center">
+        <p className="text-error">프로필 헤더 정보를 불러오는 중 오류가 발생했습니다.</p>
+      </section>
     )
   }
 
   // 데이터가 없는 경우 (fetch 결과가 null)
   if (!profileData) {
-      return (
-        <section className="relative py-10 text-center">
-            <p>프로필 정보를 찾을 수 없습니다.</p>
-        </section>
+    return (
+      <section className="relative py-10 text-center">
+        <p>프로필 정보를 찾을 수 없습니다.</p>
+      </section>
     )
   }
 
@@ -126,8 +130,8 @@ export default function ProfileHeader({ profileId }: ProfileHeaderProps) {
           {/* 프로필 이미지 */}
           <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-base-100 bg-base-100">
             <Image
-              src={profileData.profile_circle_img || '/avatar/avatar_9.jpeg'} // 기본 이미지 제공
-              alt={profileData.nickname || profileData.name || '프로필 이미지'}
+              src={profileData.profile_circle_img || "/avatar/avatar_9.jpeg"} // 기본 이미지 제공
+              alt={profileData.nickname || profileData.name || "프로필 이미지"}
               fill
               className="object-cover overflow-hidden rounded-full"
               priority={false} // LCP 아닐 가능성 높음
@@ -149,11 +153,13 @@ export default function ProfileHeader({ profileId }: ProfileHeaderProps) {
             <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
               <div>
                 <span className="text-2xl md:text-3xl font-bold">
-                  {profileData.nickname || profileData.name || '사용자'}
+                  {profileData.nickname || profileData.name || "사용자"}
                 </span>
                 {/* username은 DB에 따라 표시 여부 결정 */}
                 {/* <span className="text-sm text-base-content/70 pl-2">{profileData.name}</span> */}
-                <div className="flex items-center gap-2 mt-1 flex-wrap"> {/* flex-wrap 추가 */}
+                <div className="flex items-center gap-2 mt-1 flex-wrap">
+                  {" "}
+                  {/* flex-wrap 추가 */}
                   <div className="flex items-center gap-0.5">
                     <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
                     <span className="font-medium">
@@ -172,11 +178,14 @@ export default function ProfileHeader({ profileId }: ProfileHeaderProps) {
               {/* 버튼 영역 */}
               <div className="flex gap-2 mt-3 md:mt-0 md:ml-auto">
                 {isOwner ? (
-                    <button className="btn btn-sm btn-outline rounded-full" onClick={handleEditProfile}>
-                       프로필 수정
-                    </button>
+                  <button
+                    className="btn btn-sm btn-outline rounded-full"
+                    onClick={handleEditProfile}
+                  >
+                    프로필 수정
+                  </button>
                 ) : loggedInUser ? (
-                   <>
+                  <>
                     <button className="btn btn-sm btn-outline rounded-full" onClick={handleShare}>
                       <Share2 className="w-4 h-4" />
                     </button>
@@ -192,17 +201,21 @@ export default function ProfileHeader({ profileId }: ProfileHeaderProps) {
                     >
                       <MessageCircle className="w-4 h-4" />
                       1:1 대화
-                      {chatLoading && <span className="loading loading-spinner loading-xs ml-1"></span>}
+                      {chatLoading && (
+                        <span className="loading loading-spinner loading-xs ml-1"></span>
+                      )}
                     </button>
                   </>
                 ) : (
-                   // 로그인 안 한 경우
-                   <button className="btn btn-sm btn-primary rounded-full" onClick={() => router.push('/login')}>
-                     로그인 후 대화
-                   </button>
+                  // 로그인 안 한 경우
+                  <button
+                    className="btn btn-sm btn-primary rounded-full"
+                    onClick={() => router.push("/login")}
+                  >
+                    로그인 후 대화
+                  </button>
                 )}
               </div>
-
             </div>
           </div>
         </div>
@@ -210,4 +223,3 @@ export default function ProfileHeader({ profileId }: ProfileHeaderProps) {
     </section>
   )
 }
-

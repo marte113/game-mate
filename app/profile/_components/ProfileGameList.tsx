@@ -2,9 +2,10 @@
 
 import { useMemo } from "react"
 
-import GameCard from "@/components/GameCard"
 import type { GameInfo, ProfileGameListProps } from "@/app/profile/_types/profile.types"
 import { useGamesByTitles } from "@/hooks/api/games/useGamesByTitles"
+
+import GameCard from "./GameCard"
 
 // Next/Image 원격 허용 도메인(placehold.co)을 활용한 기본 이미지
 const DEFAULT_IMAGE = "https://placehold.co/96x96?text=Game"

@@ -1,11 +1,11 @@
-"use client";
+"use client"
 
-import NextTopLoader from "nextjs-toploader";
-import { ReactNode, useEffect } from "react";
-import { Toaster } from "react-hot-toast";
+import NextTopLoader from "nextjs-toploader"
+import { ReactNode, useEffect } from "react"
+import { Toaster } from "react-hot-toast"
 
-import { useAuthStore } from "@/stores/authStore";
-import config from "@/config";
+import { useAuthStore } from "@/stores/authStore"
+import config from "@/config"
 
 /**
  * 전체 레이아웃을 감싸는 클라이언트 컴포넌트입니다.
@@ -22,14 +22,12 @@ import config from "@/config";
  * - "use client" 지시문이 필요한 클라이언트 사이드 기능들을 모아둔 컴포넌트
  * - ProgressBar와 NextTopLoader는 겹치지 않도록 하나만 선택해서 사용
  */
-const ClientLayout = ({ children } : {children : ReactNode}) => {
-  const {checkAuth} = useAuthStore();
+const ClientLayout = ({ children }: { children: ReactNode }) => {
+  const { checkAuth } = useAuthStore()
 
   useEffect(() => {
-    checkAuth();
-  
+    checkAuth()
   }, [checkAuth])
-  
 
   return (
     <>
@@ -46,7 +44,7 @@ const ClientLayout = ({ children } : {children : ReactNode}) => {
         }}
       />
     </>
-  );
-};
+  )
+}
 
-export default ClientLayout;
+export default ClientLayout

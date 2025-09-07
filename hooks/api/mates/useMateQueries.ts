@@ -1,13 +1,18 @@
 "use client"
 
-import { useQuery, UseQueryOptions } from "@tanstack/react-query"
+import { useQuery, type UseQueryOptions } from "@tanstack/react-query"
 
 import { queryKeys } from "@/constants/queryKeys"
-import { fetchRecommendedMates, fetchPartnerMates } from "@/components/ui/sidebar/mateApi"
+import { fetchRecommendedMates, fetchPartnerMates } from "@/components/layout/sidebar/mateApi"
 import type { RecommendedMateData, PartnerMateData } from "@/types/mate.types"
 
 export function useRecommendedMatesQuery(
-  options?: UseQueryOptions<RecommendedMateData[], Error, RecommendedMateData[], ReturnType<typeof queryKeys.mates.recommended>>
+  options?: UseQueryOptions<
+    RecommendedMateData[],
+    Error,
+    RecommendedMateData[],
+    ReturnType<typeof queryKeys.mates.recommended>
+  >,
 ) {
   return useQuery({
     queryKey: queryKeys.mates.recommended(),
@@ -18,7 +23,12 @@ export function useRecommendedMatesQuery(
 }
 
 export function usePartnerMatesQuery(
-  options?: UseQueryOptions<PartnerMateData[], Error, PartnerMateData[], ReturnType<typeof queryKeys.mates.partner>>
+  options?: UseQueryOptions<
+    PartnerMateData[],
+    Error,
+    PartnerMateData[],
+    ReturnType<typeof queryKeys.mates.partner>
+  >,
 ) {
   return useQuery({
     queryKey: queryKeys.mates.partner(),
