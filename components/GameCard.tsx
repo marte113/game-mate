@@ -1,35 +1,43 @@
-'use client';
+"use client"
 
-import { useState } from 'react';
-import Image from 'next/image';
-import { Star } from 'lucide-react';
+import { useState } from "react"
+import Image from "next/image"
+import { Star } from "lucide-react"
 
-import ReservationModal from '@/app/dashboard/chat/_components/reserveModal/ReservationModal';
+import ReservationModal from "@/app/dashboard/chat/_components/reserveModal/ReservationModal"
 
 interface GameCardProps {
   game: {
-    id: string | number;
-    title: string;
-    name?: string;
-    icon?: string;
-    image: string;
-    price?: number;
-  };
-  rating: number;
-  reviewCount: number;
-  isOwner?: boolean;
+    id: string | number
+    title: string
+    name?: string
+    icon?: string
+    image: string
+    price?: number
+  }
+  rating: number
+  reviewCount: number
+  isOwner?: boolean
+  // 프로필 소유자의 userId (의뢰 생성 시 providerId로 사용)
+  providerUserId?: string
 }
 
-export default function GameCard({ game, rating, reviewCount, isOwner = false }: GameCardProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+export default function GameCard({
+  game,
+  rating,
+  reviewCount,
+  isOwner = false,
+  providerUserId,
+}: GameCardProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
+    setIsModalOpen(true)
+  }
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+  }
 
   return (
     <>
@@ -49,13 +57,9 @@ export default function GameCard({ game, rating, reviewCount, isOwner = false }:
               <div className="flex items-center gap-1 mt-1">
                 <div className="flex items-center gap-0.5">
                   <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                  <span className="font-medium">
-                    {rating.toFixed(1)}
-                  </span>
+                  <span className="font-medium">{rating.toFixed(1)}</span>
                 </div>
-                <span className="text-xs text-base-content/60">
-                  ({reviewCount})
-                </span>
+                <span className="text-xs text-base-content/60">({reviewCount})</span>
               </div>
             </div>
           </div>
@@ -64,15 +68,11 @@ export default function GameCard({ game, rating, reviewCount, isOwner = false }:
             <span className="text-amber-500 font-bold">
               {game.price?.toLocaleString() || "450"}
             </span>
-            <span className="text-xs text-base-content/70">
-              /판
-            </span>
+            <span className="text-xs text-base-content/70">/판</span>
           </div>
 
           {isOwner ? (
-            <button
-              className="btn btn-block rounded-full mt-4 bg-black text-white hover:bg-gray-800"
-            >
+            <button className="btn btn-block rounded-full mt-4 bg-black text-white hover:bg-gray-800">
               수정하기
             </button>
           ) : (
@@ -88,12 +88,8 @@ export default function GameCard({ game, rating, reviewCount, isOwner = false }:
 
       {/* 예약 모달 - 각 게임 카드마다 독립적인 모달 */}
       {!isOwner && (
-        <ReservationModal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          
-        />
+        <ReservationModal isOpen={isModalOpen} onClose={handleCloseModal} userId={providerUserId} />
       )}
     </>
-  );
-} 
+  )
+}

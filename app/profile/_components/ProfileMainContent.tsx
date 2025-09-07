@@ -1,39 +1,41 @@
-"use client";
+"use client"
 
-import { useMemo } from "react";
+import { useMemo } from "react"
 
-import { ProfileMainContentProps } from "@/app/profile/_types/profile.types";
-import { useAuthStore } from "@/stores/authStore"; // isOwner 확인용
-import { usePublicProfileQuery } from "@/hooks/api/profile/usePublicProfileQuery";
+import type { ProfileMainContentProps } from "@/app/profile/_types/profile.types"
+import { useAuthStore } from "@/stores/authStore" // isOwner 확인용
+import { usePublicProfileQuery } from "@/hooks/api/profile/usePublicProfileQuery"
 
-import ProfileTabNav from "./ProfileTabNav";
-import ProfileAlbumCarousel from "./ProfileAlbumCarousel";
-import ProfileTags from "./ProfileTags";
-import ProfileGameList from "./ProfileGameList";
-import ProfileInfoSection from "./ProfileInfoSection";
-import ProfileVideoSection from "./ProfileVideoSection";
-import ProfileReviewSection from "./ProfileReviewSection";
+import ProfileTabNav from "./ProfileTabNav"
+import ProfileAlbumCarousel from "./ProfileAlbumCarousel"
+import ProfileTags from "./ProfileTags"
+import ProfileGameList from "./ProfileGameList"
+import ProfileInfoSection from "./ProfileInfoSection"
+import ProfileVideoSection from "./ProfileVideoSection"
+import ProfileReviewSection from "./ProfileReviewSection"
 
 // 탭 종류 정의
-export type ProfileTabType = "profile"; // | 'videos' | 'reviews'; // 추후 확장
+export type ProfileTabType = "profile" // | 'videos' | 'reviews'; // 추후 확장
 
 // 클라이언트 직접 페칭 로직 제거 (API+Service+Hook 레이어 사용)
 
-export default function ProfileMainContent({
-  profileId,
-}: ProfileMainContentProps) {
-  const { user: loggedInUser } = useAuthStore(); // isOwner 확인용
+export default function ProfileMainContent({ profileId }: ProfileMainContentProps) {
+  const { user: loggedInUser } = useAuthStore() // isOwner 확인용
 
   // Prefetch된 프로필 데이터 가져오기 (하위 컴포넌트에 전달 목적)
-  const numericProfileId = useMemo(() => Number(profileId), [profileId]);
-  const { data: profileData, isLoading, error } = usePublicProfileQuery(numericProfileId, {
+  const numericProfileId = useMemo(() => Number(profileId), [profileId])
+  const {
+    data: profileData,
+    isLoading,
+    error,
+  } = usePublicProfileQuery(numericProfileId, {
     enabled: Number.isFinite(numericProfileId),
     staleTime: 5 * 60 * 1000,
-  });
+  })
 
   // isOwner 계산 (GameList 등에 전달)
   // profileData가 로드된 후에 계산하도록 보장
-  const isOwner = !!profileData && loggedInUser?.id === profileData.user_id;
+  const isOwner = !!profileData && loggedInUser?.id === profileData.user_id
 
   // --- 로딩/에러 처리 ---
   // 기본적인 스켈레톤 또는 메시지 표시
@@ -60,21 +62,21 @@ export default function ProfileMainContent({
           </div>
         </div>
       </section>
-    );
+    )
   }
   if (error) {
     return (
       <section className="py-8 text-center">
         <p className="text-error">프로필 컨텐츠를 불러오는 중 오류가 발생했습니다.</p>
       </section>
-    );
+    )
   }
   if (!profileData) {
     return (
       <section className="py-8 text-center">
         <p>프로필 컨텐츠를 찾을 수 없습니다.</p>
       </section>
-    );
+    )
   }
 
   return (
@@ -106,6 +108,7 @@ export default function ProfileMainContent({
                 // TODO: rating, reviewCount 데이터 전달 필요 (실제 데이터 사용)
                 rating={5.0} // 임시 값
                 reviewCount={4} // 임시 값 (기존 page.jsx 값)
+                providerUserId={profileData.user_id}
               />
             </div>
 
@@ -124,5 +127,5 @@ export default function ProfileMainContent({
         </div>
       </section>
     </>
-  );
+  )
 }
