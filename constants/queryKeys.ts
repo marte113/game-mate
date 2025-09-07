@@ -51,6 +51,9 @@ export const queryKeys = {
     info: () => ["profileInfo"] as const,
     image: () => ["profileImage"] as const,
     albumImages: () => ["albumImages"] as const,
+    // 공개 프로필 앨범 이미지(사용자별 캐시 분리)
+    albumImagesPublic: (publicUserId: string | number) =>
+      ["albumImagesPublic", String(publicUserId)] as const,
     publicById: (publicId: number) => ["profilePublic", publicId] as const,
   },
 } as const
@@ -80,6 +83,7 @@ export type QueryKey = ReturnType<
   | typeof queryKeys.profile.info
   | typeof queryKeys.profile.image
   | typeof queryKeys.profile.albumImages
+  | typeof queryKeys.profile.albumImagesPublic
   | typeof queryKeys.profile.publicById
 >
 

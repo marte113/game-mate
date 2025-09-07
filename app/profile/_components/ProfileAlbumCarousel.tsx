@@ -1,16 +1,16 @@
 "use client"
 
-import { useAlbumImagesQuery } from "@/hooks/api/profile/useAlbumQueries"
+import { usePublicAlbumImagesQuery } from "@/hooks/api/profile/useAlbumQueries"
 
 import MainCarousel from "@/app/(home)/_components/MainCarousel"
 import { ProfileAlbumCarouselProps } from "@/app/profile/_types/profile.types"
 
 export default function ProfileAlbumCarousel({
-  userId: _userId,
+  userId,
   profileNickname,
 }: ProfileAlbumCarouselProps) {
-  // 앨범 이미지 데이터 Fetch (중앙 훅 사용)
-  const { data, isLoading, error } = useAlbumImagesQuery()
+  // 공개 프로필(userId 기준) 앨범 이미지 데이터 Fetch (사용자별 캐시 키)
+  const { data, isLoading, error } = usePublicAlbumImagesQuery(userId)
 
   // 로딩 또는 이미지 없는 경우 렌더링 안 함
   if (isLoading || error || !data?.images || data.images.every((v) => v == null)) {

@@ -1,32 +1,32 @@
-import { ProfileDataSchema } from '@/libs/schemas/profile.schema';
+import { ProfileDataSchema } from "@/libs/schemas/profile.schema"
 
 // 타입 재내보내기
-export type { ProfileDataSchema };
+export type { ProfileDataSchema }
 
 /**
  * 프로필 정보를 가져오는 함수
  */
 export async function fetchProfileInfo(): Promise<ProfileDataSchema> {
   try {
-    const response = await fetch('/api/profile/info');
-    
+    const response = await fetch("/api/profile/info")
+
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || '프로필 정보를 불러오는데 실패했습니다');
+      const errorData = await response.json()
+      throw new Error(errorData.error || "프로필 정보를 불러오는데 실패했습니다")
     }
-    
-    const { profileData } = await response.json();
-    
+
+    const { profileData } = await response.json()
+
     // API 응답 (responsePayload)를 클라이언트에서 사용할 형태로 반환
     // profileData가 null일 경우 기본값 처리 강화
     const defaultData: Partial<ProfileDataSchema> = {
-        nickname: '',
-        username: '',
-        description: '',
-        selected_games: [],
-        selected_tags: [],
-        youtube_urls: [],
-        is_mate: false,
+      nickname: "",
+      username: "",
+      description: "",
+      selected_games: [],
+      selected_tags: [],
+      youtube_urls: [],
+      is_mate: false,
     }
 
     return {
@@ -34,10 +34,28 @@ export async function fetchProfileInfo(): Promise<ProfileDataSchema> {
       ...(profileData || {}), // API에서 받은 데이터 덮어쓰기 (null일 경우 빈 객체)
       // DB 필드명과 클라이언트 필드명이 다를 경우 여기서 매핑
       // 예: introduction: profileData?.description ?? ''
-    };
+    }
   } catch (error) {
-    console.error('프로필 정보 로드 오류:', error);
-    throw error; // 에러를 다시 throw하여 useQuery에서 처리
+    console.error("프로필 정보 로드 오류:", error)
+    throw error // 에러를 다시 throw하여 useQuery에서 처리
+  }
+}
+
+/**
+ * 공개 프로필(특정 userId)의 앨범 이미지 목록 조회 함수
+ */
+export async function fetchPublicAlbumImages(userId: string) {
+  try {
+    const response = await fetch(`/api/profile/public/album?userId=${encodeURIComponent(userId)}`)
+    if (!response.ok) {
+      const errorData = (await response.json().catch(() => ({}))) as any
+      throw new Error(errorData.error || "공개 앨범 이미지를 불러오는데 실패했습니다")
+    }
+    const { data, thumbnailIndex } = await response.json()
+    return { images: data, thumbnailIndex }
+  } catch (error) {
+    console.error("공개 앨범 이미지 로드 오류:", error)
+    throw error
   }
 }
 
@@ -46,10 +64,10 @@ export async function fetchProfileInfo(): Promise<ProfileDataSchema> {
  */
 export async function updateProfileInfo(profileData: Partial<ProfileDataSchema>) {
   try {
-    const response = await fetch('/api/profile/info', {
-      method: 'POST',
+    const response = await fetch("/api/profile/info", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       // 전송할 데이터에 username 포함
       body: JSON.stringify({
@@ -61,18 +79,18 @@ export async function updateProfileInfo(profileData: Partial<ProfileDataSchema>)
         youtube_urls: profileData.youtube_urls,
         is_mate: profileData.is_mate,
       }),
-    });
-    
+    })
+
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorData = await response.json()
       // 서버에서 보낸 상세 에러 메시지 사용
-      throw new Error(errorData.error || '프로필 정보를 저장하는데 실패했습니다');
+      throw new Error(errorData.error || "프로필 정보를 저장하는데 실패했습니다")
     }
-    
-    return await response.json();
+
+    return await response.json()
   } catch (error) {
-    console.error('프로필 저장 오류:', error);
-    throw error; // 에러를 다시 throw하여 useMutation에서 처리
+    console.error("프로필 저장 오류:", error)
+    throw error // 에러를 다시 throw하여 useMutation에서 처리
   }
 }
 
@@ -81,18 +99,18 @@ export async function updateProfileInfo(profileData: Partial<ProfileDataSchema>)
  */
 export async function fetchProfileImage() {
   try {
-    const response = await fetch('/api/profile/image/profileImage');
-    
+    const response = await fetch("/api/profile/image/profileImage")
+
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || '프로필 이미지를 불러오는데 실패했습니다');
+      const errorData = await response.json()
+      throw new Error(errorData.error || "프로필 이미지를 불러오는데 실패했습니다")
     }
-    
-    const { data } = await response.json();
-    return data;
+
+    const { data } = await response.json()
+    return data
   } catch (error) {
-    console.error('프로필 이미지 로드 오류:', error);
-    throw error;
+    console.error("프로필 이미지 로드 오류:", error)
+    throw error
   }
 }
 
@@ -101,23 +119,23 @@ export async function fetchProfileImage() {
  */
 export async function updateProfileImage(imageUrl: string) {
   try {
-    const response = await fetch('/api/profile/image/profileImage', {
-      method: 'POST',
+    const response = await fetch("/api/profile/image/profileImage", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ imageUrl }),
-    });
-    
+    })
+
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || '프로필 이미지를 업데이트하는데 실패했습니다');
+      const errorData = await response.json()
+      throw new Error(errorData.error || "프로필 이미지를 업데이트하는데 실패했습니다")
     }
-    
-    return await response.json();
+
+    return await response.json()
   } catch (error) {
-    console.error('프로필 이미지 업데이트 오류:', error);
-    throw error;
+    console.error("프로필 이미지 업데이트 오류:", error)
+    throw error
   }
 }
 
@@ -126,24 +144,24 @@ export async function updateProfileImage(imageUrl: string) {
  */
 export async function uploadFileToStorage(file: File) {
   try {
-    const formData = new FormData();
-    formData.append('file', file);
-    
-    const response = await fetch('/api/storage/upload', {
-      method: 'POST',
+    const formData = new FormData()
+    formData.append("file", file)
+
+    const response = await fetch("/api/storage/upload", {
+      method: "POST",
       body: formData,
-    });
-    
+    })
+
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || '파일 업로드에 실패했습니다');
+      const errorData = await response.json()
+      throw new Error(errorData.error || "파일 업로드에 실패했습니다")
     }
-    
-    const { data } = await response.json();
-    return data.url;
+
+    const { data } = await response.json()
+    return data.url
   } catch (error) {
-    console.error('파일 업로드 오류:', error);
-    throw error;
+    console.error("파일 업로드 오류:", error)
+    throw error
   }
 }
 
@@ -152,16 +170,16 @@ export async function uploadFileToStorage(file: File) {
  */
 export async function fetchAlbumImages() {
   try {
-    const response = await fetch('/api/profile/image/image_gallery');
+    const response = await fetch("/api/profile/image/image_gallery")
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || '앨범 이미지를 불러오는데 실패했습니다');
+      const errorData = await response.json()
+      throw new Error(errorData.error || "앨범 이미지를 불러오는데 실패했습니다")
     }
-    const { data, thumbnailIndex } = await response.json();
-    return { images: data, thumbnailIndex }; // 서버 응답 구조에 맞게 반환
+    const { data, thumbnailIndex } = await response.json()
+    return { images: data, thumbnailIndex } // 서버 응답 구조에 맞게 반환
   } catch (error) {
-    console.error('앨범 이미지 로드 오류:', error);
-    throw error;
+    console.error("앨범 이미지 로드 오류:", error)
+    throw error
   }
 }
 
@@ -170,25 +188,25 @@ export async function fetchAlbumImages() {
  */
 export async function uploadAlbumImage(file: File, index: number) {
   try {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('index', index.toString());
+    const formData = new FormData()
+    formData.append("file", file)
+    formData.append("index", index.toString())
 
-    const response = await fetch('/api/profile/image/image_gallery', {
-      method: 'POST',
+    const response = await fetch("/api/profile/image/image_gallery", {
+      method: "POST",
       body: formData,
-    });
+    })
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || '앨범 이미지 업로드에 실패했습니다');
+      const errorData = await response.json()
+      throw new Error(errorData.error || "앨범 이미지 업로드에 실패했습니다")
     }
 
-    const { data } = await response.json();
-    return data; // 업로드된 이미지 정보 반환
+    const { data } = await response.json()
+    return data // 업로드된 이미지 정보 반환
   } catch (error) {
-    console.error('앨범 이미지 업로드 오류:', error);
-    throw error;
+    console.error("앨범 이미지 업로드 오류:", error)
+    throw error
   }
 }
 
@@ -197,23 +215,23 @@ export async function uploadAlbumImage(file: File, index: number) {
  */
 export async function deleteAlbumImage(imageId: string) {
   try {
-    const response = await fetch('/api/profile/image/image_gallery', {
-      method: 'DELETE',
+    const response = await fetch("/api/profile/image/image_gallery", {
+      method: "DELETE",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ imageId }),
-    });
+    })
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || '앨범 이미지 삭제에 실패했습니다');
+      const errorData = await response.json()
+      throw new Error(errorData.error || "앨범 이미지 삭제에 실패했습니다")
     }
 
-    return await response.json(); // 삭제 결과 및 새 썸네일 정보 반환
+    return await response.json() // 삭제 결과 및 새 썸네일 정보 반환
   } catch (error) {
-    console.error('앨범 이미지 삭제 오류:', error);
-    throw error;
+    console.error("앨범 이미지 삭제 오류:", error)
+    throw error
   }
 }
 
@@ -222,22 +240,22 @@ export async function deleteAlbumImage(imageId: string) {
  */
 export async function setAlbumImageAsThumbnail(imageUrl: string) {
   try {
-    const response = await fetch('/api/profile/image/image_gallery', {
-      method: 'PATCH',
+    const response = await fetch("/api/profile/image/image_gallery", {
+      method: "PATCH",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ imageUrl }),
-    });
+    })
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || '썸네일 설정에 실패했습니다');
+      const errorData = await response.json()
+      throw new Error(errorData.error || "썸네일 설정에 실패했습니다")
     }
 
-    return await response.json(); // 새 썸네일 정보 반환
+    return await response.json() // 새 썸네일 정보 반환
   } catch (error) {
-    console.error('썸네일 설정 오류:', error);
-    throw error;
+    console.error("썸네일 설정 오류:", error)
+    throw error
   }
 }
