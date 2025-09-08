@@ -59,6 +59,7 @@ export const queryKeys = {
     albumImagesPublic: (publicUserId: string | number) =>
       ["albumImagesPublic", String(publicUserId)] as const,
     publicById: (publicId: number) => ["profilePublic", publicId] as const,
+    selectedGamesByUserId: (userId: string) => ["profile", "selectedGames", userId] as const,
   },
 } as const
 
@@ -90,6 +91,7 @@ export type QueryKey = ReturnType<
   | typeof queryKeys.profile.albumImages
   | typeof queryKeys.profile.albumImagesPublic
   | typeof queryKeys.profile.publicById
+  | typeof queryKeys.profile.selectedGamesByUserId
 >
 
 // Legacy compat single keys (kept to avoid breaking existing hooks)

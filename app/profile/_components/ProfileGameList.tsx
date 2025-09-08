@@ -55,19 +55,20 @@ export default function ProfileGameList({
   const defaultRating = 0 // GameCard에서 필요한 기본값
   const defaultReviewCount = 0 // GameCard에서 필요한 기본값
 
+  // 대표 게임: 첫 번째 항목
+  const representative = userGames[0]
+
   return (
     <>
       {/* 로딩 동안에도 Skeleton 없이 즉시 렌더링하며, 이미지/가격 등은 기본값 처리 */}
-      {userGames.map((game) => (
-        <GameCard
-          key={game.id}
-          game={game}
-          rating={rating ?? defaultRating} // 전달받은 값 또는 기본값 사용
-          reviewCount={reviewCount ?? defaultReviewCount} // 전달받은 값 또는 기본값 사용
-          isOwner={isOwner}
-          providerUserId={providerUserId}
-        />
-      ))}
+      <GameCard
+        key={representative.id}
+        game={representative}
+        rating={rating ?? defaultRating}
+        reviewCount={reviewCount ?? defaultReviewCount}
+        isOwner={isOwner}
+        providerUserId={providerUserId}
+      />
     </>
   )
 }
