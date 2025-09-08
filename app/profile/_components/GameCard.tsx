@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { Star } from "lucide-react"
+import { Star, Sparkles } from "lucide-react"
 
 import ReservationModal from "@/app/dashboard/chat/_components/reserveModal/ReservationModal"
 
@@ -41,8 +41,13 @@ export default function GameCard({
 
   return (
     <>
-      <div className="card bg-base-100 shadow-md overflow-hidden">
+      <div className="card bg-base-100 shadow-md overflow-hidden mt-0">
         <div className="p-4">
+          {/* 대표 게임 라벨 */}
+          <div className="mb-1 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-gradient-to-r from-primary/10 to-transparent px-3 py-1 text-sm font-semibold text-primary">
+            <Sparkles className="h-4 w-4" />
+            <span>대표 게임</span>
+          </div>
           <div className="flex items-center gap-3">
             <div className="relative w-12 h-12 rounded-lg overflow-hidden">
               <Image
