@@ -31,3 +31,13 @@ export async function listGamesByDescriptions(descriptions: string[]) {
   if (error) throw error
   return data ?? []
 }
+
+export async function listAllGames() {
+  const supabase = await getServerSupabase()
+  const { data, error } = await supabase
+    .from("games")
+    .select("id, name, description, image_url")
+    .order("name", { ascending: true })
+  if (error) throw error
+  return data ?? []
+}

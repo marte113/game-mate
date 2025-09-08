@@ -2,6 +2,10 @@
 // Keep compatibility first; normalize later during refactors
 
 export const queryKeys = {
+  games: {
+    // 전체 게임 목록
+    all: () => ["games", "all"] as const,
+  },
   token: {
     // Header token display uses ['tokenBalance', userId]
     balanceHeader: (userId: string) => ["token", "balanceHeader", userId] as const,
@@ -59,6 +63,7 @@ export const queryKeys = {
 } as const
 
 export type QueryKey = ReturnType<
+  | typeof queryKeys.games.all
   | typeof queryKeys.token.balanceHeader
   | typeof queryKeys.token.balance
   | typeof queryKeys.token.usage
