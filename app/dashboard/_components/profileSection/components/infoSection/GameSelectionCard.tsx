@@ -3,9 +3,9 @@
 import React, { useState, useCallback } from "react"
 import Image from "next/image"
 import { Plus, X, ChevronDown, Check } from "lucide-react"
-import { useFormContext, Controller, ControllerRenderProps } from "react-hook-form"
+import { useFormContext, Controller, type ControllerRenderProps } from "react-hook-form"
 
-import { ProfileDataSchema } from "@/libs/schemas/profile.schema"
+import { type ProfileDataSchema } from "@/libs/schemas/profile.schema"
 import { useAllGames } from "@/hooks/api/games/useAllGames"
 
 // 페이지 사이즈 상수 (클라이언트 페이징)
@@ -98,7 +98,12 @@ const GameSelectionCard = React.memo(({ name }: GameSelectionCardProps) => {
                     <div key={game.id} className="card bg-base-200 relative">
                       <div className="card-body p-3">
                         <div className="w-full aspect-video relative rounded-lg overflow-hidden mb-2">
-                          <Image src={game.image} alt={game.title} fill className="object-cover" />
+                          <Image
+                            src={game.image}
+                            alt={game.title}
+                            fill
+                            className="object-cover object-bottom"
+                          />
                           <button
                             type="button"
                             onClick={() => removeGame(game.title)}
@@ -180,7 +185,12 @@ const GameSelectionCard = React.memo(({ name }: GameSelectionCardProps) => {
                           }`}
                           onClick={() => toggleGameSelection(game.title)}
                         >
-                          <Image src={game.image} alt={game.title} fill className="object-cover" />
+                          <Image
+                            src={game.image}
+                            alt={game.title}
+                            fill
+                            className="object-cover object-bottom"
+                          />
                           {selectedGamesValue.includes(game.title) && (
                             <div className="absolute top-2 right-2 bg-yellow-400 rounded-full p-1">
                               <Check className="w-4 h-4 text-white" />
