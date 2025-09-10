@@ -1,9 +1,10 @@
 "use client"
 
-import { useMemo, useEffect, useCallback } from "react"
+import { useMemo, useEffect, useCallback, useState, useRef } from "react"
 import "react-datepicker/dist/react-datepicker.css"
 import { X } from "lucide-react"
 import { isAfter, parse } from "date-fns"
+import { createPortal } from "react-dom"
 
 import { useGamesByTitles } from "@/hooks/api/games/useGamesByTitles"
 import { useSelectedGamesByUserId } from "@/hooks/api/profile/useSelectedGamesByUserId"
@@ -11,8 +12,9 @@ import { useProviderReservationsQuery } from "@/hooks/api/orders/useOrdersQuerie
 import { useCreateOrdersBatchMutation } from "@/hooks/api/orders/useCreateOrdersBatchMutation"
 
 import { useReservationState } from "../../_hooks/useReservationState"
-
 import { type ReservationModalProps } from "./types"
+
+import type { Order as ProviderOrder } from "@/app/dashboard/task/_types/orderTypes"
 import { formatDate } from "./utils"
 import { DateTimeSection } from "./sections/DateTimeSection"
 import { GameSection } from "./sections/GameSection"
@@ -33,7 +35,6 @@ export default function ReservationModal({ isOpen, onClose, userId }: Reservatio
     addReservation,
     removeReservation,
     setPhase,
-    setSubmitting,
     resetModal,
   } = actions
 
@@ -72,14 +73,10 @@ export default function ReservationModal({ isOpen, onClose, userId }: Reservatio
   // 기존 예약 시간을 Date 객체의 배열로 변환 (기존과 동일)
   const existingReservations = useMemo(() => {
     if (!existingReservationsData?.orders) return []
-    return existingReservationsData.orders.map((o) => {
-      const { scheduled_date, scheduled_time } = o as unknown as {
-        scheduled_date: string
-        scheduled_time: string
-      }
+    return existingReservationsData.orders.map((o: ProviderOrder) =>
       // 서버가 로컬 시각으로 내려준다고 가정하고 명시 포맷으로 파싱
-      return parse(`${scheduled_date} ${scheduled_time}`, "yyyy-MM-dd HH:mm:ss", new Date())
-    })
+      parse(`${o.scheduled_date} ${o.scheduled_time}`, "yyyy-MM-dd HH:mm:ss", new Date()),
+    )
   }, [existingReservationsData])
 
   // 예약 시간 O(1) 조회를 위한 키셋
@@ -232,15 +229,83 @@ export default function ReservationModal({ isOpen, onClose, userId }: Reservatio
     }
   }, [isOpen, resetModal])
 
-  if (!isOpen) return null
+  // ESC 닫기 + 바디 스크롤 잠금
+  useEffect(() => {
+    if (!isOpen) return
 
-  return (
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose()
+    }
+    window.addEventListener("keydown", onKeyDown)
+
+    return () => {
+      document.body.style.overflow = prevOverflow
+      window.removeEventListener("keydown", onKeyDown)
+    }
+  }, [isOpen, onClose])
+
+  const [mounted, setMounted] = useState(false)
+  const modalRef = useRef<HTMLDivElement | null>(null)
+  useEffect(() => setMounted(true), [])
+
+  // 포커스 트랩: 모달 열릴 때 내부로 포커스 이동, Tab 순환, 닫힐 때 이전 포커스 복원
+  const previousActiveRef = useRef<HTMLElement | null>(null)
+  useEffect(() => {
+    if (!isOpen) return
+    const container = modalRef.current
+    if (!container) return
+
+    previousActiveRef.current = (document.activeElement as HTMLElement) ?? null
+
+    const focusableSelectors =
+      'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+    const getFocusables = () =>
+      Array.from(container.querySelectorAll(focusableSelectors)) as HTMLElement[]
+
+    const focusables = getFocusables()
+    ;(focusables[0] ?? container).focus()
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return
+      const els = getFocusables()
+      if (els.length === 0) return
+      const current = (document.activeElement as HTMLElement) ?? null
+      const idx = current ? els.indexOf(current) : -1
+      e.preventDefault()
+      if (e.shiftKey) {
+        const prevIdx = idx <= 0 ? els.length - 1 : idx - 1
+        els[prevIdx]?.focus()
+      } else {
+        const nextIdx = idx === els.length - 1 ? 0 : idx + 1
+        els[nextIdx]?.focus()
+      }
+    }
+
+    container.addEventListener("keydown", onKeyDown)
+
+    return () => {
+      container.removeEventListener("keydown", onKeyDown)
+      // 이전 포커스로 복원
+      previousActiveRef.current?.focus?.()
+    }
+  }, [isOpen])
+
+  if (!isOpen || !mounted) return null
+
+  return createPortal(
     <div
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
       role="dialog"
       aria-modal="true"
     >
-      <div className="bg-base-100 rounded-lg w-full max-w-lg p-6 relative" tabIndex={-1}>
+      <div
+        ref={modalRef}
+        className="bg-base-100 rounded-lg w-full max-w-lg p-6 relative"
+        tabIndex={-1}
+      >
         <button
           onClick={onClose}
           className="absolute right-4 top-4 btn btn-ghost btn-circle btn-sm"
@@ -317,6 +382,7 @@ export default function ReservationModal({ isOpen, onClose, userId }: Reservatio
           />
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
