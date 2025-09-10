@@ -1,11 +1,22 @@
 "use client"
 
-import { useQuery, UseQueryOptions, useInfiniteQuery, UseInfiniteQueryOptions, InfiniteData } from "@tanstack/react-query"
+import {
+  useQuery,
+  useInfiniteQuery,
+  type UseQueryOptions,
+  type UseInfiniteQueryOptions,
+  type InfiniteData,
+} from "@tanstack/react-query"
 
 import { queryKeys } from "@/constants/queryKeys"
-import { fetchGameHeader, fetchPopularGames, PopularGamesResponse, fetchGames } from "@/app/category/_api/CategoryApi"
+import {
+  fetchGameHeader,
+  fetchPopularGames,
+  type PopularGamesResponse,
+  fetchGames,
+} from "@/app/category/_api/CategoryApi"
 import { fetchMates } from "@/app/category/_api/mateApi"
-import { GameHeader, MateCardData } from "@/app/category/_types/categoryPage.types"
+import { type GameHeader, type MateCardData } from "@/app/category/_types/categoryPage.types"
 import type { GamesRow } from "@/types/database.table.types"
 
 export type MatesApiResponse = {
@@ -20,7 +31,12 @@ export type GamesApiResponse = {
 
 export function useGameHeaderQuery(
   categoryId: string | undefined,
-  options?: UseQueryOptions<GameHeader, Error, GameHeader, ReturnType<typeof queryKeys.category.gameHeader>>
+  options?: UseQueryOptions<
+    GameHeader,
+    Error,
+    GameHeader,
+    ReturnType<typeof queryKeys.category.gameHeader>
+  >,
 ) {
   return useQuery({
     queryKey: queryKeys.category.gameHeader(categoryId),
@@ -33,7 +49,12 @@ export function useGameHeaderQuery(
 
 export function usePopularGamesQuery(
   limit: number = 6,
-  options?: UseQueryOptions<PopularGamesResponse, Error, PopularGamesResponse, ReturnType<typeof queryKeys.category.popularGames>>
+  options?: UseQueryOptions<
+    PopularGamesResponse,
+    Error,
+    PopularGamesResponse,
+    ReturnType<typeof queryKeys.category.popularGames>
+  >,
 ) {
   return useQuery({
     queryKey: queryKeys.category.popularGames(),
@@ -51,7 +72,7 @@ export function useGamesInfiniteQuery(
     GamesApiResponse,
     ReturnType<typeof queryKeys.category.games>,
     number
-  >
+  >,
 ) {
   return useInfiniteQuery({
     queryKey: queryKeys.category.games(),
@@ -72,16 +93,16 @@ export function useMatesByCategoryInfiniteQuery(
     MatesApiResponse,
     ReturnType<typeof queryKeys.category.mates>,
     number
-  >
+  >,
 ) {
   return useInfiniteQuery({
     queryKey: queryKeys.category.mates(categoryId),
     queryFn: (context) => {
-      if (!categoryId) throw new Error('Category ID is required')
+      if (!categoryId) throw new Error("Category ID is required")
       // fetchMates가 기대하는 queryKey 타입에 맞춰 조정
       const matesContext = {
         ...context,
-        queryKey: ['mates', categoryId] as const,
+        queryKey: ["mates", categoryId] as const,
         pageParam: Number(context.pageParam ?? 0),
       }
       return fetchMates(matesContext)

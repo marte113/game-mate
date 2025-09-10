@@ -1,15 +1,9 @@
-// Query Key standard builders aligned with current usage
-// Keep compatibility first; normalize later during refactors
-
 export const queryKeys = {
   games: {
-    // 전체 게임 목록
     all: () => ["games", "all"] as const,
   },
   token: {
-    // Header token display uses ['tokenBalance', userId]
     balanceHeader: (userId: string) => ["token", "balanceHeader", userId] as const,
-    // Token summary card currently uses ['balance']
     balance: () => ["token", "balance"] as const,
     usage: () => ["token", "usage"] as const,
     transactions: () => ["token", "transactions"] as const,
@@ -24,16 +18,11 @@ export const queryKeys = {
   category: {
     // Listing pages
     games: () => ["games"] as const,
-    // Category header per category id
     gameHeader: (categoryId: string | undefined) => ["gameHeader", categoryId] as const,
-    // Mates by category id
     mates: (categoryId: string | undefined) => ["mates", categoryId] as const,
-    // Sidebar/landing
     recommendedThemes: () => ["recommendedThemes"] as const,
     popularGames: () => ["popular-games"] as const,
-    // Games by category
     gamesByCategory: (categoryId: string) => ["gamesByCategory", categoryId] as const,
-    // Game images lookup by titles (joined key)
     gameImagesByTitles: (titlesKey: string) => ["games", "imagesByTitles", titlesKey] as const,
   },
 
@@ -46,7 +35,6 @@ export const queryKeys = {
     rooms: () => ["chat", "rooms"] as const,
     messages: (roomId: string) => ["chat", "messages", roomId] as const,
     room: (roomId: string) => ["chat", "room", roomId] as const,
-    // Legacy compatibility
     chatRooms: () => ["chatRooms"] as const,
     notifications: () => ["notifications"] as const,
   },
@@ -55,7 +43,6 @@ export const queryKeys = {
     info: () => ["profileInfo"] as const,
     image: () => ["profileImage"] as const,
     albumImages: () => ["albumImages"] as const,
-    // 공개 프로필 앨범 이미지(사용자별 캐시 분리)
     albumImagesPublic: (publicUserId: string | number) =>
       ["albumImagesPublic", String(publicUserId)] as const,
     publicById: (publicId: number) => ["profilePublic", publicId] as const,
@@ -94,7 +81,6 @@ export type QueryKey = ReturnType<
   | typeof queryKeys.profile.selectedGamesByUserId
 >
 
-// Legacy compat single keys (kept to avoid breaking existing hooks)
 export const legacyQueryKeys = {
   profileInfo: ["profileInfo"] as const,
 } as const
