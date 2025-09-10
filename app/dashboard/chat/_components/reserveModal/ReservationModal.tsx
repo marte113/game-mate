@@ -38,6 +38,78 @@ export default function ReservationModal({ isOpen, onClose, userId }: Reservatio
     resetModal,
   } = actions
 
+  // 모달 라이프사이클 사이드 이펙트 (리셋, 스크롤락+ESC, 포커스 트랩, 마운트 게이트)
+  const [mounted, setMounted] = useState(false)
+  const modalRef = useRef<HTMLDivElement | null>(null)
+  const previousActiveRef = useRef<HTMLElement | null>(null)
+  useEffect(() => setMounted(true), [])
+
+  // 모달 닫힐 때 상태 초기화
+  useEffect(() => {
+    if (!isOpen) {
+      resetModal()
+    }
+  }, [isOpen, resetModal])
+
+  // ESC 닫기 + 바디 스크롤 잠금
+  useEffect(() => {
+    if (!isOpen) return
+
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose()
+    }
+    window.addEventListener("keydown", onKeyDown)
+
+    return () => {
+      document.body.style.overflow = prevOverflow
+      window.removeEventListener("keydown", onKeyDown)
+    }
+  }, [isOpen, onClose])
+
+  // 포커스 트랩: 모달 열릴 때 내부로 포커스 이동, Tab 순환, 닫힐 때 이전 포커스 복원
+  useEffect(() => {
+    if (!isOpen) return
+    const container = modalRef.current
+    if (!container) return
+
+    previousActiveRef.current = (document.activeElement as HTMLElement) ?? null
+
+    const focusableSelectors =
+      'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+    const getFocusables = () =>
+      Array.from(container.querySelectorAll(focusableSelectors)) as HTMLElement[]
+
+    const focusables = getFocusables()
+    ;(focusables[0] ?? container).focus()
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return
+      const els = getFocusables()
+      if (els.length === 0) return
+      const current = (document.activeElement as HTMLElement) ?? null
+      const idx = current ? els.indexOf(current) : -1
+      e.preventDefault()
+      if (e.shiftKey) {
+        const prevIdx = idx <= 0 ? els.length - 1 : idx - 1
+        els[prevIdx]?.focus()
+      } else {
+        const nextIdx = idx === els.length - 1 ? 0 : idx + 1
+        els[nextIdx]?.focus()
+      }
+    }
+
+    container.addEventListener("keydown", onKeyDown)
+
+    return () => {
+      container.removeEventListener("keydown", onKeyDown)
+      // 이전 포커스로 복원
+      previousActiveRef.current?.focus?.()
+    }
+  }, [isOpen])
+
   // 제공자의 selected_games 조회 - 훅스 레이어 사용
   const { data: selectedGamesResp, isLoading: isLoadingSelectedGames } = useSelectedGamesByUserId(
     userId,
@@ -68,6 +140,23 @@ export default function ReservationModal({ isOpen, onClose, userId }: Reservatio
   } = useProviderReservationsQuery(userId, {
     enabled: !!userId && isOpen,
     staleTime: 1000 * 60 * 5,
+  })
+
+  // 결제 처리 뮤테이션 - 훅스 레이어 사용(배치 생성)
+  const createOrdersBatchMutation = useCreateOrdersBatchMutation({
+    onSuccess: () => {
+      alert("결제가 완료되었습니다. 예약이 확정되었습니다.")
+      resetModal()
+      onClose()
+    },
+    onError: (error) => {
+      console.error("결제 처리 오류:", error)
+      alert(
+        `결제 처리 중 오류가 발생했습니다: ${
+          error instanceof Error ? error.message : "알 수 없는 오류"
+        }`,
+      )
+    },
   })
 
   // 기존 예약 시간을 Date 객체의 배열로 변환 (기존과 동일)
@@ -172,23 +261,6 @@ export default function ReservationModal({ isOpen, onClose, userId }: Reservatio
     setPhase("select")
   }, [setPhase])
 
-  // 결제 처리 뮤테이션 - 훅스 레이어 사용(배치 생성)
-  const createOrdersBatchMutation = useCreateOrdersBatchMutation({
-    onSuccess: () => {
-      alert("결제가 완료되었습니다. 예약이 확정되었습니다.")
-      resetModal()
-      onClose()
-    },
-    onError: (error) => {
-      console.error("결제 처리 오류:", error)
-      alert(
-        `결제 처리 중 오류가 발생했습니다: ${
-          error instanceof Error ? error.message : "알 수 없는 오류"
-        }`,
-      )
-    },
-  })
-
   const handlePayment = useCallback(() => {
     if (!computed.canProceedToPayment || !userId) return
     const payloads = state.reservations.map((reservation) => ({
@@ -221,77 +293,6 @@ export default function ReservationModal({ isOpen, onClose, userId }: Reservatio
     () => !computed.canProceedToPayment || isLoading,
     [computed.canProceedToPayment, isLoading],
   )
-
-  // 모달 닫힐 때 상태 초기화
-  useEffect(() => {
-    if (!isOpen) {
-      resetModal()
-    }
-  }, [isOpen, resetModal])
-
-  // ESC 닫기 + 바디 스크롤 잠금
-  useEffect(() => {
-    if (!isOpen) return
-
-    const prevOverflow = document.body.style.overflow
-    document.body.style.overflow = "hidden"
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose()
-    }
-    window.addEventListener("keydown", onKeyDown)
-
-    return () => {
-      document.body.style.overflow = prevOverflow
-      window.removeEventListener("keydown", onKeyDown)
-    }
-  }, [isOpen, onClose])
-
-  const [mounted, setMounted] = useState(false)
-  const modalRef = useRef<HTMLDivElement | null>(null)
-  useEffect(() => setMounted(true), [])
-
-  // 포커스 트랩: 모달 열릴 때 내부로 포커스 이동, Tab 순환, 닫힐 때 이전 포커스 복원
-  const previousActiveRef = useRef<HTMLElement | null>(null)
-  useEffect(() => {
-    if (!isOpen) return
-    const container = modalRef.current
-    if (!container) return
-
-    previousActiveRef.current = (document.activeElement as HTMLElement) ?? null
-
-    const focusableSelectors =
-      'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
-    const getFocusables = () =>
-      Array.from(container.querySelectorAll(focusableSelectors)) as HTMLElement[]
-
-    const focusables = getFocusables()
-    ;(focusables[0] ?? container).focus()
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== "Tab") return
-      const els = getFocusables()
-      if (els.length === 0) return
-      const current = (document.activeElement as HTMLElement) ?? null
-      const idx = current ? els.indexOf(current) : -1
-      e.preventDefault()
-      if (e.shiftKey) {
-        const prevIdx = idx <= 0 ? els.length - 1 : idx - 1
-        els[prevIdx]?.focus()
-      } else {
-        const nextIdx = idx === els.length - 1 ? 0 : idx + 1
-        els[nextIdx]?.focus()
-      }
-    }
-
-    container.addEventListener("keydown", onKeyDown)
-
-    return () => {
-      container.removeEventListener("keydown", onKeyDown)
-      // 이전 포커스로 복원
-      previousActiveRef.current?.focus?.()
-    }
-  }, [isOpen])
 
   if (!isOpen || !mounted) return null
 

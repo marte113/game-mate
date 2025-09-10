@@ -50,6 +50,13 @@ export const DateTimeSelector = memo(function DateTimeSelector({
               onInputClick={() => !isLoading && setIsDateOpen(true)}
               onClickOutside={() => setIsDateOpen(false)}
               onCalendarClose={() => setIsDateOpen(false)}
+              onKeyDown={(e) => {
+                // 스페이스로 달력 열기/토글
+                if (e.key === " " || e.code === "Space" || e.key === "Spacebar") {
+                  e.preventDefault()
+                  if (!isLoading) setIsDateOpen((prev) => !prev)
+                }
+              }}
             />
           </div>
           <div className="flex gap-2">
@@ -74,6 +81,15 @@ export const DateTimeSelector = memo(function DateTimeSelector({
               onInputClick={() => !isLoading && setIsTimeOpen(true)}
               onClickOutside={() => setIsTimeOpen(false)}
               onCalendarClose={() => setIsTimeOpen(false)}
+              onKeyDown={(e) => {
+                // 스페이스로 시간 선택 드롭다운 열기/토글
+                if (e.key === " " || e.code === "Space" || e.key === "Spacebar") {
+                  e.preventDefault()
+                  if (!isLoading && selectedDate && availableTimes.length > 0) {
+                    setIsTimeOpen((prev) => !prev)
+                  }
+                }
+              }}
             />
             <button
               className={`btn btn-primary btn-sm ${
