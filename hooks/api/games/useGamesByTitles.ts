@@ -16,15 +16,17 @@ function buildTitlesKey(titles: readonly string[]): string {
     .join(",")
 }
 
-export function useGamesByTitles(
-  titles: readonly string[],
-  options?: UseQueryOptions<
+type GamesByTitlesOptions = Omit<
+  UseQueryOptions<
     GamesByTitlesResponse,
     Error,
     GamesByTitlesResponse,
     ReturnType<typeof queryKeys.category.gameImagesByTitles>
   >,
-) {
+  "queryKey" | "queryFn"
+>
+
+export function useGamesByTitles(titles: readonly string[], options?: GamesByTitlesOptions) {
   const titlesKey = buildTitlesKey(titles)
   return useQuery({
     queryKey: queryKeys.category.gameImagesByTitles(titlesKey),

@@ -5,8 +5,13 @@ import { useQuery, UseQueryOptions } from "@tanstack/react-query"
 import { queryKeys } from "@/constants/queryKeys"
 import { orderApi, OrdersResponse } from "@/app/dashboard/_api/orderApi"
 
+type OrdersQueryOptions<TQueryKey extends readonly unknown[]> = Omit<
+  UseQueryOptions<OrdersResponse, Error, OrdersResponse, TQueryKey>,
+  "queryKey" | "queryFn"
+>
+
 export function useRequestedOrdersQuery(
-  options?: UseQueryOptions<OrdersResponse, Error, OrdersResponse, ReturnType<typeof queryKeys.orders.requested>>
+  options?: OrdersQueryOptions<ReturnType<typeof queryKeys.orders.requested>>,
 ) {
   return useQuery({
     queryKey: queryKeys.orders.requested(),
@@ -17,7 +22,7 @@ export function useRequestedOrdersQuery(
 }
 
 export function useReceivedOrdersQuery(
-  options?: UseQueryOptions<OrdersResponse, Error, OrdersResponse, ReturnType<typeof queryKeys.orders.received>>
+  options?: OrdersQueryOptions<ReturnType<typeof queryKeys.orders.received>>,
 ) {
   return useQuery({
     queryKey: queryKeys.orders.received(),
@@ -29,10 +34,10 @@ export function useReceivedOrdersQuery(
 
 export function useProviderReservationsQuery(
   providerId: string | undefined,
-  options?: UseQueryOptions<OrdersResponse, Error, OrdersResponse, ReturnType<typeof queryKeys.orders.providerReservations>>
+  options?: OrdersQueryOptions<ReturnType<typeof queryKeys.orders.providerReservations>>,
 ) {
   return useQuery({
-    queryKey: queryKeys.orders.providerReservations(providerId ?? ''),
+    queryKey: queryKeys.orders.providerReservations(providerId ?? ""),
     queryFn: () => orderApi.getProviderReservations(providerId!),
     enabled: !!providerId,
     staleTime: 30_000, // 30초

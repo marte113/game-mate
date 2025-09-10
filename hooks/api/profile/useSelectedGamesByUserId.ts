@@ -9,14 +9,19 @@ export interface SelectedGamesResponse {
   selectedGames: string[]
 }
 
-export function useSelectedGamesByUserId(
-  userId: string | undefined,
-  options?: UseQueryOptions<
+type SelectedGamesQueryOptions = Omit<
+  UseQueryOptions<
     SelectedGamesResponse,
     Error,
     SelectedGamesResponse,
     ReturnType<typeof queryKeys.profile.selectedGamesByUserId>
   >,
+  "queryKey" | "queryFn"
+>
+
+export function useSelectedGamesByUserId(
+  userId: string | undefined,
+  options?: SelectedGamesQueryOptions,
 ) {
   return useQuery({
     queryKey: userId

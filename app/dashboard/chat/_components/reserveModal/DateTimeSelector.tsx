@@ -1,12 +1,14 @@
-"use client";
+"use client"
 
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { ko } from "date-fns/locale";
+import React, { memo, useState } from "react"
+import DatePicker from "react-datepicker"
 
-import { DateTimeSelectorProps } from "./types";
+import "react-datepicker/dist/react-datepicker.css"
+import { ko } from "date-fns/locale"
 
-export function DateTimeSelector({
+import { DateTimeSelectorProps } from "./types"
+
+export const DateTimeSelector = memo(function DateTimeSelector({
   selectedDate,
   setSelectedDate,
   selectedTime,
@@ -14,8 +16,11 @@ export function DateTimeSelector({
   availableTimes,
   selectedGame,
   isLoading,
-  handleAddReservation
+  handleAddReservation,
 }: DateTimeSelectorProps) {
+  // 드롭다운 오픈 상태를 로컬로 관리하여 깜빡임 제거
+  const [isDateOpen, setIsDateOpen] = useState(false)
+  const [isTimeOpen, setIsTimeOpen] = useState(false)
   return (
     <div className="form-control">
       <label className="label">
@@ -30,19 +35,37 @@ export function DateTimeSelector({
           <div className="flex gap-2">
             <DatePicker
               selected={selectedDate}
-              onChange={(date) => setSelectedDate(date)}
+              onChange={(date) => {
+                setSelectedDate(date)
+                setIsDateOpen(false)
+              }}
               dateFormat="yyyy.MM.dd"
               minDate={new Date()}
               placeholderText="예약 날짜 선택"
               locale={ko}
               className="input input-bordered flex-1"
               disabled={isLoading}
+              shouldCloseOnSelect
+              open={isDateOpen}
+              onInputClick={() => !isLoading && setIsDateOpen(true)}
+              onClickOutside={() => setIsDateOpen(false)}
+              onCalendarClose={() => setIsDateOpen(false)}
+              onKeyDown={(e) => {
+                // 스페이스로 달력 열기/토글
+                if (e.key === " " || e.code === "Space" || e.key === "Spacebar") {
+                  e.preventDefault()
+                  if (!isLoading) setIsDateOpen((prev) => !prev)
+                }
+              }}
             />
           </div>
           <div className="flex gap-2">
             <DatePicker
               selected={selectedTime}
-              onChange={(time) => setSelectedTime(time)}
+              onChange={(time) => {
+                setSelectedTime(time)
+                setIsTimeOpen(false)
+              }}
               showTimeSelect
               showTimeSelectOnly
               timeIntervals={30}
@@ -53,12 +76,24 @@ export function DateTimeSelector({
               locale={ko}
               className="input input-bordered flex-1"
               disabled={!selectedDate || isLoading || availableTimes.length === 0}
+              shouldCloseOnSelect
+              open={isTimeOpen}
+              onInputClick={() => !isLoading && setIsTimeOpen(true)}
+              onClickOutside={() => setIsTimeOpen(false)}
+              onCalendarClose={() => setIsTimeOpen(false)}
+              onKeyDown={(e) => {
+                // 스페이스로 시간 선택 드롭다운 열기/토글
+                if (e.key === " " || e.code === "Space" || e.key === "Spacebar") {
+                  e.preventDefault()
+                  if (!isLoading && selectedDate && availableTimes.length > 0) {
+                    setIsTimeOpen((prev) => !prev)
+                  }
+                }
+              }}
             />
             <button
               className={`btn btn-primary btn-sm ${
-                !selectedDate || !selectedTime || !selectedGame || isLoading
-                  ? "btn-disabled"
-                  : ""
+                !selectedDate || !selectedTime || !selectedGame || isLoading ? "btn-disabled" : ""
               }`}
               onClick={handleAddReservation}
               disabled={!selectedDate || !selectedTime || !selectedGame || isLoading}
@@ -69,5 +104,5 @@ export function DateTimeSelector({
         </div>
       )}
     </div>
-  );
-} 
+  )
+})
