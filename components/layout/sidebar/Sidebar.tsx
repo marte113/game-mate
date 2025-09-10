@@ -2,26 +2,31 @@
 
 import { usePathname } from "next/navigation"
 import Link from "next/link"
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import {
-  Menu,
   LayoutDashboard,
   ClipboardList,
   MessageSquare,
   Users,
   Settings,
   HelpCircle,
+  Gamepad2,
+  Hand,
 } from "lucide-react"
 
 import { useNotificationStore } from "@/stores/notificationStore"
 import { useAuthStore } from "@/stores/authStore"
+import { useSidebarStore } from "@/stores/sidebarStore"
 import { Separator } from "@/components/ui/Separator"
+import { useBodyScrollLock } from "@/hooks/ui/useBodyScrollLock"
 
 import RecommendMate from "./RecommendMate"
 import PartnerMate from "./PartnerMate"
 
 export default function Sidebar() {
-  const [isOpen, setIsOpen] = useState(false)
+  // 개별 selector 사용으로 불필요한 렌더 최소화
+  const isOpen = useSidebarStore((s) => s.isOpen)
+  const close = useSidebarStore((s) => s.close)
   const pathname = usePathname()
   const isLoggedIn = useAuthStore((state) => state.user)
   const { unreadCount, fetchNotifications, setupNotificationSubscription } = useNotificationStore()
@@ -56,6 +61,25 @@ export default function Sidebar() {
     // 의존성: isLoggedIn 상태와 스토어에서 가져온 안정적인 함수들
   }, [isLoggedIn, fetchNotifications, setupNotificationSubscription])
 
+  // 라우트 변경 시(모바일 뷰) 사이드바 자동 닫기
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches) {
+      close()
+    }
+  }, [pathname, close])
+
+  // ESC 키로 닫기 (접근성 개선)
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close()
+    }
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [close])
+
+  // 모바일 전용 body 스크롤 락 (사이드바 열림 시에만 적용)
+  useBodyScrollLock(isOpen, { onlyMobile: true, breakpoint: 767 })
+
   const menuItems = [
     {
       title: "일반",
@@ -88,6 +112,11 @@ export default function Sidebar() {
           icon: <Users className="w-5 h-5" />,
           badge: unreadCount.follow > 0 ? unreadCount.follow.toString() : undefined,
         },
+        {
+          href: "/category",
+          label: "게임 카테고리",
+          icon: <Gamepad2 className="w-5 h-5" />,
+        },
       ],
     },
   ]
@@ -106,30 +135,23 @@ export default function Sidebar() {
           label: "도움말",
           icon: <HelpCircle className="w-5 h-5" />,
         },
+        {
+          href: "/intro",
+          label: "소개",
+          icon: <Hand className="w-5 h-5" />,
+        },
       ],
     },
   ]
 
   return (
-    <div className="relative md:block">
-      {/* 모바일 메뉴 버튼 */}
-      <button
-        className="md:hidden absolute top-2 left-1 btn btn-ghost btn-sm flex items-center h-[40px] z-50"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <Menu className="w-5 h-5" />
-      </button>
-
+    <div className="md:block">
       {/* 오버레이 */}
-      {isOpen && (
-        <div
-          className="md:hidden fixed inset-0 bg-black/50 z-40"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+      {isOpen && <div className="md:hidden fixed inset-0 bg-black/50 z-40" onClick={close} />}
 
       {/* 사이드바 */}
       <div
+        id="app-sidebar"
         className={`
         overflow-y-auto hide-scrollbar fixed h-screen top-0 left-0 z-40 bg-base-100 border-r border-base-300
         transition-transform duration-300 ease-in-out
@@ -164,7 +186,7 @@ export default function Sidebar() {
                             ? "bg-warning text-warning-content"
                             : ""
                         }`}
-                        onClick={() => setIsOpen(false)} // 모바일 메뉴 닫기
+                        onClick={close} // 모바일 메뉴 닫기
                       >
                         {item.icon}
                         <span>{item.label}</span>
@@ -213,7 +235,7 @@ export default function Sidebar() {
                              ? "bg-warning text-warning-content"
                              : ""
                          }`}
-                      onClick={() => setIsOpen(false)}
+                      onClick={close}
                     >
                       {item.icon}
                       <span>{item.label}</span>
