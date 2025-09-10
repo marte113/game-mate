@@ -1,16 +1,16 @@
-"use client";
+"use client"
 
-import React from 'react';
-import { FormProvider } from 'react-hook-form';
+import React from "react"
+import { FormProvider } from "react-hook-form"
 
-import { Button } from '@/components/ui';
-import { useProfileForm } from '@/hooks/useProfileForm';
+import { Button } from "@/components/ui"
+import { useProfileForm } from "@/hooks/profile/useProfileForm"
 
-import BasicInfoCard from "./BasicInfoCard";
-import GameSelectionCard from "./GameSelectionCard";
-import TagSelectionCard from "./TagSelectionCard";
-import YouTubeUrlsCard from "./YouTubeUrlsCard";
-import MateRegister from "./MateRegister";
+import BasicInfoCard from "./BasicInfoCard"
+import GameSelectionCard from "./GameSelectionCard"
+import TagSelectionCard from "./TagSelectionCard"
+import YouTubeUrlsCard from "./YouTubeUrlsCard"
+import MateRegister from "./MateRegister"
 
 export default function ProfileInfoSection() {
   const {
@@ -21,23 +21,26 @@ export default function ProfileInfoSection() {
     isError,
     profileQueryError,
     handleCancel,
-  } = useProfileForm();
+  } = useProfileForm()
 
-  const { handleSubmit, formState: { errors, isDirty, isSubmitting, isValid } } = methods;
+  const {
+    handleSubmit,
+    formState: { errors, isDirty, isSubmitting, isValid },
+  } = methods
 
   if (isLoadingProfile) {
     return (
       <div className="space-y-6">
         <div className="card bg-base-100 shadow-xl animate-pulse">
           <div className="card-body">
-             <div className="h-8 bg-base-300 rounded w-1/3 mb-6"></div>
-             <div className="h-40 bg-base-300 rounded mb-4"></div>
-             <div className="h-40 bg-base-300 rounded mb-4"></div>
-             <div className="h-20 bg-base-300 rounded"></div>
+            <div className="h-8 bg-base-300 rounded w-1/3 mb-6"></div>
+            <div className="h-40 bg-base-300 rounded mb-4"></div>
+            <div className="h-40 bg-base-300 rounded mb-4"></div>
+            <div className="h-20 bg-base-300 rounded"></div>
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   if (isError) {
@@ -47,13 +50,13 @@ export default function ProfileInfoSection() {
           <div className="card-body items-center text-center">
             <h3 className="card-title text-error">오류 발생</h3>
             <p className="text-error mb-4">
-              {(profileQueryError as Error)?.message || '프로필 정보를 불러오는데 실패했습니다'}
+              {(profileQueryError as Error)?.message || "프로필 정보를 불러오는데 실패했습니다"}
             </p>
             <p className="text-sm">페이지를 새로고침하거나 잠시 후 다시 시도해주세요.</p>
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -63,9 +66,7 @@ export default function ProfileInfoSection() {
           <div className="card-body">
             <div className="flex justify-between items-center mb-4">
               <h3 className="card-title">프로필 정보</h3>
-              {isDirty && (
-                <span className="badge badge-accent">변경사항 있음</span>
-              )}
+              {isDirty && <span className="badge badge-accent">변경사항 있음</span>}
             </div>
 
             <BasicInfoCard />
@@ -92,12 +93,12 @@ export default function ProfileInfoSection() {
                 isLoading={isSubmitting || isSaving}
                 disabled={!isDirty || isSubmitting || !isValid || isSaving}
               >
-                {isSubmitting || isSaving ? '저장 중...' : '변경사항 저장'}
+                {isSubmitting || isSaving ? "저장 중..." : "변경사항 저장"}
               </Button>
             </div>
           </div>
         </div>
       </form>
     </FormProvider>
-  );
+  )
 }
