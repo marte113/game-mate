@@ -18,7 +18,6 @@ export default function Intro() {
         <ProblemSection />
         <FeaturesAccordionSection />
       </main>
-      <Footer />
     </>
   )
 }
