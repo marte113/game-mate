@@ -25,6 +25,7 @@ export function useChatRoomsQuery(
     queryFn: chatApi.getChatRooms,
     staleTime: 30_000, // 30초 - 채팅방 목록은 실시간으로 업데이트되므로 짧게 설정
     gcTime: 300_000, // 5분
+    throwOnError: true,
     ...options,
   })
 }
@@ -47,6 +48,7 @@ export function useChatMessagesQuery(
     staleTime: 600_000, // 10분 - 이미 전송된 메시지는 변하지 않음
     gcTime: 1800_000, // 30분
     enabled: !!roomId,
+    throwOnError: true,
     ...options,
   })
 }
@@ -64,6 +66,7 @@ export function useChatRoomQuery(
     staleTime: 300_000, // 5분 - 채팅방 정보는 상대적으로 덜 변함
     gcTime: 600_000, // 10분
     enabled: !!roomId,
+    throwOnError: true,
     ...options,
   })
 }
@@ -84,6 +87,7 @@ export function useChatRoomsLegacyQuery(
     queryFn: chatApi.getChatRooms,
     staleTime: 30_000,
     gcTime: 300_000,
+    throwOnError: true,
     ...options,
   })
 }
