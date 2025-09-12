@@ -7,12 +7,14 @@ import { useAuthStore } from "@/stores/authStore" // isOwner 확인용
 import { usePublicProfileQuery } from "@/hooks/api/profile/usePublicProfileQuery"
 
 import ProfileTabNav from "./ProfileTabNav"
-import ProfileAlbumCarousel from "./ProfileAlbumCarousel"
+import ProfileAlbumBoundary from "./ProfileAlbumBoundary"
 import ProfileTags from "./ProfileTags"
-import ProfileGameList from "./ProfileGameList"
+import ProfileGameListBoundary from "./ProfileGameListBoundary"
 import ProfileInfoSection from "./ProfileInfoSection"
 import ProfileVideoSection from "./ProfileVideoSection"
 import ProfileReviewSection from "./ProfileReviewSection"
+import QuerySectionBoundary from "@/components/query/QuerySectionBoundary"
+import { queryKeys } from "@/constants/queryKeys"
 
 // 탭 종류 정의
 export type ProfileTabType = "profile" // | 'videos' | 'reviews'; // 추후 확장
@@ -94,15 +96,15 @@ export default function ProfileMainContent({ profileId }: ProfileMainContentProp
             <div className="md:col-span-1 space-y-6">
               {/* 앨범 - user_id가 있을 때만 렌더링 */}
               {profileData.user_id && (
-                <ProfileAlbumCarousel
-                  userId={profileData.user_id} // null 체크는 위에서 profileData 로딩 시 완료됨
+                <ProfileAlbumBoundary
+                  userId={profileData.user_id}
                   profileNickname={profileData.nickname}
                 />
               )}
               {/* 태그 */}
               <ProfileTags tags={profileData.selected_tags} />
               {/* 게임 카드 */}
-              <ProfileGameList
+              <ProfileGameListBoundary
                 selectedGames={profileData.selected_games}
                 isOwner={isOwner}
                 // TODO: rating, reviewCount 데이터 전달 필요 (실제 데이터 사용)
@@ -119,7 +121,9 @@ export default function ProfileMainContent({ profileId }: ProfileMainContentProp
               {/* 비디오 */}
               <ProfileVideoSection youtubeUrls={profileData.youtube_urls} />
               {/* 리뷰 */}
-              <ProfileReviewSection profileId={profileId} />
+              <QuerySectionBoundary keys={queryKeys.profile.reviewsByProfileId(profileId)}>
+                <ProfileReviewSection profileId={profileId} />
+              </QuerySectionBoundary>
             </div>
           </div>
 

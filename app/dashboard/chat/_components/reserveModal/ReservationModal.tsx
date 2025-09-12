@@ -20,6 +20,8 @@ import { DateTimeSection } from "./sections/DateTimeSection"
 import { GameSection } from "./sections/GameSection"
 import { SummarySection } from "./sections/SummarySection"
 import { PaymentSection } from "./sections/PaymentSection"
+import QuerySectionBoundary from "@/components/query/QuerySectionBoundary"
+import { queryKeys } from "@/constants/queryKeys"
 
 // 섹션 단위 컴포넌트 사용으로 리렌더 범위 최소화
 
@@ -120,6 +122,17 @@ export default function ReservationModal({ isOpen, onClose, userId }: Reservatio
   const { data: titlesData, isLoading: isLoadingTitles } = useGamesByTitles(titles, {
     enabled: isOpen && titles.length > 0,
   })
+
+  // QuerySectionBoundary 키 계산을 위한 titlesKey
+  const titlesKey = useMemo(
+    () =>
+      [...titles]
+        .map((t) => t.trim().toLowerCase())
+        .filter(Boolean)
+        .sort()
+        .join(","),
+    [titles],
+  )
 
   // GameSelector가 기대하는 Game 타입으로 매핑 (기존과 동일)
   const mappedProviderGames = useMemo(
@@ -325,52 +338,60 @@ export default function ReservationModal({ isOpen, onClose, userId }: Reservatio
         )}
 
         {state.phase === "select" ? (
-          <div className="space-y-6">
-            <DateTimeSection
-              selectedDate={state.selectedDate}
-              setSelectedDate={setDate}
-              selectedTime={state.selectedTime}
-              setSelectedTime={setTime}
-              availableTimes={state.availableTimes}
-              selectedGame={state.selectedGame}
-              isLoading={isLoading}
-              handleAddReservation={handleAddReservation}
-              reservations={computed.sortedReservations}
-              formatDate={formatDate}
-              handleRemoveReservation={removeReservation}
-            />
-
-            <GameSection
-              games={mappedProviderGames}
-              selectedGame={state.selectedGame}
-              setSelectedGame={selectGame}
-              isLoading={isLoading}
-            />
-
-            <div className="flex justify-between gap-2 mt-8">
-              <SummarySection
-                gameReservationCounts={Object.values(computed.gameReservationCounts)}
-                totalTokens={computed.totalTokens}
+          <QuerySectionBoundary
+            keys={[
+              queryKeys.orders.providerReservations(userId ?? ""),
+              queryKeys.profile.selectedGamesByUserId(userId ?? ""),
+              queryKeys.category.gameImagesByTitles(titlesKey),
+            ]}
+          >
+            <div className="space-y-6">
+              <DateTimeSection
+                selectedDate={state.selectedDate}
+                setSelectedDate={setDate}
+                selectedTime={state.selectedTime}
+                setSelectedTime={setTime}
+                availableTimes={state.availableTimes}
+                selectedGame={state.selectedGame}
+                isLoading={isLoading}
+                handleAddReservation={handleAddReservation}
+                reservations={computed.sortedReservations}
+                formatDate={formatDate}
+                handleRemoveReservation={removeReservation}
               />
 
-              <div className="flex gap-2">
-                <button className="btn btn-ghost" onClick={onClose} disabled={isLoading}>
-                  취소
-                </button>
-                <button
-                  className="btn btn-primary"
-                  onClick={handleSubmit}
-                  disabled={isPaymentDisabled}
-                >
-                  {isLoading ? (
-                    <span className="loading loading-spinner loading-sm"></span>
-                  ) : (
-                    "결제하기"
-                  )}
-                </button>
+              <GameSection
+                games={mappedProviderGames}
+                selectedGame={state.selectedGame}
+                setSelectedGame={selectGame}
+                isLoading={isLoading}
+              />
+
+              <div className="flex justify-between gap-2 mt-8">
+                <SummarySection
+                  gameReservationCounts={Object.values(computed.gameReservationCounts)}
+                  totalTokens={computed.totalTokens}
+                />
+
+                <div className="flex gap-2">
+                  <button className="btn btn-ghost" onClick={onClose} disabled={isLoading}>
+                    취소
+                  </button>
+                  <button
+                    className="btn btn-primary"
+                    onClick={handleSubmit}
+                    disabled={isPaymentDisabled}
+                  >
+                    {isLoading ? (
+                      <span className="loading loading-spinner loading-sm"></span>
+                    ) : (
+                      "결제하기"
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          </QuerySectionBoundary>
         ) : (
           <PaymentSection
             gameReservationCounts={Object.values(computed.gameReservationCounts)}

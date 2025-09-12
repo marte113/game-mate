@@ -1,11 +1,10 @@
-import { notFound } from 'next/navigation'
+import { notFound } from "next/navigation"
 
-import { svcCheckProfileExists } from '@/app/apis/service/profile/profile.service.server'
+import { svcCheckProfileExists } from "@/app/apis/service/profile/profile.service.server"
 
-import ProfileMainContent from '../_components/ProfileMainContent'
-import ProfileHeader from '../_components/ProfileHeader'
-import ProfilePageContainer from '../_components/ProfilePageContaier'
-
+import ProfileMainBoundary from "../_components/ProfileMainBoundary"
+import ProfileHeaderBoundary from "../_components/ProfileHeaderBoundary"
+import ProfilePageContainer from "../_components/ProfilePageContaier"
 
 interface ProfilePageProps {
   params: Promise<{ id: string }>
@@ -15,7 +14,6 @@ interface ProfilePageProps {
 async function checkProfileExists(profileId: string): Promise<boolean> {
   return svcCheckProfileExists(profileId)
 }
-
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
   const resolvedParams = await params
@@ -30,10 +28,10 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   return (
     <ProfilePageContainer profileId={profileId}>
       {/* 1. 프로필 헤더 */}
-      <ProfileHeader profileId={profileId} />
+      <ProfileHeaderBoundary profileId={profileId} />
 
       {/* 2. 메인 컨텐츠 (탭 네비게이션 및 컨텐츠 포함) */}
-      <ProfileMainContent profileId={profileId} />
+      <ProfileMainBoundary profileId={profileId} />
     </ProfilePageContainer>
   )
 }

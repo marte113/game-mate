@@ -26,6 +26,7 @@ export function useRecommendedThemesInfiniteQuery(
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextPage,
     staleTime: 300_000, // 5분
+    throwOnError: true,
     ...options,
   })
 }

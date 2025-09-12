@@ -42,6 +42,7 @@ export function useGamesByTitles(titles: readonly string[], options?: GamesByTit
     enabled: titles.length > 0,
     staleTime: 10 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
+    throwOnError: true,
     ...options,
   })
 }

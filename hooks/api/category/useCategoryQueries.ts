@@ -43,6 +43,7 @@ export function useGameHeaderQuery(
     queryFn: () => fetchGameHeader(categoryId!),
     enabled: !!categoryId,
     staleTime: 300_000, // 5분 (카테고리 헤더는 자주 변하지 않음)
+    throwOnError: true,
     ...options,
   })
 }
@@ -60,6 +61,7 @@ export function usePopularGamesQuery(
     queryKey: queryKeys.category.popularGames(),
     queryFn: () => fetchPopularGames(limit),
     staleTime: 600_000, // 10분 (인기 게임은 덜 자주 갱신)
+    throwOnError: true,
     ...options,
   })
 }
@@ -80,6 +82,7 @@ export function useGamesInfiniteQuery(
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextPage,
     staleTime: 300_000, // 5분
+    throwOnError: true,
     ...options,
   })
 }
@@ -111,6 +114,7 @@ export function useMatesByCategoryInfiniteQuery(
     getNextPageParam: (lastPage) => lastPage.nextPage,
     enabled: !!categoryId,
     staleTime: 300_000, // 5분
+    throwOnError: true,
     ...options,
   })
 }

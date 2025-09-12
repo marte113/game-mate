@@ -47,6 +47,7 @@ export const queryKeys = {
       ["albumImagesPublic", String(publicUserId)] as const,
     publicById: (publicId: number) => ["profilePublic", publicId] as const,
     selectedGamesByUserId: (userId: string) => ["profile", "selectedGames", userId] as const,
+    reviewsByProfileId: (profileId: string) => ["profile", "reviews", profileId] as const,
   },
 } as const
 
@@ -79,6 +80,7 @@ export type QueryKey = ReturnType<
   | typeof queryKeys.profile.albumImagesPublic
   | typeof queryKeys.profile.publicById
   | typeof queryKeys.profile.selectedGamesByUserId
+  | typeof queryKeys.profile.reviewsByProfileId
 >
 
 export const legacyQueryKeys = {

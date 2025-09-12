@@ -18,6 +18,7 @@ export function useRecommendedMatesQuery(
     queryKey: queryKeys.mates.recommended(),
     queryFn: fetchRecommendedMates,
     staleTime: 300_000, // 5분 (메이트 추천은 적당히 자주 갱신)
+    throwOnError: true,
     ...options,
   })
 }
@@ -34,6 +35,7 @@ export function usePartnerMatesQuery(
     queryKey: queryKeys.mates.partner(),
     queryFn: fetchPartnerMates,
     staleTime: 600_000, // 10분 (파트너는 조금 덜 자주 갱신)
+    throwOnError: true,
     ...options,
   })
 }

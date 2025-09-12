@@ -23,6 +23,7 @@ export function useAllGames(
     queryFn: async () => fetchJson<AllGamesResponse>("/api/games/all"),
     staleTime: 10 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
+    throwOnError: true,
     ...options,
   })
 }

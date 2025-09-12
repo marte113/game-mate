@@ -5,6 +5,8 @@ import React from "react"
 import GameCategorySlider from "@/app/category/_components/GameCategorySlider"
 import MainCarousel from "@/app/(home)/_components/MainCarousel"
 import RecommendedMates from "@/components/ui/RecomendedMates"
+import QuerySectionBoundary from "@/components/query/QuerySectionBoundary"
+import { queryKeys } from "@/constants/queryKeys"
 
 interface Slide {
   image: string
@@ -31,8 +33,12 @@ export default function Home() {
       <main className="min-h-screen w-full bg-base-100">
         <div className="container mx-auto px-4 pt-6">
           <MainCarousel slides={slides} className="h-[370px]" />
-          <GameCategorySlider />
-          <RecommendedMates />
+          <QuerySectionBoundary keys={queryKeys.category.popularGames()}>
+            <GameCategorySlider />
+          </QuerySectionBoundary>
+          <QuerySectionBoundary keys={queryKeys.category.recommendedThemes()}>
+            <RecommendedMates />
+          </QuerySectionBoundary>
         </div>
       </main>
     </>

@@ -17,6 +17,7 @@ export function useRequestedOrdersQuery(
     queryKey: queryKeys.orders.requested(),
     queryFn: orderApi.getRequestedOrders,
     staleTime: 30_000, // 30초
+    throwOnError: true,
     ...options,
   })
 }
@@ -28,6 +29,7 @@ export function useReceivedOrdersQuery(
     queryKey: queryKeys.orders.received(),
     queryFn: orderApi.getReceivedOrders,
     staleTime: 30_000, // 30초
+    throwOnError: true,
     ...options,
   })
 }
@@ -41,6 +43,7 @@ export function useProviderReservationsQuery(
     queryFn: () => orderApi.getProviderReservations(providerId!),
     enabled: !!providerId,
     staleTime: 30_000, // 30초
+    throwOnError: true,
     ...options,
   })
 }

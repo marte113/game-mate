@@ -5,6 +5,8 @@ import TaskPageContainer from "./_components/TaskPageContainer"
 import TaskPageNavTab from "./_components/TaskPageNavTab"
 import TaskPageNavTabSkeleton from "./_components/skeletons/TaskPageNavTabSkeleton"
 import TaskListSkeleton from "./_components/skeletons/TaskListSkeleton"
+import QuerySectionBoundary from "@/components/query/QuerySectionBoundary"
+import { queryKeys } from "@/constants/queryKeys"
 
 export const dynamic = "force-dynamic"
 
@@ -15,9 +17,11 @@ export default function TaskPage() {
       <Suspense fallback={<TaskPageNavTabSkeleton />}>
         <TaskPageNavTab />
       </Suspense>
-      <Suspense fallback={<TaskListSkeleton />}>
-        <TaskList />
-      </Suspense>
+      <QuerySectionBoundary keys={[queryKeys.orders.received(), queryKeys.orders.requested()]}>
+        <Suspense fallback={<TaskListSkeleton />}>
+          <TaskList />
+        </Suspense>
+      </QuerySectionBoundary>
     </TaskPageContainer>
   )
 }

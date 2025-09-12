@@ -5,14 +5,22 @@ import { ErrorBoundary, type FallbackProps, type ErrorBoundaryProps } from "reac
 
 import ErrorView from "@/components/feedback/ErrorView"
 
-export interface ClientErrorBoundaryProps {
-  children: ReactNode
-  fallback?: ReactNode
+type WithFallback = { fallback: ReactNode; fallbackRender?: never }
+type WithFallbackRender = {
+  fallback?: never
   fallbackRender?: (args: { error: Error; reset: () => void }) => ReactNode
+}
+type WithoutFallback = { fallback?: undefined; fallbackRender?: undefined }
+
+type BaseProps = {
+  children: ReactNode
   resetKeys?: Array<unknown>
   onError?: ErrorBoundaryProps["onError"]
   onReset?: () => void
 }
+
+export type ClientErrorBoundaryProps = BaseProps &
+  (WithFallback | WithFallbackRender | WithoutFallback)
 
 /**
  * 섹션/카드 단위에서 부분 리렌더링을 가능하게 하는 클라이언트 에러 바운더리

@@ -23,6 +23,7 @@ export function useAlbumImagesQuery(
     queryFn: fetchAlbumImages,
     staleTime: 300_000, // 5분
     refetchOnWindowFocus: false,
+    throwOnError: true,
     ...options,
   })
 }
@@ -43,6 +44,7 @@ export function usePublicAlbumImagesQuery(
     enabled: !!userId,
     staleTime: 300_000, // 5분
     refetchOnWindowFocus: false,
+    throwOnError: true,
     ...options,
   })
 }
