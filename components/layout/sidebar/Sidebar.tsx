@@ -22,6 +22,8 @@ import { useBodyScrollLock } from "@/hooks/ui/useBodyScrollLock"
 
 import RecommendMate from "./RecommendMate"
 import PartnerMate from "./PartnerMate"
+import QuerySectionBoundary from "@/components/query/QuerySectionBoundary"
+import { queryKeys } from "@/constants/queryKeys"
 
 export default function Sidebar() {
   // 개별 selector 사용으로 불필요한 렌더 최소화
@@ -207,12 +209,16 @@ export default function Sidebar() {
 
           {/* --- 추천 채널 섹션 --- */}
           <div className="flex-shrink-0">
-            <RecommendMate />
+            <QuerySectionBoundary keys={queryKeys.mates.recommended()}>
+              <RecommendMate />
+            </QuerySectionBoundary>
           </div>
 
           {/* --- 파트너 메이트 섹션 --- */}
           <div className="flex-shrink-0 mt-2">
-            <PartnerMate />
+            <QuerySectionBoundary keys={queryKeys.mates.partner()}>
+              <PartnerMate />
+            </QuerySectionBoundary>
           </div>
 
           {/* --- 공통 메뉴 구분선 --- */}

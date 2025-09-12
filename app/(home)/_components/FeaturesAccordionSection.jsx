@@ -144,11 +144,11 @@ const FeaturesAccordion = () => {
         <ExpertSection />
 
         <div className="carousel carousel-center gap-3 p-4 rounded-box max-w-full overflow-x-auto">
-          <CaroselItem src="/images/lol2.webp" alt="League of Legends" />
-          <CaroselItem src="/images/valrorant.webp" alt="Valrorant" />
-          <CaroselItem src="/images/tft.jpg" alt="TFT" />
-          <CaroselItem src="/images/eternalreturn.jpg" alt="Eternal Return" />
-          <CaroselItem src="/images/bg.jpg" alt="Battle Ground" />
+          <CaroselItem src="/images/lol.jpg" alt="League of Legends" />
+          <CaroselItem src="/images/val.png" alt="Valrorant" />
+          <CaroselItem src="/images/tft.png" alt="TFT" />
+          <CaroselItem src="/images/eternal.png" alt="Eternal Return" />
+          <CaroselItem src="/images/bg.webp" alt="Battle Ground" />
         </div>
 
         <div className=" flex flex-col md:flex-row gap-12 md:gap-24">
