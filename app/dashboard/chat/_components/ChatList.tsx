@@ -33,6 +33,7 @@ function ChatSkeleton() {
 export default function ChatList() {
   // UI 상태는 chatUiStore에서 가져오기
   const { selectedChat, setSelectedChat, searchTerm: globalSearchTerm } = useChatUiStore()
+  const setMobileView = useChatUiStore((s) => s.setMobileView)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
   // React Query로 채팅방 목록 가져오기 (새로운 훅 사용)
@@ -70,6 +71,8 @@ export default function ChatList() {
 
   const handleSelectChat = (chatRoom: ChatRoom) => {
     setSelectedChat(chatRoom)
+    // 모바일에서는 대화창으로 전환
+    setMobileView("room")
   }
 
   const renderChatRooms = () => {

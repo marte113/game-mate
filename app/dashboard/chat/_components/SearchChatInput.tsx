@@ -1,18 +1,18 @@
-'use client'
+"use client"
 
-import { useEffect, useMemo, useState } from 'react'
-import debounce from 'lodash/debounce'
+import { useEffect, useMemo, useState } from "react"
+import debounce from "lodash/debounce"
 
-import { useChatUiStore } from '@/stores/chatUiStore'
+import { useChatUiStore } from "@/stores/chatUiStore"
 
 export default function SearchChatInput() {
-  const [value, setValue] = useState('')
+  const [value, setValue] = useState("")
   const setSearchTerm = useChatUiStore((s) => s.setSearchTerm)
 
   // 디바운스된 업데이트 함수 (상태 없이 수행)
   const debouncedUpdate = useMemo(
     () => debounce((q: string) => setSearchTerm(q), 250),
-    [setSearchTerm]
+    [setSearchTerm],
   )
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export default function SearchChatInput() {
 
   return (
     <div className="p-4 border-b">
-      <h1 className="text-2xl font-bold mb-4">Inbox</h1>
+      <h1 className="text-2xl font-bold mb-4">채팅</h1>
       <div className="form-control">
         <form onSubmit={handleSearch} className="flex input-group">
           <input

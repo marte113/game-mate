@@ -12,6 +12,7 @@ export function useStartChat() {
   const router = useRouter()
   const { user: loggedInUser } = useAuthStore()
   const { setSelectedChat } = useChatUiStore()
+  const setMobileView = useChatUiStore((s) => s.setMobileView)
 
   // 새로운 React Query 훅들 사용
   const createChatRoomMutation = useCreateChatRoom()
@@ -42,6 +43,8 @@ export function useStartChat() {
       // 채팅방 상세 조회 후 UI 상태 업데이트
       const chatRoom = await chatApi.getChatRoom(chatRoomId)
       setSelectedChat(chatRoom)
+      // 모바일 환경에서 바로 대화창으로 전환
+      setMobileView("room")
       router.push("/dashboard/chat")
       toast.dismiss()
     } catch (err: unknown) {
