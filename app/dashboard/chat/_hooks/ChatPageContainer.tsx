@@ -21,5 +21,7 @@ interface ChatRoom {
 }
 
 export default function ChatPageContainer({ children }: { children: ReactNode }) {
-  return <div className="flex  h-[calc(100vh-4rem)] gap-4">{children}</div>
+  return (
+    <div className="flex flex-col md:flex-row h-[calc(100vh-4rem)] gap-2 md:gap-4">{children}</div>
+  )
 }

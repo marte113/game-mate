@@ -1,10 +1,19 @@
+"use client"
 
-export default function RightSection({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+import { useChatUiStore } from "@/stores/chatUiStore"
+import { cn } from "@/utils/classname"
+
+export default function RightSection({ children }: { children: React.ReactNode }) {
+  const mobileView = useChatUiStore((s) => s.mobileView)
+
   return (
-    <div className="flex-1 bg-base-100 rounded-lg shadow-xl">{children}</div>
-  );
+    <div
+      className={cn(
+        "bg-base-100 rounded-lg shadow-xl h-full flex-1",
+        mobileView === "room" ? "flex" : "hidden md:flex",
+      )}
+    >
+      {children}
+    </div>
+  )
 }

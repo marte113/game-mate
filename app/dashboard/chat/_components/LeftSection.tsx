@@ -4,15 +4,26 @@ import type { ReactNode } from "react"
 import { useEffect } from "react"
 
 import { useChatUiStore } from "@/stores/chatUiStore"
+import { cn } from "@/utils/classname"
 
 export default function LeftSection({ children }: { children: ReactNode }) {
-  const reset = useChatUiStore((s) => s.reset)
+  const setSearchTerm = useChatUiStore((s) => s.setSearchTerm)
+  const mobileView = useChatUiStore((s) => s.mobileView)
 
-  // 페이지 입장/이탈 시 검색어 초기화
+  // 페이지 입장/이탈 시 검색어만 초기화 (선택된 채팅은 유지)
   useEffect(() => {
-    reset()
-    return () => reset()
-  }, [reset])
+    setSearchTerm("")
+    return () => setSearchTerm("")
+  }, [setSearchTerm])
 
-  return <div className="w-80 bg-base-100 rounded-lg shadow-xl flex flex-col">{children}</div>
+  return (
+    <div
+      className={cn(
+        "bg-base-100 rounded-lg shadow-xl h-full w-full md:w-80 flex-col",
+        mobileView === "room" ? "hidden md:flex" : "flex",
+      )}
+    >
+      {children}
+    </div>
+  )
 }
