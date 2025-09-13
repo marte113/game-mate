@@ -1,8 +1,15 @@
 "use client"
 
 import Image from "next/image"
+import type { MouseEventHandler } from "react"
 
-export default function ButtonKakaoLogin({ isLoading, onClick, disabled }) {
+type Props = {
+  isLoading?: boolean
+  onClick?: MouseEventHandler<HTMLButtonElement>
+  disabled?: boolean
+}
+
+export default function ButtonKakaoLogin({ isLoading, onClick, disabled }: Props) {
   return (
     <button
       className="btn btn-block bg-[#FEE500] text-[#000000 85%] font-normal"

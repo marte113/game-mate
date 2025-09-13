@@ -1,6 +1,12 @@
 import React from "react"
 
-const Pagination = ({ totalPages, page, setPage }) => {
+type Props = {
+  totalPages: number
+  page: number
+  setPage: (page: number) => void
+}
+
+const Pagination = ({ totalPages, page, setPage }: Props) => {
   const startPage = Math.floor((page - 1) / 10) * 10 + 1
   const endPage = Math.min(startPage + 9, totalPages)
 

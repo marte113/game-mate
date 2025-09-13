@@ -9,6 +9,9 @@ import { useChatRoomsLegacyQuery } from "@/hooks/api/chat/useChatQueries"
 import { useLegacyChatSubscription } from "@/hooks/api/chat/useChatSubscription"
 
 import { formatMessageTime } from "../_utils/formatters"
+import Image from "next/image"
+import { getAvatarUrl } from "../_utils/avatar"
+import { DEFAULT_AVATAR_SRC } from "@/constants/image"
 
 // 로딩 중 스켈레톤 UI 컴포넌트
 function ChatSkeleton() {
@@ -97,13 +100,12 @@ export default function ChatList() {
             <div className="flex items-center gap-3">
               <div className="avatar">
                 <div className="w-12 rounded-full relative">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={
-                      chatRoom.otherUser?.profile_circle_img ||
-                      `https://api.dicebear.com/7.x/avataaars/svg?seed=${chatRoom.otherUser?.name || "Unknown"}`
-                    }
+                  <Image
+                    src={chatRoom.otherUser?.profile_circle_img || DEFAULT_AVATAR_SRC}
                     alt="avatar"
+                    fill
+                    sizes="48px"
+                    className="object-cover"
                   />
                   {chatRoom.otherUser?.is_online && (
                     <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-base-100"></span>

@@ -2,6 +2,7 @@
 "use client"
 
 import { ArrowLeftToLine } from "lucide-react"
+import Image from "next/image"
 
 import { useChatUiStore } from "@/stores/chatUiStore"
 
@@ -33,8 +34,14 @@ export default function ChatHeader({ otherUser, onReservationClick }: ChatHeader
       </button>
 
       <div className="avatar">
-        <div className="w-12 rounded-full">
-          <img src={getAvatarUrl(otherUser)} alt="avatar" />
+        <div className="w-12 rounded-full relative">
+          <Image
+            src={getAvatarUrl(otherUser)}
+            alt="avatar"
+            fill
+            sizes="48px"
+            className="object-cover"
+          />
         </div>
       </div>
       <div className="flex-1">

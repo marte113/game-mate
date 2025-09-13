@@ -1,4 +1,10 @@
-export default function Card({title, content, summary}) {
+type Props = {
+  title: string
+  content: string | number
+  summary?: string
+}
+
+export default function Card({ title, content, summary }: Props) {
   return (
     <div className="flex flex-col rounded-md bg-base-100 border-b border-gray-400 shadow-md">
       <div className="card-body p-[16px]">
@@ -7,5 +13,5 @@ export default function Card({title, content, summary}) {
         <p className="text-xs md:text-sm text-success">{summary}</p>
       </div>
     </div>
-  );ㄹ
+  )
 }

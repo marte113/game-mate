@@ -2,6 +2,8 @@
 
 import { Star } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
+import Image from "next/image"
+import { DEFAULT_AVATAR_SRC } from "@/constants/image"
 
 import profileApi from "@/app/profile/_api/profileApi"
 import { ReviewInfo, ProfileReviewSectionProps } from "@/app/profile/_types/profile.types"
@@ -48,11 +50,13 @@ export default function ProfileReviewSection({ profileId }: ProfileReviewSection
           {reviews.map((review) => (
             <div key={review.id} className="flex gap-4">
               <div className="avatar flex-shrink-0">
-                <div className="w-10 h-10 rounded-full overflow-hidden">
-                  <img
-                    src={review.reviewer?.profile_circle_img || "/avatar/avatar_default.jpeg"}
+                <div className="w-10 h-10 rounded-full overflow-hidden relative">
+                  <Image
+                    src={review.reviewer?.profile_circle_img || DEFAULT_AVATAR_SRC}
                     alt={review.reviewer?.name || "익명"}
-                    className="object-cover w-full h-full"
+                    fill
+                    sizes="40px"
+                    className="object-cover"
                   />
                 </div>
               </div>
