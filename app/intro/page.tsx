@@ -1,9 +1,6 @@
-"use client"
-
 import HeroCenterSection from "@/app/(home)/_components/HeroCenterSection"
 import ProblemSection from "@/app/(home)/_components/ProblemSection"
 import FeaturesAccordionSection from "@/app/(home)/_components/FeaturesAccordionSection"
-import Footer from "@/components/layout/Footer"
 import ProgressBar from "@/components/ui/ProgressBar"
 import { AutoToast } from "@/components/feedback/AutoToast"
 

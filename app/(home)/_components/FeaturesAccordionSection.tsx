@@ -1,13 +1,24 @@
 "use client"
 
 import { useState, useRef } from "react"
+import type { ReactNode } from "react"
 import Image from "next/image"
 import { AtSign, CreditCard, UserCircle2, Paintbrush } from "lucide-react"
 
 import CaroselItem from "./CaroselItem"
 import ExpertSection from "./ExpertSection"
 
-const features = [
+type Feature = {
+  title: string
+  description: string
+  type: "image" | "video"
+  path: string
+  format: string
+  alt: string
+  svg: ReactNode
+}
+
+const features: Feature[] = [
   {
     title: "신뢰할 수 있는 리뷰!",
     description:
@@ -50,8 +61,10 @@ const features = [
   },
 ]
 
-const Item = ({ feature, isOpen, setFeatureSelected }) => {
-  const accordion = useRef(null)
+type ItemProps = { feature: Feature; isOpen: boolean; setFeatureSelected: () => void }
+
+const Item = ({ feature, isOpen, setFeatureSelected }: ItemProps) => {
+  const accordion = useRef<HTMLDivElement | null>(null)
   const { title, description, svg } = feature
 
   return (
@@ -85,7 +98,9 @@ const Item = ({ feature, isOpen, setFeatureSelected }) => {
   )
 }
 
-const Media = ({ feature }) => {
+type MediaProps = { feature: Feature }
+
+const Media = ({ feature }: MediaProps) => {
   const { type, path, format, alt } = feature
   const style = "rounded-2xl aspect-square w-full sm:w-[26rem]"
   const size = {
@@ -157,7 +172,6 @@ const FeaturesAccordion = () => {
               {features.map((feature, i) => (
                 <Item
                   key={feature.title}
-                  index={i}
                   feature={feature}
                   isOpen={featureSelected === i}
                   setFeatureSelected={() => setFeatureSelected(i)}

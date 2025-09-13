@@ -8,7 +8,9 @@ import { orderApi, OrdersResponse } from "@/app/dashboard/_api/orderApi"
 type OrdersQueryOptions<TQueryKey extends readonly unknown[]> = Omit<
   UseQueryOptions<OrdersResponse, Error, OrdersResponse, TQueryKey>,
   "queryKey" | "queryFn"
->
+> & {
+  suspense?: boolean
+}
 
 export function useRequestedOrdersQuery(
   options?: OrdersQueryOptions<ReturnType<typeof queryKeys.orders.requested>>,
