@@ -49,6 +49,10 @@ export const queryKeys = {
     selectedGamesByUserId: (userId: string) => ["profile", "selectedGames", userId] as const,
     reviewsByProfileId: (profileId: string) => ["profile", "reviews", profileId] as const,
   },
+
+  search: {
+    users: (q: string) => ["search", "users", q] as const,
+  },
 } as const
 
 export type QueryKey = ReturnType<
@@ -81,6 +85,7 @@ export type QueryKey = ReturnType<
   | typeof queryKeys.profile.publicById
   | typeof queryKeys.profile.selectedGamesByUserId
   | typeof queryKeys.profile.reviewsByProfileId
+  | typeof queryKeys.search.users
 >
 
 export const legacyQueryKeys = {
