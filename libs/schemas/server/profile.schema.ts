@@ -24,3 +24,14 @@ export const profileSelectedGamesGetQuerySchema = z.object({
 })
 
 export type ProfileSelectedGamesGetQuery = z.infer<typeof profileSelectedGamesGetQuerySchema>
+
+// GET /api/search/users?q=... (username/nickname 검색)
+export const profileSearchGetQuerySchema = z.object({
+  q: z
+    .string({ required_error: "q는 필수입니다." })
+    .trim()
+    .min(1, { message: "검색어는 1자 이상이어야 합니다." })
+    .max(50, { message: "검색어는 50자 이하여야 합니다." }),
+})
+
+export type ProfileSearchGetQuery = z.infer<typeof profileSearchGetQuerySchema>
