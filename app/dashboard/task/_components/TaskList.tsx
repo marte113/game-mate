@@ -16,6 +16,7 @@ import type { Order } from "../_types/orderTypes"
 import TaskSection from "./TaskSection"
 import TaskDetailModal from "./TaskDetailModal"
 import ReviewModal from "./ReviewModal"
+import { useGamesByTitles } from "@/hooks/api/games/useGamesByTitles"
 
 export default function TaskList() {
   const searchParams = useSearchParams()
@@ -62,12 +63,15 @@ export default function TaskList() {
     } => {
       if (!orders) return { current: [], scheduled: [], past: [] }
 
+      const toDate = (o: Order) => new Date(`${o.scheduled_date}T${o.scheduled_time}`)
+      const sortDescBySchedule = (a: Order, b: Order) => toDate(b).getTime() - toDate(a).getTime()
+
       return {
-        current: orders.filter((order) => order.status === "accepted"),
-        scheduled: orders.filter((order) => order.status === "pending"),
-        past: orders.filter((order) =>
-          ["completed", "rejected", "canceled"].includes(order.status ?? ""),
-        ),
+        current: orders.filter((order) => order.status === "accepted").sort(sortDescBySchedule),
+        scheduled: orders.filter((order) => order.status === "pending").sort(sortDescBySchedule),
+        past: orders
+          .filter((order) => ["completed", "rejected", "canceled"].includes(order.status ?? ""))
+          .sort(sortDescBySchedule),
       }
     },
     [],
@@ -83,21 +87,43 @@ export default function TaskList() {
     [requestedData, categorizeOrders],
   )
 
-  // URL의 id가 있으면 해당 의뢰 자동 오픈 (탭 데이터 로딩 이후 1회)
-  useEffect(() => {
-    if (!idParam) return
-    if (taskDetailModalIsOpen) return
-    if (openedByIdRef.current === idParam) return
+  // 화면에 표시되는 탭의 모든 주문에서 게임 타이틀 수집 후 이미지 매핑 조회
+  const activeOrders = activeTab === "received" ? receivedOrders : requestedOrders
+  const titles = useMemo(() => {
+    const arr = [...activeOrders.current, ...activeOrders.scheduled, ...activeOrders.past]
+      .map((o) => o.game)
+      .filter((g): g is string => typeof g === "string" && g.trim() !== "")
+    return Array.from(new Set(arr))
+  }, [activeOrders])
 
-    const orders = activeTab === "received" ? receivedData?.orders : requestedData?.orders
-    if (!orders) return
+  const { data: gamesRes } = useGamesByTitles(titles, {
+    enabled: titles.length > 0,
+  })
 
-    const target = orders.find((o) => o.id === idParam)
-    if (target) {
-      openTaskDetailModal(target)
-      openedByIdRef.current = idParam
+  const gameImageMap = useMemo(() => {
+    const map: Record<string, string | null> = {}
+    for (const g of gamesRes?.games ?? []) {
+      if (g.description) map[g.description] = g.image_url
+      if (g.name) map[g.name] = g.image_url
     }
-  }, [idParam, activeTab, receivedData, requestedData, taskDetailModalIsOpen, openTaskDetailModal])
+    return map
+  }, [gamesRes])
+
+  // URL의 id가 있으면 해당 의뢰 자동 오픈 (탭 데이터 로딩 이후 1회)
+  // useEffect(() => {
+  //   if (!idParam) return
+  //   if (taskDetailModalIsOpen) return
+  //   if (openedByIdRef.current === idParam) return
+
+  //   const orders = activeTab === "received" ? receivedData?.orders : requestedData?.orders
+  //   if (!orders) return
+
+  //   const target = orders.find((o) => o.id === idParam)
+  //   if (target) {
+  //     openTaskDetailModal(target)
+  //     openedByIdRef.current = idParam
+  //   }
+  // }, [idParam, activeTab, receivedData, requestedData, taskDetailModalIsOpen, openTaskDetailModal])
 
   // 로딩 처리
   // if ((activeTab === 'received' && !receivedData) ||
@@ -119,6 +145,7 @@ export default function TaskList() {
             taskType="current"
             emptyMessage="진행 중인 의뢰가 없습니다"
             activeTab={activeTab}
+            gameImageMap={gameImageMap}
           />
 
           <TaskSection
@@ -127,6 +154,7 @@ export default function TaskList() {
             taskType="scheduled"
             emptyMessage="예약된 의뢰가 없습니다"
             activeTab={activeTab}
+            gameImageMap={gameImageMap}
           />
 
           <TaskSection
@@ -135,6 +163,7 @@ export default function TaskList() {
             taskType="past"
             emptyMessage="지난 의뢰가 없습니다"
             activeTab={activeTab}
+            gameImageMap={gameImageMap}
           />
         </>
       )
@@ -147,6 +176,7 @@ export default function TaskList() {
             taskType="current"
             emptyMessage="진행 중인 신청이 없습니다"
             activeTab={activeTab}
+            gameImageMap={gameImageMap}
           />
 
           <TaskSection
@@ -155,6 +185,7 @@ export default function TaskList() {
             taskType="scheduled"
             emptyMessage="대기 중인 신청이 없습니다"
             activeTab={activeTab}
+            gameImageMap={gameImageMap}
           />
 
           <TaskSection
@@ -163,6 +194,7 @@ export default function TaskList() {
             taskType="past"
             emptyMessage="지난 신청이 없습니다"
             activeTab={activeTab}
+            gameImageMap={gameImageMap}
           />
         </>
       )
