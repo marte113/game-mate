@@ -135,13 +135,17 @@ const RecommendedMatesSlider = ({ theme, mates }: RecommendedMatesSliderProps) =
       </div>
 
       <div className="relative">
+        {/* 스크롤 컨테이너: 실제 overflow-x는 여기에서 처리 */}
         <div
           ref={carouselRef}
-          className="carousel carousel-center gap-4 pb-4 overflow-x-auto scroll-smooth"
+          className="w-full overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory"
         >
-          {shuffledMates.map((mate) => (
-            <MateCard key={mate.id} mate={mate} />
-          ))}
+          {/* 트랙: 콘텐츠는 가로로만 나열, 래핑 금지 + 콘텐츠 너비만큼 확장 */}
+          <div className="flex w-max items-start flex-nowrap gap-4 pr-4">
+            {shuffledMates.map((mate) => (
+              <MateCard key={mate.id} mate={mate} />
+            ))}
+          </div>
         </div>
       </div>
     </section>

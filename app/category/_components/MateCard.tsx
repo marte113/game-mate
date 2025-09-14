@@ -1,9 +1,9 @@
 // components/MateCard.tsx (RecommendedMatesSlider.tsx에서 분리하거나 수정)
-import Image from 'next/image'
-import Link from 'next/link'
-import { Star, UserRound } from 'lucide-react' // 아이콘 라이브러리 확인
+import Image from "next/image"
+import Link from "next/link"
+import { Star, UserRound } from "lucide-react" // 아이콘 라이브러리 확인
 
-import type { MateCardData } from '../_types/categoryPage.types' // MateCard 데이터 타입 임포트
+import type { MateCardData } from "../_types/categoryPage.types" // MateCard 데이터 타입 임포트
 
 interface MateCardProps {
   mate: MateCardData
@@ -13,8 +13,11 @@ interface MateCardProps {
 export function MateCard({ mate }: MateCardProps) {
   return (
     // Link href를 profile id (user_id)로 수정
-    <Link href={`/profile/${mate.public_id}`} className="carousel-item w-[20%] min-w-[220px] group">
-      <div className="card bg-base-100 shadow-md hover:shadow-lg transition-all duration-300">
+    <Link
+      href={`/profile/${mate.public_id}`}
+      className="snap-start block shrink-0 basis-[240px] sm:basis-[260px] md:basis-[280px] group h-full"
+    >
+      <div className="card h-full flex flex-col bg-base-100 shadow-md hover:shadow-lg transition-all duration-300">
         <div className="relative">
           <div className="relative aspect-[4/3] w-full overflow-hidden rounded-t-xl">
             {mate.image !== "/default-avatar.png" ? (
@@ -28,7 +31,11 @@ export function MateCard({ mate }: MateCardProps) {
               />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center bg-base-200">
-                <UserRound color="#ffffff" className="w-12 h-12 text-base-content/60" aria-hidden="true" />
+                <UserRound
+                  color="#ffffff"
+                  className="w-12 h-12 text-base-content/60"
+                  aria-hidden="true"
+                />
               </div>
             )}
             {mate.isOnline ? (
@@ -46,8 +53,8 @@ export function MateCard({ mate }: MateCardProps) {
             </div>
           </div>
         </div>
-        
-        <div className="card-body p-4">
+
+        <div className="card-body p-4 flex-1 flex flex-col">
           <div className="flex justify-between items-start">
             <div>
               <h3 className="card-title text-lg">{mate.name}</h3>
@@ -58,7 +65,7 @@ export function MateCard({ mate }: MateCardProps) {
               <span className="font-bold text-sm">{mate.rating.toFixed(1)}</span>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2 mt-3">
             <div className="relative w-6 h-6 rounded-full overflow-hidden">
               <Image
@@ -71,7 +78,7 @@ export function MateCard({ mate }: MateCardProps) {
             </div>
             <span className="text-sm font-medium">{mate.game}</span>
           </div>
-          
+
           <div className="flex justify-between items-center mt-3">
             <div className="flex items-center gap-1">
               <span className="text-primary font-bold">{mate.price.toLocaleString()}</span>
