@@ -49,6 +49,7 @@ export default {
     ],
     // 팀 컨벤션에서는 한글/대문자 시작 등 다양성을 허용 → 케이스 검사를 비활성화
     'subject-case': [0],
-    'subject-empty': [2, 'never']
+    'subject-empty': [2, 'never'],
+    'body-max-line-length': [2, 'always', 300]
   }
 };
