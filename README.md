@@ -79,3 +79,7 @@
   - 공통 유틸리티(date, errors, recommendation 등). 순수 함수 위주 구성.
 
 > 페이지 컴포넌트는 선언적 구조를 지향하여 가독성 및 서버 컴포넌트 상태를 유지하고 데이터 페칭/상태/로직은 컨테이너/훅/서비스로 캡슐화하고 있습니다.
+
+<p align="center">
+  <img src="./public/images/architecture.png" alt="앱 구조" width="800" />
+</p>
