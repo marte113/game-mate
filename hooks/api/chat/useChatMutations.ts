@@ -6,6 +6,7 @@ import { toast } from "react-hot-toast"
 import { queryKeys } from "@/constants/queryKeys"
 import { chatApi } from "@/app/dashboard/chat/_api/chatApi"
 import type { Database } from "@/types/database.types"
+import { useAuthStore } from "@/stores/authStore"
 
 type MessageRow = Database["public"]["Tables"]["messages"]["Row"]
 
@@ -86,44 +87,53 @@ export function useCreateChatRoomMutation() {
  */
 export function useOptimisticSendMessage() {
   const queryClient = useQueryClient()
+  const currentUserId = useAuthStore((s) => s.user?.id)
 
   return useMutation({
-    mutationFn: async ({ content, receiverId, chatRoomId }: SendMessageData) => {
-      // 낙관적 업데이트: 즉시 메시지를 캐시에 추가
+    mutationFn: ({ content, receiverId, chatRoomId }: SendMessageData) =>
+      chatApi.sendMessage(content, receiverId, chatRoomId ?? undefined),
+    onMutate: async ({ content, receiverId, chatRoomId }) => {
+      // 방별 메시지 쿼리와 충돌 방지를 위해 현재 쿼리를 취소
       if (chatRoomId) {
-        queryClient.setQueryData<MessageRow[]>(
-          queryKeys.chat.messages(chatRoomId),
-          (oldMessages: MessageRow[] | undefined = []) => [
-            ...oldMessages,
-            {
-              id: `temp-${Date.now()}`, // 임시 ID
-              content,
-              sender_id: "current-user", // 현재 사용자 ID로 교체 필요
-              receiver_id: receiverId,
-              chat_room_id: chatRoomId,
-              is_read: false,
-              created_at: new Date().toISOString(),
-            },
-          ],
-        )
-      }
+        await queryClient.cancelQueries({ queryKey: queryKeys.chat.messages(chatRoomId) })
+        const previous = queryClient.getQueryData<MessageRow[]>(queryKeys.chat.messages(chatRoomId))
 
-      // 실제 API 호출
-      await chatApi.sendMessage(content, receiverId, chatRoomId ?? undefined)
-    },
-    onSuccess: (_, { chatRoomId }) => {
-      // 성공 시 정확한 데이터로 다시 불러오기
-      if (chatRoomId) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.chat.messages(chatRoomId) })
+        const optimisticId = `optimistic-${Date.now()}`
+        const optimistic: MessageRow = {
+          id: optimisticId as unknown as string,
+          content,
+          sender_id: (currentUserId ?? "optimistic-user") as string,
+          receiver_id: receiverId,
+          chat_room_id: chatRoomId,
+          is_read: false,
+          created_at: new Date().toISOString(),
+        }
+
+        queryClient.setQueryData<MessageRow[]>(queryKeys.chat.messages(chatRoomId), (old) => [
+          ...(old ?? []),
+          optimistic,
+        ])
+
+        return { previous, chatRoomId }
       }
-      queryClient.invalidateQueries({ queryKey: queryKeys.chat.rooms() })
+      // chatRoomId가 없는 경우는 서버 응답을 기다린 뒤 목록 invalidate만
+      return { previous: undefined, chatRoomId: undefined as unknown as string | undefined }
     },
-    onError: (error: Error, { chatRoomId }) => {
-      // 실패 시 낙관적 업데이트 롤백
-      if (chatRoomId) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.chat.messages(chatRoomId) })
+    onError: (error, _vars, ctx) => {
+      if (ctx?.chatRoomId) {
+        // 이전 캐시로 롤백
+        queryClient.setQueryData(queryKeys.chat.messages(ctx.chatRoomId), ctx.previous ?? [])
       }
       toast.error(error.message || "메시지 전송에 실패했습니다")
+    },
+    onSettled: (_data, _err, variables, _ctx) => {
+      const roomId = variables.chatRoomId
+      if (roomId) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.chat.messages(roomId) })
+      }
+      // 채팅방 목록/미리보기 갱신
+      queryClient.invalidateQueries({ queryKey: queryKeys.chat.rooms() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.chat.chatRooms() })
     },
   })
 }
