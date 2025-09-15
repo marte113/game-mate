@@ -122,19 +122,19 @@ export default function Sidebar() {
       title: "기타",
       items: [
         {
+          href: "/intro",
+          label: "소개",
+          icon: <Hand className="w-5 h-5" />,
+        },
+        {
           href: "/",
           label: "설정",
           icon: <Settings className="w-5 h-5" />,
         },
         {
-          href: "/",
+          href: "/#",
           label: "도움말",
           icon: <HelpCircle className="w-5 h-5" />,
-        },
-        {
-          href: "/intro",
-          label: "소개",
-          icon: <Hand className="w-5 h-5" />,
         },
       ],
     },
