@@ -129,13 +129,13 @@ export default function Sidebar() {
         },
         {
           id: "setting",
-          href: "/",
+          href: "",
           label: "설정",
           icon: <Settings className="w-5 h-5" />,
         },
         {
           id: "help",
-          href: "/",
+          href: "",
           label: "도움말",
           icon: <HelpCircle className="w-5 h-5" />,
         },
