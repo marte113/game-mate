@@ -31,37 +31,31 @@ export default function Sidebar() {
   const close = useSidebarStore((s) => s.close)
   const pathname = usePathname()
   const isLoggedIn = useAuthStore((state) => state.user)
-  const { unreadCount, fetchNotifications, setupNotificationSubscription } = useNotificationStore()
+  const { unreadCount, startNotificationSubscription } = useNotificationStore()
   //isopen에 의해 useNotificationStore가 재생성되더라도 zustand는 안정적인 참조를 제공하기 때문에,
   // 이전 참조를 계속 사용할 수 있습니다. 이 때문에 컴포넌트가 리렌더링되어도 useEffect의 의존성 배열은
   // 변경되지 않기 때문에, useEffect가 재실행되지 않음.
 
-  // 알림 데이터 로드
+  // 알림 실시간 구독 시작(스토어가 SUBSCRIBED 시 초기 동기화를 수행)
   useEffect(() => {
-    let unsubscribe: (() => void) | undefined // 구독 해제 함수를 저장할 변수
+    let stop: (() => void) | undefined
 
     if (isLoggedIn) {
-      // 로그인 상태일 때만 알림 로드 및 구독 설정
-      console.log("Sidebar Effect: 로그인됨. 알림 로드 및 구독 시작.")
-      fetchNotifications()
-      unsubscribe = setupNotificationSubscription() // 구독 설정하고 해제 함수 저장
+      console.log("Sidebar Effect: 로그인됨. 알림 실시간 구독 시작.")
+      stop = startNotificationSubscription()
     } else {
-      // 로그아웃 상태일 때는 아무 작업 안 함
       console.log("Sidebar Effect: 로그아웃됨. 알림 관련 작업 건너뜀.")
     }
 
-    // 클린업 함수: 컴포넌트 언마운트 시 또는 isLoggedIn 변경 시 이전 effect 정리
     return () => {
-      if (unsubscribe) {
-        // 저장된 구독 해제 함수가 있다면 호출
+      if (stop) {
         console.log("Sidebar Effect Cleanup: 알림 구독 해제.")
-        unsubscribe()
+        stop()
       } else {
         console.log("Sidebar Effect Cleanup: 해제할 구독 없음.")
       }
     }
-    // 의존성: isLoggedIn 상태와 스토어에서 가져온 안정적인 함수들
-  }, [isLoggedIn, fetchNotifications, setupNotificationSubscription])
+  }, [isLoggedIn, startNotificationSubscription])
 
   // 라우트 변경 시(모바일 뷰) 사이드바 자동 닫기
   useEffect(() => {
