@@ -122,17 +122,20 @@ export default function Sidebar() {
       title: "기타",
       items: [
         {
+          id: "intro",
           href: "/intro",
           label: "소개",
           icon: <Hand className="w-5 h-5" />,
         },
         {
+          id: "setting",
           href: "/",
           label: "설정",
           icon: <Settings className="w-5 h-5" />,
         },
         {
-          href: "/#",
+          id: "help",
+          href: "/",
           label: "도움말",
           icon: <HelpCircle className="w-5 h-5" />,
         },
@@ -226,7 +229,7 @@ export default function Sidebar() {
               </h3>
               <ul className="flex flex-col gap-1">
                 {section.items.map((item) => (
-                  <li key={item.href}>
+                  <li key={item.id}>
                     <Link
                       href={item.href}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-base-200 text-base-content/80 hover:text-base-content
