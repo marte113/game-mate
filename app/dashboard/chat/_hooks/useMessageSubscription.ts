@@ -8,7 +8,7 @@ import { RealtimeChannel, RealtimePostgresChangesPayload } from "@supabase/supab
 
 import { Database } from "@/types/database.types"
 import { Message } from "@/app/dashboard/chat/_types/chatTypes"
-import { ChatQueryKeys } from "@/app/dashboard/chat/_api"
+import { queryKeys } from "@/constants/queryKeys"
 import { useNotificationStore } from "@/stores/notificationStore"
 
 export const useMessageSubscription = (currentChatRoomId: string | null) => {
@@ -34,9 +34,9 @@ export const useMessageSubscription = (currentChatRoomId: string | null) => {
 
           // 새 메시지의 채팅방과 현재 보고 있는 채팅방이 같은 경우
           if (currentChatRoomId && currentChatRoomId === newMessage.chat_room_id) {
-            // 메시지 캐시 무효화 - React Query v4 형식으로 수정
+            // 메시지 캐시 무효화 - 중앙 쿼리 키 사용
             queryClient.invalidateQueries({
-              queryKey: ["messages", currentChatRoomId],
+              queryKey: queryKeys.chat.messages(currentChatRoomId),
             })
 
             // 새 메시지가 현재 사용자에게 온 경우 읽음 처리 + 알림 읽음 처리
@@ -58,7 +58,7 @@ export const useMessageSubscription = (currentChatRoomId: string | null) => {
           } else {
             // 다른 채팅방에서 메시지가 왔을 경우 채팅방 목록만 업데이트
             queryClient.invalidateQueries({
-              queryKey: ["chatRooms"],
+              queryKey: queryKeys.chat.chatRooms(),
             })
           }
         },
@@ -72,7 +72,7 @@ export const useMessageSubscription = (currentChatRoomId: string | null) => {
         },
         () => {
           // 채팅방 참가자 정보가 업데이트되면 채팅방 목록을 다시 가져오기
-          queryClient.invalidateQueries({ queryKey: ChatQueryKeys.chatRooms })
+          queryClient.invalidateQueries({ queryKey: queryKeys.chat.chatRooms() })
         },
       )
       .subscribe()

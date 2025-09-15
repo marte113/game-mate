@@ -7,7 +7,7 @@ import { useAuthStore } from "@/stores/authStore"
 import { useChatUiStore } from "@/stores/chatUiStore"
 import { useNotificationStore } from "@/stores/notificationStore"
 import { useChatMessages } from "@/hooks/api/chat/useChatQueries"
-import { useSendMessage, useMarkAsRead } from "@/hooks/api/chat/useChatMutations"
+import { useOptimisticSendMessage, useMarkAsRead } from "@/hooks/api/chat/useChatMutations"
 
 import ReservationModal from "./reserveModal/ReservationModal"
 import ChatHeader from "./ChatHeader"
@@ -29,7 +29,7 @@ export default function ChatRoom() {
 
   // 새로운 React Query 훅들 사용
   const { data: messages = [], isLoading } = useChatMessages(roomId)
-  const sendMessageMutation = useSendMessage()
+  const optimisticSendMessage = useOptimisticSendMessage()
   const { mutate: markAsRead } = useMarkAsRead()
 
   // 알림 스토어는 필요한 액션만 셀렉터로 구독하여 불필요 리렌더 방지
@@ -66,13 +66,13 @@ export default function ChatRoom() {
         return
       }
 
-      sendMessageMutation.mutate({
+      optimisticSendMessage.mutate({
         content,
         receiverId: selectedChat.otherUser.id,
         chatRoomId: roomId || undefined,
       })
     },
-    [selectedChat?.otherUser?.id, roomId, sendMessageMutation],
+    [selectedChat?.otherUser?.id, roomId, optimisticSendMessage],
   )
 
   // 예약 버튼 클릭 핸들러 - 참조 안정성 확보
@@ -116,7 +116,7 @@ export default function ChatRoom() {
         {/* 메시지 입력 */}
         <ChatInput
           onSendMessage={handleSendMessage}
-          isDisabled={isLoading || sendMessageMutation.isPending}
+          isSubmitting={optimisticSendMessage.isPending}
         />
       </div>
 
