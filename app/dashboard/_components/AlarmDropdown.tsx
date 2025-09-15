@@ -1,38 +1,33 @@
-'use client'
+"use client"
 
-import { Bell } from "lucide-react";
-import { useState, useRef, useEffect, memo } from "react";
-import Link from 'next/link'
-import { formatDistanceToNow } from 'date-fns'
-import { ko } from 'date-fns/locale'
+import { Bell } from "lucide-react"
+import { useState, useRef, useEffect, memo } from "react"
+import Link from "next/link"
+import { formatDistanceToNow } from "date-fns"
+import { ko } from "date-fns/locale"
 
-import { useNotificationStore } from '@/stores/notificationStore'
+import { useNotificationStore } from "@/stores/notificationStore"
 
 export default memo(function AlarmDropdown() {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  
-  const { 
-    notifications, 
-    unreadCount, 
-    fetchNotifications, 
-    markAsRead, 
+  const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const {
+    notifications,
+    unreadCount,
+    markAsRead,
     markAllAsRead,
-    subscribeToNotifications,
-    markHeaderNotificationsAsRead
+    markHeaderNotificationsAsRead,
+    startNotificationSubscription,
   } = useNotificationStore()
 
-  // 알림 데이터 로드
+  // 실시간 구독 시작(스토어가 SUBSCRIBED 시 초기 fetch 수행)
   useEffect(() => {
-    fetchNotifications()
-    
-    // 실시간 구독 설정
-    const unsubscribe = subscribeToNotifications()
-    
+    const stop = startNotificationSubscription()
     return () => {
-      unsubscribe()
+      stop()
     }
-  }, [fetchNotifications, subscribeToNotifications])
+  }, [startNotificationSubscription])
 
   // 드롭다운 외부 클릭 감지
   useEffect(() => {
@@ -42,8 +37,8 @@ export default memo(function AlarmDropdown() {
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
   // 알림 클릭 처리
@@ -54,33 +49,33 @@ export default memo(function AlarmDropdown() {
 
   // 시간 포맷팅
   const formatTime = (timeString: string | null) => {
-    if (!timeString) return '알 수 없음'
-    
+    if (!timeString) return "알 수 없음"
+
     return formatDistanceToNow(new Date(timeString), {
       addSuffix: true,
-      locale: ko
+      locale: ko,
     })
   }
 
   // 알림 타입에 따른 경로 반환
   const getNotificationPath = (type: string | null, relatedId: string | null) => {
-    if (!type || !relatedId) return '#'
-    
+    if (!type || !relatedId) return "#"
+
     switch (type) {
-      case 'message':
+      case "message":
         return `/dashboard/chat`
-      case 'request':
+      case "request":
         // 누군가 내게 보낸 의뢰 -> 받은 의뢰 탭으로 이동
         return `/dashboard/task?tab=received&id=${relatedId}`
-      case 'accept':
-      case 'reject':
-      case 'cancel':
+      case "accept":
+      case "reject":
+      case "cancel":
         // 내가 신청한 의뢰의 상태 변화 -> 신청한 의뢰 탭으로 이동
         return `/dashboard/task?tab=requested&id=${relatedId}`
-      case 'follow':
+      case "follow":
         return `/dashboard/follow`
       default:
-        return '#'
+        return "#"
     }
   }
 
@@ -93,10 +88,7 @@ export default memo(function AlarmDropdown() {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <button 
-        className="btn btn-ghost btn-circle"
-        onClick={() => setIsOpen(!isOpen)}
-      >
+      <button className="btn btn-ghost btn-circle" onClick={() => setIsOpen(!isOpen)}>
         <span className="indicator rounded-full hover:text-gray-300">
           <Bell className="w-6 h-6" />
           {unreadCount.total > 0 && (
@@ -108,13 +100,13 @@ export default memo(function AlarmDropdown() {
       {isOpen && (
         <div className="absolute right-0 mt-2 w-80 bg-base-100 rounded-box shadow-xl z-50 animate-opacity border border-base-200">
           <div className="absolute -top-2 right-5 w-4 h-4 bg-base-100 transform rotate-45 border-l border-t border-base-200"></div>
-          
+
           <div className="relative">
             <div className="p-4">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-bold">알림</h3>
                 {unreadCount.total > 0 && (
-                  <button 
+                  <button
                     className="text-xs text-blue-500 hover:underline"
                     onClick={() => markAllAsRead()}
                   >
@@ -122,7 +114,7 @@ export default memo(function AlarmDropdown() {
                   </button>
                 )}
               </div>
-              
+
               {notifications.length === 0 ? (
                 <p className="text-center py-4 text-base-content/60">새로운 알림이 없습니다</p>
               ) : (
@@ -132,7 +124,13 @@ export default memo(function AlarmDropdown() {
                       <Link
                         href={getNotificationPath(notification.type, notification.related_id)}
                         className="flex items-start gap-3 p-2 hover:bg-base-200 rounded-lg cursor-pointer"
-                        onClick={() => handleNotificationClick(notification.id, notification.type, notification.related_id)}
+                        onClick={() =>
+                          handleNotificationClick(
+                            notification.id,
+                            notification.type,
+                            notification.related_id,
+                          )
+                        }
                       >
                         {!notification.is_read && (
                           <div className="w-2 h-2 mt-2 rounded-full bg-primary"></div>
@@ -162,5 +160,5 @@ export default memo(function AlarmDropdown() {
         </div>
       )}
     </div>
-  );
+  )
 })
