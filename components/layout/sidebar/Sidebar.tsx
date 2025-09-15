@@ -122,12 +122,12 @@ export default function Sidebar() {
       title: "기타",
       items: [
         {
-          href: "/dashboard/settings",
+          href: "/",
           label: "설정",
           icon: <Settings className="w-5 h-5" />,
         },
         {
-          href: "/dashboard/help",
+          href: "/",
           label: "도움말",
           icon: <HelpCircle className="w-5 h-5" />,
         },
