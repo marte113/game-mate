@@ -26,7 +26,7 @@ export default function HeaderLeft() {
       >
         <Menu className="w-5 h-5" />
       </button>
-      <div className="cursor-pointer group" onClick={handleLogoClick}>
+      <div className="cursor-pointer group hidden md:block" onClick={handleLogoClick}>
         <Image src="/icons/free-icon-gamepad.png" alt="logo" width={30} height={30} />
       </div>
     </div>
