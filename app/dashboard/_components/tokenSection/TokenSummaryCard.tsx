@@ -30,8 +30,8 @@ export default function TokenSummaryCard() {
           <div className="stats stats-vertical sm:stats-horizontal shadow w-full">
             <div className="stat">
               <div className="stat-title">보유 토큰</div>
-              <div className="stat-value">{balance ?? 0}</div>
-              <div className="stat-desc">
+              <div className="stat-value">{(balance ?? 0).toLocaleString()}</div>
+              <div className="stat-desc mt-2">
                 {usageData && typeof usageData.diff === "number" && !isNaN(usageData.diff)
                   ? usageData.diff >= 0
                     ? `↗︎ ${Math.abs(usageData.diff).toLocaleString()} (지난달 대비)`
@@ -48,7 +48,7 @@ export default function TokenSummaryCard() {
                   ? usageData.usageThisMonth.toLocaleString()
                   : 0}
               </div>
-              <div className="stat-desc">이번 달 사용량</div>
+              <div className="stat-desc mt-2">이번 달 사용량</div>
             </div>
           </div>
         </div>

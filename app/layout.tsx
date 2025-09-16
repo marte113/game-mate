@@ -44,14 +44,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <PlausibleProvider domain={config.domainName} />
         </head>
       )}
-      <body className="overflow-x-hidden bg-base-200">
+      <body>
         {/* ClientLayout contains all the client wrappers (Crisp chat support, toast messages, tooltips, etc.) */}
         <QueryProvider>
           <ClientLayout>
             <Header />
             <div className="flex w-full min-w-0 overflow-x-hidden">
               <Sidebar />
-              <main className="min-w-0 flex-1 overflow-x-hidden md:ml-64">
+              <main className="min-w-0 flex-1 overflow-x-hidden md:ml-64 mt-14">
                 {children}
                 <Footer />
               </main>
