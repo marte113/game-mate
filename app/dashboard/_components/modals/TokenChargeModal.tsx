@@ -1,13 +1,11 @@
 "use client"
 
 import { useEffect, useState, useRef } from "react"
-import { useRouter } from "next/navigation"
-import Image from "next/image"
-import * as PortOne from "@portone/browser-sdk/v2"
-import { toast } from "react-hot-toast"
-import { v4 as uuidv4 } from "uuid"
-import { useAuthStore } from "@/stores/authStore"
 import { createPortal } from "react-dom"
+import usePayment from "@/hooks/payment/usePayment"
+import TokenOptionCard from "./TokenOptionCard"
+import PaymentSummary from "./PaymentSummary"
+import PaymentActions from "./PaymentActions"
 
 type TokenOption = {
   orderName: string
@@ -73,9 +71,7 @@ type Props = { isOpen: boolean; onClose: () => void }
 
 export default function TokenChargeModal({ isOpen, onClose }: Props) {
   const [selectedOption, setSelectedOption] = useState<TokenOption | null>(null)
-  const router = useRouter()
-  const [processing, setProcessing] = useState<boolean>(false)
-  const { user } = useAuthStore()
+  const { processing, processPayment } = usePayment()
   const isMountedRef = useRef<boolean>(false)
 
   // 컴포넌트가 마운트된 후 isMounted 값을 true로 설정
@@ -87,86 +83,8 @@ export default function TokenChargeModal({ isOpen, onClose }: Props) {
   }, [])
 
   const handleOnClickPayment = async () => {
-    try {
-      // 로그인 확인
-      if (!user) {
-        toast.error("로그인이 필요합니다")
-        return
-      }
-
-      // 토큰 선택 확인
-      if (!selectedOption) {
-        toast.error("토큰을 선택해주세요")
-        return
-      }
-
-      // 결제 요청
-      setProcessing(true)
-
-      // 고유한 결제 ID 생성
-      const paymentId = `payment-${uuidv4()}`
-
-      // 환경 변수 확인 (클라이언트 공개 키)
-      const storeId = process.env.NEXT_PUBLIC_PORTONE_STORE_ID
-      const channelKey = process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY
-      if (!storeId || !channelKey) {
-        toast.error("결제 설정이 누락되었습니다. 관리자에게 문의해주세요.")
-        return
-      }
-
-      // PortOne 결제 파라미터
-      const paymentRequest = {
-        storeId,
-        channelKey,
-        paymentId: paymentId,
-        orderName: `token-${selectedOption.tokenAmount}`,
-        totalAmount: selectedOption.totalAmount,
-        currency: "KRW",
-        payMethod: "CARD",
-        customer: (() => {
-          const obj: { customerId: string; email?: string } = { customerId: user.id }
-          // authStore의 user에는 email이 없으므로 안전 캐스팅
-          const email = (user as unknown as { email?: string })?.email
-          if (typeof email === "string" && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-            obj.email = email
-          }
-          return obj
-        })(),
-        customData: JSON.stringify({ userId: user.id }),
-      }
-
-      console.log("결제 요청 정보:", paymentRequest)
-
-      const response = await PortOne.requestPayment(
-        paymentRequest as unknown as Parameters<typeof PortOne.requestPayment>[0],
-      )
-
-      console.log("포트원 응답:", response)
-
-      // 응답이 없거나 에러 형태일 수 있음에 대비한 가드
-      if (!response) {
-        toast.error("결제가 취소되었거나 응답이 없습니다.")
-        return
-      }
-
-      if ("code" in response && (response as any).code !== undefined) {
-        toast.error((response as any).message ?? "결제 오류가 발생했습니다.")
-        return
-      }
-
-      const paymentIdFromRes = (response as any).paymentId as string | undefined
-      if (!paymentIdFromRes) {
-        toast.error("결제 식별자(paymentId)를 확인할 수 없습니다.")
-        return
-      }
-
-      router.push(`/payment/complete?paymentId=${paymentIdFromRes}`)
-    } catch (error) {
-      console.error("결제 요청 중 오류 발생:", error)
-      toast.error("결제 요청 중 오류가 발생했습니다. 다시 시도해주세요.")
-    } finally {
-      setProcessing(false)
-    }
+    if (!selectedOption) return
+    await processPayment(selectedOption)
   }
 
   // 마운트 되지 않았거나 모달이 열려있지 않으면 아무것도 렌더링하지 않음
@@ -181,88 +99,33 @@ export default function TokenChargeModal({ isOpen, onClose }: Props) {
           onClick={onClose}
         ></div>
 
-        <div className="relative bg-white rounded-lg max-w-xl w-full mx-auto z-50">
-          <div className="p-6">
-            <h3 className="font-bold text-lg mb-4">토큰 충전</h3>
+        <div className="relative bg-white rounded-lg max-w-xl w-full mx-4 md:mx-auto z-50">
+          <div className="p-4 md:p-6">
+            <h3 className="font-bold text-lg mb-4 text-center">토큰 충전</h3>
 
-            <div className="flex gap-4">
+            {/* 모바일: 세로 배치, 데스크톱: 좌우 배치 */}
+            <div className="flex flex-col md:flex-row gap-4">
               {/* 토큰 옵션 선택 영역 */}
-              <div className="w-2/3 space-y-2 pr-4 max-h-[460px] overflow-y-auto">
+              <div className="w-full md:w-2/3 space-y-2 md:pr-4 max-h-[400px] md:max-h-[460px] overflow-y-auto">
                 {TOKEN_OPTIONS.map((option) => (
-                  <div
+                  <TokenOptionCard
                     key={option.orderName}
-                    className={`card bg-base-200 cursor-pointer hover:bg-base-300 transition-colors ${
-                      selectedOption?.orderName === option.orderName
-                        ? "border-2 border-primary"
-                        : ""
-                    }`}
-                    onClick={() => setSelectedOption(option)}
-                  >
-                    <div className="card-body py-4 px-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Image
-                            src="/images/tokken.png"
-                            alt="token"
-                            width={20}
-                            height={20}
-                            className="w-5 h-5"
-                          />
-                          <span className="font-bold text-lg">
-                            {option.tokenAmount.toLocaleString()}
-                          </span>
-                          <span className="text-error font-semibold text-sm">
-                            {option.discount}
-                          </span>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-bold">₩{option.totalAmount.toLocaleString()}</div>
-                          <div className="text-xs line-through text-base-content/50">
-                            ₩{option.originalPrice.toLocaleString()}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                    option={option}
+                    isSelected={selectedOption?.orderName === option.orderName}
+                    onSelect={setSelectedOption}
+                  />
                 ))}
               </div>
 
-              {/* 결제 정보 영역 */}
-              <div className="w-1/3 space-y-4">
-                <div className="bg-base-200 p-4 rounded-lg">
-                  <h4 className="font-bold mb-4">결제 정보</h4>
-                  {selectedOption ? (
-                    <>
-                      <div className="flex justify-between mb-2">
-                        <span>결제 금액</span>
-                        <span className="font-bold">
-                          ₩{selectedOption.totalAmount.toLocaleString()}
-                        </span>
-                      </div>
-                      <div className="flex justify-between text-sm text-base-content/70">
-                        <span>할인 금액</span>
-                        <span>
-                          ₩
-                          {(
-                            selectedOption.originalPrice - selectedOption.totalAmount
-                          ).toLocaleString()}
-                        </span>
-                      </div>
-                    </>
-                  ) : (
-                    <p className="text-sm text-base-content/70">토큰을 선택해주세요</p>
-                  )}
-                </div>
-                <button
-                  className="btn btn-primary w-full"
-                  disabled={!selectedOption || processing}
-                  onClick={handleOnClickPayment}
-                >
-                  결제하기
-                </button>
-                <button className="btn btn-ghost w-full" onClick={onClose}>
-                  취소
-                </button>
+              {/* 결제 정보 및 버튼 영역 */}
+              <div className="w-full md:w-1/3 space-y-4">
+                <PaymentSummary selectedOption={selectedOption} />
+                <PaymentActions
+                  selectedOption={selectedOption}
+                  processing={processing}
+                  onPayment={handleOnClickPayment}
+                  onClose={onClose}
+                />
               </div>
             </div>
           </div>
