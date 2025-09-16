@@ -36,7 +36,7 @@ export default function TaskSection({
 
   return (
     <section>
-      <h2 className="text-xl font-bold mb-4">{title}</h2>
+      <h2 className="text-lg md:text-xl font-bold mb-4">{title}</h2>
       <div className="bg-base-100 rounded-lg shadow">
         {tasks.length > 0 ? (
           pagedTasks.map((task) => (

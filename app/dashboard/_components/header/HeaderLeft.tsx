@@ -15,7 +15,7 @@ export default function HeaderLeft() {
   }
 
   return (
-    <div className="flex items-center gap-4 pl-6 md:pl-0">
+    <div className="flex items-center gap-2 pl-2 md:pl-0">
       {/* 모바일 전용 햄버거 버튼: 사이드바 토글 */}
       <button
         type="button"
@@ -26,7 +26,7 @@ export default function HeaderLeft() {
       >
         <Menu className="w-5 h-5" />
       </button>
-      <div className="cursor-pointer group" onClick={handleLogoClick}>
+      <div className="cursor-pointer group hidden md:block" onClick={handleLogoClick}>
         <Image src="/icons/free-icon-gamepad.png" alt="logo" width={30} height={30} />
       </div>
     </div>

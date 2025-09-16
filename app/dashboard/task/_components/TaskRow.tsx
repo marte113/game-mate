@@ -76,7 +76,7 @@ export default function TaskRow({ task, taskType, activeTab, gameImageMap }: Pro
 
   return (
     <div
-      className={`flex flex-wrap items-center justify-between p-4 border-b ${
+      className={`flex flex-wrap items-center justify-between p-3 border-b ${
         taskType === "past" ? "text-gray-400" : ""
       }`}
     >

@@ -144,7 +144,7 @@ export default function Sidebar() {
   ]
 
   return (
-    <div className="md:block">
+    <div className="w-0 flex-none md:block">
       {/* 오버레이 */}
       {isOpen && <div className="md:hidden fixed inset-0 bg-black/50 z-40" onClick={close} />}
 

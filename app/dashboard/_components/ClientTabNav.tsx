@@ -1,6 +1,6 @@
-'use client'
+"use client"
 
-import { useRouter, usePathname } from 'next/navigation'
+import { useRouter, usePathname } from "next/navigation"
 
 interface ClientTabNavProps {
   currentTab: string
@@ -12,24 +12,26 @@ export default function ClientTabNav({ currentTab }: ClientTabNavProps) {
 
   const handleTabChange = (tab: string) => {
     const params = new URLSearchParams()
-    params.set('tab', tab)
+    params.set("tab", tab)
     router.push(`${pathname}?${params.toString()}`)
   }
 
   return (
-    <div className="tabs tabs-boxed">
-      <button
-        className={`tab ${currentTab === 'profile' ? 'tab-active' : ''}`}
-        onClick={() => handleTabChange('profile')}
-      >
-        프로필
-      </button>
-      <button
-        className={`tab ${currentTab === 'token' ? 'tab-active' : ''}`}
-        onClick={() => handleTabChange('token')}
-      >
-        토큰
-      </button>
+    <div className="w-full overflow-x-auto">
+      <div className="tabs tabs-boxed">
+        <button
+          className={`tab ${currentTab === "profile" ? "tab-active" : ""}`}
+          onClick={() => handleTabChange("profile")}
+        >
+          프로필
+        </button>
+        <button
+          className={`tab ${currentTab === "token" ? "tab-active" : ""}`}
+          onClick={() => handleTabChange("token")}
+        >
+          토큰
+        </button>
+      </div>
     </div>
   )
-} 
+}
