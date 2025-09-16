@@ -202,7 +202,7 @@ export default function TaskList() {
   }
 
   return (
-    <div className="p-6">
+    <div className="min-w-0">
       <div className="space-y-8">{renderContent()}</div>
 
       {/* 상세 정보 모달 (isOpen과 isReceived prop만 전달) */}

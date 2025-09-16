@@ -33,7 +33,7 @@ export default function TokenHistoryTable() {
 
   return (
     <div className="card bg-base-100 shadow-xl">
-      <div className="card-body">
+      <div className="card-body p-2">
         <h2 className="card-title mb-4">토큰 사용 내역</h2>
         <div className="w-full overflow-x-auto">
           <table className="table table-zebra w-full table-auto">

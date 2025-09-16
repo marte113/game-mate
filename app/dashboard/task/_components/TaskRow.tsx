@@ -76,7 +76,7 @@ export default function TaskRow({ task, taskType, activeTab, gameImageMap }: Pro
 
   return (
     <div
-      className={`flex items-center justify-between p-4 border-b ${
+      className={`flex flex-wrap items-center justify-between p-4 border-b ${
         taskType === "past" ? "text-gray-400" : ""
       }`}
     >
@@ -173,49 +173,54 @@ export default function TaskRow({ task, taskType, activeTab, gameImageMap }: Pro
       </div>
 
       {!isPast && (
-        <>
+        <div className="flex items-center gap-2 ml-2 max-[660px]:basis-full max-[660px]:justify-end max-[660px]:flex-wrap">
           {isReceived && isScheduled && (
             <>
               <button
-                className="btn btn-primary btn-sm mr-2"
+                className="btn btn-primary btn-sm max-[660px]:btn-xs"
                 onClick={() => handleChangeStatus(task.id, "accepted")}
+                aria-label="수락하기"
               >
                 <Check className="w-4 h-4" />
-                수락하기
+                <span className="hidden sm:inline">수락하기</span>
               </button>
               <button
-                className="btn btn-error btn-sm"
+                className="btn btn-error btn-sm max-[660px]:btn-xs"
                 onClick={() => handleChangeStatus(task.id, "rejected")}
+                aria-label="거절하기"
               >
                 <X className="w-4 h-4" />
-                거절하기
+                <span className="hidden sm:inline">거절하기</span>
               </button>
             </>
           )}
 
           {isReceived && isCurrent && (
             <button
-              className="btn btn-primary btn-sm"
+              className="btn btn-primary btn-sm max-[660px]:btn-xs"
               onClick={() => handleChangeStatus(task.id, "completed")}
+              aria-label="완료하기"
             >
-              완료하기
+              <Check className="w-4 h-4" />
+              <span className="hidden sm:inline">완료하기</span>
             </button>
           )}
 
           {!isReceived && isScheduled && (
             <button
-              className="btn btn-error btn-sm"
+              className="btn btn-error btn-sm max-[660px]:btn-xs"
               onClick={() => handleChangeStatus(task.id, "canceled")}
+              aria-label="취소하기"
             >
               <X className="w-4 h-4" />
-              취소하기
+              <span className="hidden sm:inline">취소하기</span>
             </button>
           )}
 
-          <button className="btn btn-ghost btn-circle btn-sm ml-2">
+          <button className="btn btn-ghost btn-circle btn-sm ml-2" aria-label="메시지 보내기">
             <MessageSquare className="w-4 h-4" />
           </button>
-        </>
+        </div>
       )}
 
       {activeTab === "requested" && taskType === "past" && task.status === "completed" && (

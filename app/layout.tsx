@@ -49,7 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <QueryProvider>
           <ClientLayout>
             <Header />
-            <div className="flex">
+            <div className="flex w-full min-w-0">
               <Sidebar />
               <main className="min-w-0 flex-1 overflow-x-hidden md:ml-64">
                 {children}
