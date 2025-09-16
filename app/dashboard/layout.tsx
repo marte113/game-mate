@@ -1,5 +1,4 @@
-
-export default async function LayoutPrivate({ children } : {children : React.ReactNode}) {
+export default async function LayoutPrivate({ children }: { children: React.ReactNode }) {
   // const supabase = createServerComponentClient({ cookies });
 
   // const {
@@ -13,11 +12,8 @@ export default async function LayoutPrivate({ children } : {children : React.Rea
   return (
     <>
       <div className="flex min-h-screen bg-base-200">
-        
-        <div className="flex-1 p-4">
-          {children}
-        </div>
+        <div className="flex-1 p-2">{children}</div>
       </div>
     </>
-  );
+  )
 }
