@@ -1,21 +1,21 @@
-"use client";
+"use client"
 
-import { useState } from "react";
+import { useState } from "react"
 
-import TokenChargeModal from "../modals/TokenChargeModal";
-import TokenChargeButton from "./TokenChargeButton";
-import { useTokenBalanceQuery, useTokenUsageQuery } from "@/hooks/api/token/useTokenBalanceQuery";
-import { useAuthStore } from "@/stores/authStore";
+import TokenChargeModal from "../modals/TokenChargeModal"
+import TokenChargeButton from "./TokenChargeButton"
+import { useTokenBalanceQuery, useTokenUsageQuery } from "@/hooks/api/token/useTokenBalanceQuery"
+import { useAuthStore } from "@/stores/authStore"
 
 export default function TokenSummaryCard() {
-  const [isChargeModalOpen, setIsChargeModalOpen] = useState<boolean>(false);
+  const [isChargeModalOpen, setIsChargeModalOpen] = useState<boolean>(false)
 
-  const { user } = useAuthStore();
-  const { data: balance, error: balanceError } = useTokenBalanceQuery(user?.id);
-  const { data: usageData, error: usageError } = useTokenUsageQuery();
+  const { user } = useAuthStore()
+  const { data: balance, error: balanceError } = useTokenBalanceQuery(user?.id)
+  const { data: usageData, error: usageError } = useTokenUsageQuery()
 
   if (balanceError || usageError) {
-    return <div>에러가 발생하였습니다.</div>;
+    return <div>에러가 발생하였습니다.</div>
   }
 
   return (
@@ -24,16 +24,15 @@ export default function TokenSummaryCard() {
         <div className="card-body">
           <div className="flex justify-between items-center">
             <h2 className="card-title mb-4">토큰 보유 현황</h2>
-            <TokenChargeButton
-              openChargeModal={() => setIsChargeModalOpen(true)}
-            />
+            <TokenChargeButton openChargeModal={() => setIsChargeModalOpen(true)} />
           </div>
-          <div className="stats shadow">
+          {/* 모바일에서는 세로 스택, sm 이상에서 가로 배치 */}
+          <div className="stats stats-vertical sm:stats-horizontal shadow w-full">
             <div className="stat">
               <div className="stat-title">보유 토큰</div>
               <div className="stat-value">{balance ?? 0}</div>
               <div className="stat-desc">
-                {usageData && typeof usageData.diff === 'number' && !isNaN(usageData.diff)
+                {usageData && typeof usageData.diff === "number" && !isNaN(usageData.diff)
                   ? usageData.diff >= 0
                     ? `↗︎ ${Math.abs(usageData.diff).toLocaleString()} (지난달 대비)`
                     : `↘︎ ${Math.abs(usageData.diff).toLocaleString()} (지난달 대비)`
@@ -43,7 +42,9 @@ export default function TokenSummaryCard() {
             <div className="stat">
               <div className="stat-title">사용 토큰</div>
               <div className="stat-value">
-                {usageData && typeof usageData.usageThisMonth === 'number' && !isNaN(usageData.usageThisMonth)
+                {usageData &&
+                typeof usageData.usageThisMonth === "number" &&
+                !isNaN(usageData.usageThisMonth)
                   ? usageData.usageThisMonth.toLocaleString()
                   : 0}
               </div>
@@ -52,10 +53,7 @@ export default function TokenSummaryCard() {
           </div>
         </div>
       </div>
-      <TokenChargeModal
-        isOpen={isChargeModalOpen}
-        onClose={() => setIsChargeModalOpen(false)}
-      />
+      <TokenChargeModal isOpen={isChargeModalOpen} onClose={() => setIsChargeModalOpen(false)} />
     </>
-  );
+  )
 }

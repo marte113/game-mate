@@ -1,20 +1,9 @@
 import type { Database } from "@/types/database.types"
+import { formatRelativeFromNow } from "@/utils/date"
 
 type TokenTransaction = Database["public"]["Tables"]["token_transactions"]["Row"]
 
-// 안전한 날짜 포맷팅 함수
-function formatDate(dateString: string | null): string {
-  if (!dateString) return "날짜 없음"
-
-  const date = new Date(dateString)
-  if (isNaN(date.getTime())) return "잘못된 날짜"
-
-  return date.toLocaleDateString("ko-KR", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  })
-}
+// 날짜는 상대 시간(예: 3시간 전)으로 간략히 표기하여 작은 화면에서의 줄바꿈을 줄입니다.
 
 // 트랜잭션 타입별 라벨과 색상 클래스를 반환
 function getTransactionTypeDisplay(type: TokenTransaction["transaction_type"]): {
@@ -49,13 +38,21 @@ export default function TokenHistoryTr({ transaction }: { transaction: TokenTran
 
   return (
     <tr key={transaction.transaction_id}>
-      <td>{formatDate(transaction.created_at)}</td>
-      <td>
-        <span className={typeDisplay.className}>{typeDisplay.label}</span>
+      <td className="whitespace-nowrap text-xs sm:text-sm">
+        {formatRelativeFromNow(transaction.created_at ?? "")}
       </td>
-      <td>{formatAmount(transaction.transaction_type, transaction.amount)}</td>
-      <td>
-        <span className="badge badge-success font-semibold">완료</span>
+      <td className="whitespace-nowrap text-xs sm:text-sm">
+        <span className={`${typeDisplay.className} text-xs sm:text-sm whitespace-nowrap`}>
+          {typeDisplay.label}
+        </span>
+      </td>
+      <td className="whitespace-nowrap text-xs sm:text-sm font-semibold">
+        {formatAmount(transaction.transaction_type, transaction.amount)}
+      </td>
+      <td className="whitespace-nowrap">
+        <span className="badge badge-success px-2 py-0.5 text-[0.7rem] sm:text-xs font-semibold">
+          완료
+        </span>
       </td>
     </tr>
   )
