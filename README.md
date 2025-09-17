@@ -81,5 +81,99 @@
 > 페이지 컴포넌트는 선언적 구조를 지향하여 가독성 및 서버 컴포넌트 상태를 유지하고 데이터 페칭/상태/로직은 컨테이너/훅/서비스로 캡슐화하고 있습니다.
 
 <p align="center">
-  <img src="./public/images/architecture.png" alt="앱 구조" width="800" />
+  <img src="./public/images/architecture.png" alt="앱 구조" width="800"/>
 </p>
+
+## 💡Functions
+
+#### 🏠 메인 페이지 🏠
+
+&nbsp;#무한 스크롤, 슬라이더
+
+<table>
+<td>
+  <img src='./public/intro/main.gif' alt="게임 메이트 home페이지" width="680">
+</td>
+<td>
+  <img src='./public/intro/mobile_home.JPG'alt="게임 메이트 home페이지-m" width="190" height="370">
+</td>
+</table>
+
+#### 📊 대시보드 페이지 - 프로필 탭, 토큰 탭 📊
+
+&nbsp;#프로필 수정, 앨범 이미지 관리 <br>
+&nbsp;#토큰 사용 추이, 사용 내역
+
+<table>
+<td>
+  <img src='./public/intro/dashboard.gif' alt="게임 메이트 dashboard페이지" width="680">
+</td>
+<td>
+  <img src='./public/intro/dashboard_profile.JPG'alt="게임 메이트 dashboard페이지-m" width="190" height="370">
+</td>
+</table>
+
+#### 🪙 대시보드 페이지 - token 탭, 충전 모달 🪙
+
+&nbsp; #토큰 충전
+
+<table>
+<td>
+  <img src='./public/intro/payment.gif' alt="게임 메이트 dashboard_token페이지" width="680">
+</td>
+<td>
+  <img src='./public/intro/payment_m.JPG'alt="게임 메이트 dashboard_token페이지지-m" width="190" height="370">
+</td>
+</table>
+
+#### 🗨️ 채팅 페이지 - 채팅 🗨️
+
+&nbsp;#실시간 채팅
+
+<table>
+<td>
+  <img src='./public/intro/chat.gif' alt="게임 메이트 chat페이지" width="680">
+</td>
+<td>
+  <img src='./public/intro/chat_m.JPG'alt="게임 메이트 chat페이지-m" width="190" height="370">
+</td>
+</table>
+
+#### 🗓️ 채팅 페이지 - 예약 모달 🗓️
+
+&nbsp; #채팅 페이지 예약
+
+<table>
+<td>
+  <img src='./public/intro/reservation.gif' alt="게임 메이트 reservation페이지지" width="680">
+</td>
+<td>
+  <img src='./public/intro/reservation_m.JPG'alt="게임 메이트 reservation페이지-m" width="190" height="370">
+</td>
+</table>
+
+#### 📋 의뢰 페이지 📋
+
+&nbsp;#받은 의뢰, 신청한 의뢰
+
+<table>
+<td>
+  <img src='./public/intro/task.gif' alt="게임 메이트 task페이지" width="680">
+</td>
+<td>
+  <img src='./public/intro/task_m.JPG'alt="게임 메이트 task페이지-m" width="190" height="370">
+</td>
+</table>
+
+#### ⭐ 의뢰 페이지 - 리뷰 모달 ⭐
+
+&nbsp;#의뢰 완료 후, 신청자 리뷰 작성
+
+<table>
+<td>
+  <img src='./public/intro/review.gif' alt="게임 메이트 review페이지" width="680">
+</td>
+<td>
+  <img src='./public/intro/review_m.JPG'alt="게임 메이트 review페이지-m" width="190" height="370">
+</td>
+</table>
