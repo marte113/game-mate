@@ -1,20 +1,23 @@
-import { create } from 'zustand'
+import { create } from "zustand"
 
-import { createClient } from '@/supabase/functions/client'
+import { createClient } from "@/supabase/functions/client"
 // UsersRow, ProfilesRow 제거 (충돌 방지)
-import type { Database } from '@/types/database.types'
+import type { Database } from "@/types/database.types"
 
 // 부분 타입 정의 (Pick 사용)
-type UserMinimal = Pick<Database['public']['Tables']['users']['Row'], 'id' | 'profile_circle_img'>
-type ProfileMinimal = Pick<Database['public']['Tables']['profiles']['Row'], 'id' | 'nickname' | 'rating'>
+type UserMinimal = Pick<Database["public"]["Tables"]["users"]["Row"], "id" | "profile_circle_img">
+type ProfileMinimal = Pick<
+  Database["public"]["Tables"]["profiles"]["Row"],
+  "id" | "nickname" | "rating"
+>
 
 interface AuthState {
-  user: UserMinimal | null  // 최소 필드 타입
-  profile: ProfileMinimal | null  // 최소 필드 타입
+  user: UserMinimal | null // 최소 필드 타입
+  profile: ProfileMinimal | null // 최소 필드 타입
   isLoading: boolean
   error: string | null
-  loginWithKakao: () => Promise<void>
-  loginWithGoogle: () => Promise<void>
+  loginWithKakao: (next?: string) => Promise<void>
+  loginWithGoogle: (next?: string) => Promise<void>
   logout: () => Promise<void>
   checkAuth: () => Promise<void>
 }
@@ -24,45 +27,52 @@ export const useAuthStore = create<AuthState>((set) => ({
   profile: null,
   isLoading: false,
   error: null,
-  
-  loginWithKakao: async () => {
+
+  loginWithKakao: async (next?: string) => {
     try {
       set({ isLoading: true, error: null })
       const supabase = createClient()
-      const redirectURL = window.location.origin + "/api/auth/callback"
-      
+      const redirectURL =
+        window.location.origin +
+        "/api/auth/callback" +
+        (next ? `?next=${encodeURIComponent(next)}` : "")
+
       await supabase.auth.signInWithOAuth({
-        provider: 'kakao',
+        provider: "kakao",
         options: {
           redirectTo: redirectURL,
         },
       })
       // 리다이렉션이 발생하므로 여기서는 상태를 업데이트하지 않음
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : '로그인 중 오류가 발생했습니다'
+      const errorMessage = error instanceof Error ? error.message : "로그인 중 오류가 발생했습니다"
       set({ error: errorMessage, isLoading: false })
     }
   },
-  
-  loginWithGoogle: async () => {
+
+  loginWithGoogle: async (next?: string) => {
     try {
       set({ isLoading: true, error: null })
       const supabase = createClient()
-      const redirectURL = window.location.origin + "/api/auth/callback"
-      
+      const redirectURL =
+        window.location.origin +
+        "/api/auth/callback" +
+        (next ? `?next=${encodeURIComponent(next)}` : "")
+
       await supabase.auth.signInWithOAuth({
-        provider: 'google',
+        provider: "google",
         options: {
           redirectTo: redirectURL,
         },
       })
       // 리다이렉션이 발생하므로 여기서는 상태를 업데이트하지 않음
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : '구글 로그인 중 오류가 발생했습니다'
+      const errorMessage =
+        error instanceof Error ? error.message : "구글 로그인 중 오류가 발생했습니다"
       set({ error: errorMessage, isLoading: false })
     }
   },
-  
+
   logout: async () => {
     try {
       set({ isLoading: true, error: null })
@@ -70,60 +80,65 @@ export const useAuthStore = create<AuthState>((set) => ({
       await supabase.auth.signOut()
       set({ user: null, profile: null, isLoading: false })
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : '로그아웃 중 오류가 발생했습니다'
+      const errorMessage =
+        error instanceof Error ? error.message : "로그아웃 중 오류가 발생했습니다"
       set({ error: errorMessage, isLoading: false })
     }
   },
-  
+
   checkAuth: async () => {
     try {
       set({ isLoading: true, error: null })
       const supabase = createClient()
-      const { data: { user }, error: userAuthError } = await supabase.auth.getUser()
+      const {
+        data: { user },
+        error: userAuthError,
+      } = await supabase.auth.getUser()
       if (userAuthError) {
-        set({ error: '인증 정보를 확인하는 중 오류가 발생했습니다', isLoading: false })
+        set({ error: "인증 정보를 확인하는 중 오류가 발생했습니다", isLoading: false })
         return
       }
       if (user) {
         // 사용자 정보 확인 (타입 안전하게)
         const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('id, profile_circle_img')
-          .eq('id', user.id)
+          .from("users")
+          .select("id, profile_circle_img")
+          .eq("id", user.id)
           .single()
-        
+
         if (userError) {
-          console.error('Error fetching user:', userError)
-          set({ error: '사용자 정보를 가져오는 중 오류가 발생했습니다', isLoading: false })
+          console.error("Error fetching user:", userError)
+          set({ error: "사용자 정보를 가져오는 중 오류가 발생했습니다", isLoading: false })
           return
         }
-        
+
         // 프로필 정보 확인 (타입 안전하게)
         const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('id, nickname, rating')
-          .eq('user_id', user.id)
+          .from("profiles")
+          .select("id, nickname, rating")
+          .eq("user_id", user.id)
           .single()
-        
+
         if (profileError) {
-          console.error('Error fetching profile:', profileError)
-          set({ error: '프로필 정보를 가져오는 중 오류가 발생했습니다', isLoading: false })
+          console.error("Error fetching profile:", profileError)
+          set({ error: "프로필 정보를 가져오는 중 오류가 발생했습니다", isLoading: false })
           return
         }
-        
+
         // 타입 안전하게 set
-        set({ 
-          user: userData as UserMinimal,  // 타입 단언
-          profile: profileData as ProfileMinimal,  // 타입 단언
-          isLoading: false 
+        set({
+          user: userData as UserMinimal, // 타입 단언
+          profile: profileData as ProfileMinimal, // 타입 단언
+          isLoading: false,
         })
       } else {
         set({ user: null, profile: null, isLoading: false })
       }
     } catch (error) {
-      console.error('Error checking auth:', error)
-      const errorMessage = error instanceof Error ? error.message : '인증 확인 중 오류가 발생했습니다'
+      console.error("Error checking auth:", error)
+      const errorMessage =
+        error instanceof Error ? error.message : "인증 확인 중 오류가 발생했습니다"
       set({ error: errorMessage, isLoading: false })
     }
-  }
+  },
 }))

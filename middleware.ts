@@ -1,11 +1,11 @@
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
+import { createServerClient } from "@supabase/ssr"
+import { NextResponse, type NextRequest } from "next/server"
 
-const protectedPaths = ['/dashboard'];
-const authPaths = ['/login'];
+const protectedPaths = ["/dashboard"]
+const authPaths = ["/login"]
 
 export async function middleware(req: NextRequest) {
-  const res = NextResponse.next();
+  const res = NextResponse.next()
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -16,10 +16,10 @@ export async function middleware(req: NextRequest) {
           return req.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => res.cookies.set(name, value, options));
+          cookiesToSet.forEach(({ name, value, options }) => res.cookies.set(name, value, options))
         },
       },
-    }
+    },
   )
 
   try {
@@ -27,25 +27,27 @@ export async function middleware(req: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser()
 
-    const path = req.nextUrl.pathname;
-    const isProtectedPath = protectedPaths.some((p) => path.startsWith(p));
-    const isAuthPath = authPaths.includes(path);
-    const isLoggedIn = !!user;
+    const path = req.nextUrl.pathname
+    const isProtectedPath = protectedPaths.some((p) => path.startsWith(p))
+    const isAuthPath = authPaths.includes(path)
+    const isLoggedIn = !!user
 
     if (isProtectedPath && !isLoggedIn) {
-      // 보호된 페이지 접근 시 미로그인 → 로그인 페이지로 이동
-      return NextResponse.redirect(new URL('/login', req.url));
-    }
-    
-    if (isAuthPath && isLoggedIn) {
-      // 로그인 페이지 접근 시 이미 로그인된 사용자 → 대시보드로 이동
-      return NextResponse.redirect(new URL('/dashboard', req.url));
+      // 보호된 페이지 접근 시 미로그인 → 로그인 페이지로 이동 (원래 목적지로 돌아오도록 next 포함)
+      const next = encodeURIComponent(req.nextUrl.pathname + req.nextUrl.search)
+      return NextResponse.redirect(new URL(`/login?next=${next}`, req.url))
     }
 
-    return res;
+    if (isAuthPath && isLoggedIn) {
+      // 로그인 페이지 접근 시 이미 로그인된 사용자 → 대시보드로 이동
+      return NextResponse.redirect(new URL("/dashboard", req.url))
+    }
+
+    return res
   } catch (err) {
-    console.error('Middleware error:', err);
-    return NextResponse.redirect(new URL('/login', req.url));
+    console.error("Middleware error:", err)
+    const next = encodeURIComponent(req.nextUrl.pathname + req.nextUrl.search)
+    return NextResponse.redirect(new URL(`/login?next=${next}`, req.url))
   }
 }
 
@@ -55,6 +57,6 @@ export const config = {
     /*
      * _next/static, _next/image 등 정적 리소스는 제외하고 미들웨어 적용
      */
-    '/((?!api|_next/static|_next/image|icons|public|favicon.ico).*)',
+    "/((?!api|_next/static|_next/image|icons|public|favicon.ico).*)",
   ],
-};
+}

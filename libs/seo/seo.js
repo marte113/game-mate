@@ -1,4 +1,4 @@
-import config from "@/config";
+import config from "@/config"
 
 // SEO 기본값 상수
 // 추후에 twitterCreator 값을 추가해야 함
@@ -7,7 +7,7 @@ const DEFAULT_SEO = {
   type: "website",
   cardType: "summary_large_image",
   twitterCreator: "",
-};
+}
 
 // OpenGraph 메타데이터 생성 함수
 const createOpenGraphMetadata = (openGraph = {}) => ({
@@ -17,7 +17,7 @@ const createOpenGraphMetadata = (openGraph = {}) => ({
   siteName: openGraph.title || config.appName,
   locale: DEFAULT_SEO.locale,
   type: DEFAULT_SEO.type,
-});
+})
 
 // Twitter 메타데이터 생성 함수
 const createTwitterMetadata = (openGraph = {}) => ({
@@ -25,7 +25,7 @@ const createTwitterMetadata = (openGraph = {}) => ({
   description: openGraph.description || config.appDescription,
   card: DEFAULT_SEO.cardType,
   creator: DEFAULT_SEO.twitterCreator,
-});
+})
 
 // Schema.org 데이터 생성 함수
 const createSchemaData = () => ({
@@ -33,14 +33,14 @@ const createSchemaData = () => ({
   "@type": "SoftwareApplication",
   name: config.appName,
   description: config.appDescription,
-  image: `https://${config.domainName}/icons/free-icons-gamepad.png`,
+  image: `https://${config.domainName}/icons/icon.png`,
   url: `https://${config.domainName}/`,
   author: {
     "@type": "Person",
     name: "Marc Lou",
   },
-  datePublished: "2023-08-01",
-  applicationCategory: "EducationalApplication",
+  datePublished: "2025-09-01",
+  applicationCategory: "gaming playform",
   aggregateRating: {
     "@type": "AggregateRating",
     ratingValue: "4.8",
@@ -53,7 +53,7 @@ const createSchemaData = () => ({
       priceCurrency: "USD",
     },
   ],
-});
+})
 
 export const getSEOTags = ({
   title,
@@ -66,7 +66,7 @@ export const getSEOTags = ({
   const baseUrl =
     process.env.NODE_ENV === "development"
       ? "http://localhost:3000/"
-      : `https://${config.domainName}/`;
+      : `https://${config.domainName}/`
 
   return {
     title: title || config.appName,
@@ -80,8 +80,8 @@ export const getSEOTags = ({
       alternates: { canonical: canonicalUrlRelative },
     }),
     ...extraTags,
-  };
-};
+  }
+}
 
 export const renderSchemaTags = () => (
   <script
@@ -90,4 +90,4 @@ export const renderSchemaTags = () => (
       __html: JSON.stringify(createSchemaData()),
     }}
   />
-);
+)

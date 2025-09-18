@@ -67,7 +67,7 @@ export default function ProfileHeader({ profileId }: ProfileHeaderProps) {
   const handleEditProfile = () => {
     // TODO: 프로필 수정 페이지로 이동 또는 모달
     console.log("Edit profile button clicked")
-    router.push("/dashboard/settings/profile") // 예시 경로
+    router.push("/dashboard?tab=profile")
   }
 
   // --- 렌더링 로직 ---

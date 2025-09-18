@@ -1,10 +1,11 @@
 "use client"
 
 import React from "react"
+import type { MouseEventHandler } from "react"
 
 interface ButtonGoogleLoginProps {
   isLoading: boolean
-  onClick: (e: React.MouseEvent) => void
+  onClick?: MouseEventHandler<HTMLButtonElement>
   disabled?: boolean
 }
 
