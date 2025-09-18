@@ -90,90 +90,118 @@
 
 &nbsp;#무한 스크롤, 슬라이더
 
-<table>
-<td>
-  <img src='./public/intro/main.gif' alt="게임 메이트 home페이지" width="680">
-</td>
-<td>
-  <img src='./public/intro/mobile_home.JPG'alt="게임 메이트 home페이지-m" width="190" height="370">
-</td>
-</table>
+<div style="display: flex; width: 100%; align-items: flex-start;">
+  <div style="flex: 8;">
+    <img src='./public/intro/main.gif' alt="게임 메이트 home페이지" style="width:100%">
+  </div>
+  <div style="flex: 2; margin-left: 10px;">
+    <img src='./public/intro/mobile_home_fix.JPG' alt="게임 메이트 home페이지-m" style="width:100%">
+  </div>
+</div>
 
 #### 📊 대시보드 페이지 - 프로필 탭, 토큰 탭 📊
 
 &nbsp;#프로필 수정, 앨범 이미지 관리 <br>
 &nbsp;#토큰 사용 추이, 사용 내역
 
-<table>
-<td>
-  <img src='./public/intro/dashboard.gif' alt="게임 메이트 dashboard페이지" width="680">
-</td>
-<td>
-  <img src='./public/intro/dashboard_profile.JPG'alt="게임 메이트 dashboard페이지-m" width="190" height="370">
-</td>
-</table>
+<div style="display: flex; width: 100%; align-items: flex-start;">
+  <div style="flex: 8;">
+    <img src='./public/intro/dashboard.gif' alt="게임 메이트 dashboard페이지" style="width:100%">
+  </div>
+  <div style="flex: 2; margin-left: 10px;">
+    <img src='./public/intro/dashboard_profile_fix.JPG' alt="게임 메이트 dashboard페이지-m" style="width:100%">
+  </div>
+</div>
 
 #### 🪙 대시보드 페이지 - token 탭, 충전 모달 🪙
 
 &nbsp; #토큰 충전
 
-<table>
-<td>
-  <img src='./public/intro/payment.gif' alt="게임 메이트 dashboard_token페이지" width="680">
-</td>
-<td>
-  <img src='./public/intro/payment_m.JPG'alt="게임 메이트 dashboard_token페이지지-m" width="190" height="370">
-</td>
-</table>
+<div style="display: flex; width: 100%; align-items: flex-start;">
+  <div style="flex: 8;">
+    <img src='./public/intro/payment.gif' alt="게임 메이트 dashboard_token페이지" style="width:100%">
+  </div>
+  <div style="flex: 2; margin-left: 10px;">
+    <img src='./public/intro/payment_m_fix.JPG' alt="게임 메이트 dashboard_token페이지지-m" style="width:100%">
+  </div>
+</div>
+
+#### 🙋 프로필 페이지[id] 🙋
+
+&nbsp; #리뷰, 유튜브, 예약, 채팅 진입점
+
+<div style="display: flex; width: 100%; align-items: flex-start;">
+  <div style="flex: 8;">
+    <img src='./public/intro/profile_public.gif' alt="게임 메이트 dashboard_token페이지" style="width:100%">
+  </div>
+  <div style="flex: 2; margin-left: 10px;">
+    <img src='./public/intro/profile_public_m.JPG' alt="게임 메이트 dashboard_token페이지지-m" style="width:100%">
+  </div>
+</div>
 
 #### 🗨️ 채팅 페이지 - 채팅 🗨️
 
 &nbsp;#실시간 채팅
 
-<table>
-<td>
-  <img src='./public/intro/chat.gif' alt="게임 메이트 chat페이지" width="680">
-</td>
-<td>
-  <img src='./public/intro/chat_m.JPG'alt="게임 메이트 chat페이지-m" width="190" height="370">
-</td>
-</table>
+<div style="display: flex; width: 100%; align-items: flex-start;">
+  <div style="flex: 8;">
+    <img src='./public/intro/chat.gif' alt="게임 메이트 chat페이지" style="width:100%">
+  </div>
+  <div style="flex: 2; margin-left: 10px;">
+    <img src='./public/intro/chat_m_fix.JPG' alt="게임 메이트 chat페이지-m" style="width:100%">
+  </div>
+</div>
 
 #### 🗓️ 채팅 페이지 - 예약 모달 🗓️
 
 &nbsp; #채팅 페이지 예약
 
-<table>
-<td>
-  <img src='./public/intro/reservation.gif' alt="게임 메이트 reservation페이지지" width="680">
-</td>
-<td>
-  <img src='./public/intro/reservation_m.JPG'alt="게임 메이트 reservation페이지-m" width="190" height="370">
-</td>
-</table>
+<div style="display: flex; width: 100%; align-items: flex-start;">
+  <div style="flex: 8;">
+    <img src='./public/intro/reservation.gif' alt="게임 메이트 reservation페이지지" style="width:100%">
+  </div>
+  <div style="flex: 2; margin-left: 10px;">
+    <img src='./public/intro/reservation_m_fix.JPG' alt="게임 메이트 reservation페이지-m" style="width:100%">
+  </div>
+</div>
 
 #### 📋 의뢰 페이지 📋
 
 &nbsp;#받은 의뢰, 신청한 의뢰
 
-<table>
-<td>
-  <img src='./public/intro/task.gif' alt="게임 메이트 task페이지" width="680">
-</td>
-<td>
-  <img src='./public/intro/task_m.JPG'alt="게임 메이트 task페이지-m" width="190" height="370">
-</td>
-</table>
+<div style="display: flex; width: 100%; align-items: flex-start;">
+  <div style="flex: 8;">
+    <img src='./public/intro/task.gif' alt="게임 메이트 task페이지" style="width:100%">
+  </div>
+  <div style="flex: 2; margin-left: 10px;">
+    <img src='./public/intro/task_m_fix2.JPG' alt="게임 메이트 task페이지-m" style="width:100%">
+  </div>
+</div>
 
 #### ⭐ 의뢰 페이지 - 리뷰 모달 ⭐
 
 &nbsp;#의뢰 완료 후, 신청자 리뷰 작성
 
-<table>
-<td>
-  <img src='./public/intro/review.gif' alt="게임 메이트 review페이지" width="680">
-</td>
-<td>
-  <img src='./public/intro/review_m.JPG'alt="게임 메이트 review페이지-m" width="190" height="370">
-</td>
-</table>
+<div style="display: flex; width: 100%; align-items: flex-start;">
+  <div style="flex: 8;">
+    <img src='./public/intro/review.gif' alt="게임 메이트 review페이지" style="width:100%">
+  </div>
+  <div style="flex: 2; margin-left: 10px;">
+    <img src='./public/intro/review_m_fix.JPG' alt="게임 메이트 review페이지-m" style="width:100%">
+  </div>
+</div>
+
+####
+
+#### 🏷️ 카테고리 페이지 🏷️
+
+&nbsp;#게임 카테고리
+
+<div style="display: flex; width: 100%; align-items: flex-start;">
+  <div style="flex: 8;">
+    <img src='./public/intro/category.JPG' alt="게임 메이트 review페이지" style="width:100%">
+  </div>
+  <div style="flex: 2; margin-left: 10px;">
+    <img src='./public/intro/category_m2.JPG' alt="게임 메이트 review페이지-m" style="width:100%">
+  </div>
+</div>
