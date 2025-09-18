@@ -1,5 +1,6 @@
 "use client"
 
+import { Suspense } from "react"
 import { useMemo } from "react"
 
 import type { GameInfo, ProfileGameListProps } from "@/app/profile/_types/profile.types"
@@ -8,7 +9,7 @@ import { useGamesByTitles } from "@/hooks/api/games/useGamesByTitles"
 import GameCard from "./GameCard"
 
 // Next/Image 원격 허용 도메인(placehold.co)을 활용한 기본 이미지
-const DEFAULT_IMAGE = "https://placehold.co/96x96?text=Game"
+const DEFAULT_IMAGE = "https://placehold.co/96x96.png?text=Game"
 
 // 선택된 게임 타이틀(한글, description 컬럼) 을 API 응답과 매핑하는 함수
 function mapSelectedGames(
@@ -61,14 +62,33 @@ export default function ProfileGameList({
   return (
     <>
       {/* 로딩 동안에도 Skeleton 없이 즉시 렌더링하며, 이미지/가격 등은 기본값 처리 */}
-      <GameCard
-        key={representative.id}
-        game={representative}
-        rating={rating ?? defaultRating}
-        reviewCount={reviewCount ?? defaultReviewCount}
-        isOwner={isOwner}
-        providerUserId={providerUserId}
-      />
+      <Suspense
+        fallback={
+          <div className="card bg-base-100 shadow-md overflow-hidden mt-0">
+            <div className="p-4">
+              <div className="mb-1 h-6 w-28 bg-base-200 rounded-full" />
+              <div className="flex items-center gap-3 mt-2">
+                <div className="w-12 h-12 rounded-lg bg-base-200" />
+                <div className="flex-1">
+                  <div className="h-4 w-32 bg-base-200 rounded" />
+                  <div className="h-3 w-24 bg-base-200 rounded mt-2" />
+                </div>
+              </div>
+              <div className="h-4 w-16 bg-base-200 rounded mt-3" />
+              <div className="h-9 w-full bg-base-200 rounded-full mt-4" />
+            </div>
+          </div>
+        }
+      >
+        <GameCard
+          key={representative.id}
+          game={representative}
+          rating={rating ?? defaultRating}
+          reviewCount={reviewCount ?? defaultReviewCount}
+          isOwner={isOwner}
+          providerUserId={providerUserId}
+        />
+      </Suspense>
     </>
   )
 }

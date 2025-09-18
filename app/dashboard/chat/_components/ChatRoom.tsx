@@ -103,7 +103,7 @@ export default function ChatRoom() {
 
   return (
     <>
-      <div className="h-full flex flex-col w-full">
+      <div className="h-full flex flex-col w-full min-w-0">
         {/* 채팅방 헤더 */}
         <ChatHeader
           otherUser={selectedChat.otherUser}

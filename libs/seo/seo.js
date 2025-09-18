@@ -39,8 +39,8 @@ const createSchemaData = () => ({
     "@type": "Person",
     name: "Marc Lou",
   },
-  datePublished: "2023-08-01",
-  applicationCategory: "EducationalApplication",
+  datePublished: "2025-09-01",
+  applicationCategory: "gaming playform",
   aggregateRating: {
     "@type": "AggregateRating",
     ratingValue: "4.8",

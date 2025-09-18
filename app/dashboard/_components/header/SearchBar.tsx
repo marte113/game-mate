@@ -196,8 +196,8 @@ export default function SearchBar() {
         </div>
       ) : (
         // 닫힘 상태: 아이콘 버튼
-        <button className="btn btn-ghost btn-circle" onClick={() => setIsOpen(true)}>
-          <SearchIcon className="w-5 h-5" />
+        <button className="p-2" onClick={() => setIsOpen(true)}>
+          <SearchIcon className="w-4 h-4 md:w-5 md:h-5" />
         </button>
       )}
     </div>
