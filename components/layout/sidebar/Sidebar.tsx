@@ -117,6 +117,13 @@ export default function Sidebar() {
     },
   ]
 
+  // 비로그인 사용자도 볼 수 있는 공개 메뉴(중복 방지용)
+  const publicCategoryItem = {
+    href: "/category",
+    label: "게임 카테고리",
+    icon: <Gamepad2 className="w-5 h-5" />,
+  }
+
   const commonItems = [
     {
       title: "기타",
@@ -203,6 +210,30 @@ export default function Sidebar() {
 
           {/* --- 로그인 시 메뉴와 아래 섹션 구분선 --- */}
           {isLoggedIn && <Separator className="bg-base-200 flex-shrink-0" />}
+
+          {/* --- 비로그인 사용자에게도 '게임 카테고리' 노출 --- */}
+          {!isLoggedIn && (
+            <div className="flex-shrink-0">
+              <h3 className="text-sm font-semibold text-base-content/60 mb-2 px-1">탐색</h3>
+              <ul className="flex flex-col gap-1">
+                <li>
+                  <Link
+                    href={publicCategoryItem.href}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-base-200 text-base-content/80 hover:text-base-content
+                        ${
+                          pathname === publicCategoryItem.href.split("?")[0]
+                            ? "bg-warning text-warning-content"
+                            : ""
+                        }`}
+                    onClick={close}
+                  >
+                    {publicCategoryItem.icon}
+                    <span>{publicCategoryItem.label}</span>
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          )}
 
           {/* --- 추천 채널 섹션 --- */}
           <div className="flex-shrink-0">

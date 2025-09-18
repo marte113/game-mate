@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { toast } from "react-hot-toast"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 
 import HeaderCenter from "@/components/layout/HeaderCenter"
 import ButtonKakaoLogin from "@/components/auth/ButtonKakaoLogin"
@@ -15,12 +15,18 @@ export default function Login() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const { loginWithKakao, loginWithGoogle, user, checkAuth } = useAuthStore()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const nextParam = searchParams.get("next") ?? undefined
 
-  // 이미 로그인한 경우 대시보드로 리다이렉트
+  // 이미 로그인한 경우: next가 있으면 next로, 없으면 대시보드로 리다이렉트
   useEffect(() => {
     checkAuth().then(() => {
       if (user) {
-        router.push("/dashboard")
+        if (nextParam) {
+          router.push(nextParam)
+        } else {
+          router.push("/dashboard")
+        }
       }
     })
   }, [user, router, checkAuth])
@@ -29,7 +35,7 @@ export default function Login() {
     e.preventDefault()
     setIsLoading(true)
     try {
-      await loginWithKakao()
+      await loginWithKakao(nextParam)
       // 리다이렉션이 발생하므로 여기서는 추가 작업 불필요
     } catch (error) {
       console.error(error)
@@ -42,7 +48,7 @@ export default function Login() {
     e.preventDefault()
     setIsGoogleLoading(true)
     try {
-      await loginWithGoogle()
+      await loginWithGoogle(nextParam)
       // 리다이렉션이 발생하므로 여기서는 추가 작업 불필요
     } catch (error) {
       console.error(error)
