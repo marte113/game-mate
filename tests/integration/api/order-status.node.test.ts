@@ -1,3 +1,4 @@
+// @vitest-environment node
 /**
  * 의뢰 상태 변경 API 통합 테스트
  *

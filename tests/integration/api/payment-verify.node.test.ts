@@ -1,3 +1,4 @@
+// @vitest-environment node
 /**
  * 결제 검증 API 통합 테스트
  *

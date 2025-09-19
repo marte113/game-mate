@@ -14,6 +14,7 @@
  *    - canceled/rejected → cancel_request_and_refund RPC (요청자 환불)
  */
 
+// @vitest-environment node
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { changeOrderStatus } from "@/app/apis/service/order/statusService"
 

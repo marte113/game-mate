@@ -26,12 +26,6 @@ export default defineConfig({
         "app/api/**", // API 라우트는 통합 테스트에서 커버
       ],
     },
-
-    // 환경별 분리 (node 환경이 필요한 테스트)
-    environmentMatchGlobs: [
-      ["tests/unit/**/*.node.test.ts", "node"],
-      ["tests/integration/**/*.node.test.ts", "node"],
-    ],
   },
   resolve: {
     alias: {
