@@ -22,7 +22,7 @@ export default function ChatHeader({ otherUser, onReservationClick }: ChatHeader
   const setMobileView = useChatUiStore((s) => s.setMobileView)
 
   return (
-    <div className="p-4 border-b flex items-center gap-3">
+    <div className="md:p-4 p-2 border-b flex items-center gap-3">
       {/* 모바일 전용 뒤로가기 버튼 */}
       <button
         type="button"

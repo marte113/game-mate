@@ -24,16 +24,16 @@ export default function ChatInput({ onSendMessage, isSubmitting }: ChatInputProp
 
   return (
     <form onSubmit={handleSubmit} className="p-4 border-t">
-      <div className="flex gap-2 items-center">
+      <div className="flex gap-2 items-center min-w-0">
         <input
           ref={inputRef}
           type="text"
           value={messageText}
           onChange={(e) => setMessageText(e.target.value)}
           placeholder="메시지를 입력하세요..."
-          className="input input-bordered flex-1 h-10"
+          className="input input-bordered h-11 flex-1 min-w-0 w-full"
         />
-        <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+        <button type="submit" className="btn btn-primary btn-md shrink-0" disabled={isSubmitting}>
           전송
         </button>
       </div>
