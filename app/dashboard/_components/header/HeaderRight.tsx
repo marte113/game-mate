@@ -1,6 +1,7 @@
 "use client"
 
 import { Suspense } from "react"
+
 import { useAuthStore } from "@/stores/authStore"
 
 import SearchBar from "./SearchBar"
