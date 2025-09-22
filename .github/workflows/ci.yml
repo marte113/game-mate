@@ -10,6 +10,12 @@ jobs:
   lint-and-build:
     name: 🔍 Lint & 🏗️ Build
     runs-on: ubuntu-latest
+    environment: preview
+    
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
 
     steps:
       - name: 📥 Checkout code

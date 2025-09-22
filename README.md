@@ -15,7 +15,7 @@
 당신이 원하는 플레이어와 함께 짜릿한 승리를 만들어보세요! “게임 메이트”는 다채로운 성향의 게이머님들을 위한 메이트가 준비되어 있답니다!
 
 <p>
-  <a href="http://localhost:3000" target="_blank">🎮 게임 메이트 서비스 바로가기</a>
+  <a href="https://game-mate-peach.vercel.app/" target="_blank">🎮 게임 메이트 서비스 바로가기</a>
   <br/>
 </p>
 
