@@ -232,3 +232,11 @@
   </tr>
   
 </table>
+
+#### 💡Lighthouse💡
+
+&nbsp;🏠메인 페이지
+
+<p >
+  <img src="./public/intro/lighhouse.JPG" alt="Home 페이지 Lighthouse 측정치" width="400"/>
+</p>

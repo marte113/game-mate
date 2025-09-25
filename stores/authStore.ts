@@ -1,10 +1,7 @@
 import { create } from "zustand"
-
 import { createClient } from "@/supabase/functions/client"
-// UsersRow, ProfilesRow 제거 (충돌 방지)
 import type { Database } from "@/types/database.types"
 
-// 부분 타입 정의 (Pick 사용)
 type UserMinimal = Pick<Database["public"]["Tables"]["users"]["Row"], "id" | "profile_circle_img">
 type ProfileMinimal = Pick<
   Database["public"]["Tables"]["profiles"]["Row"],
@@ -12,8 +9,8 @@ type ProfileMinimal = Pick<
 >
 
 interface AuthState {
-  user: UserMinimal | null // 최소 필드 타입
-  profile: ProfileMinimal | null // 최소 필드 타입
+  user: UserMinimal | null
+  profile: ProfileMinimal | null
   isLoading: boolean
   error: string | null
   loginWithKakao: (next?: string) => Promise<void>
@@ -32,21 +29,25 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       set({ isLoading: true, error: null })
       const supabase = createClient()
-      const redirectURL =
-        window.location.origin +
-        "/api/auth/callback" +
-        (next ? `?next=${encodeURIComponent(next)}` : "")
+      const origin = window.location.origin
+      // next는 쿠키로 전달 (redirectTo에는 동적 쿼리를 붙이지 않음)
+      if (typeof window !== "undefined") {
+        if (next) {
+          document.cookie = `return_to=${encodeURIComponent(next)}; Path=/; Max-Age=600; SameSite=Lax`
+        } else {
+          document.cookie = `return_to=; Path=/; Max-Age=0; SameSite=Lax`
+        }
+      }
+      const redirectURL = `${origin}/api/auth/callback`
 
       await supabase.auth.signInWithOAuth({
         provider: "kakao",
-        options: {
-          redirectTo: redirectURL,
-        },
+        options: { redirectTo: redirectURL },
       })
-      // 리다이렉션이 발생하므로 여기서는 상태를 업데이트하지 않음
+      // 이후는 리다이렉트되므로 상태 업데이트 불필요
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "로그인 중 오류가 발생했습니다"
-      set({ error: errorMessage, isLoading: false })
+      const msg = error instanceof Error ? error.message : "로그인 중 오류가 발생했습니다"
+      set({ error: msg, isLoading: false })
     }
   },
 
@@ -54,22 +55,24 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       set({ isLoading: true, error: null })
       const supabase = createClient()
-      const redirectURL =
-        window.location.origin +
-        "/api/auth/callback" +
-        (next ? `?next=${encodeURIComponent(next)}` : "")
+      const origin = window.location.origin
+      // next는 쿠키로 전달 (redirectTo에는 동적 쿼리를 붙이지 않음)
+      if (typeof window !== "undefined") {
+        if (next) {
+          document.cookie = `return_to=${encodeURIComponent(next)}; Path=/; Max-Age=600; SameSite=Lax`
+        } else {
+          document.cookie = `return_to=; Path=/; Max-Age=0; SameSite=Lax`
+        }
+      }
+      const redirectURL = `${origin}/api/auth/callback`
 
       await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: {
-          redirectTo: redirectURL,
-        },
+        options: { redirectTo: redirectURL },
       })
-      // 리다이렉션이 발생하므로 여기서는 상태를 업데이트하지 않음
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "구글 로그인 중 오류가 발생했습니다"
-      set({ error: errorMessage, isLoading: false })
+      const msg = error instanceof Error ? error.message : "구글 로그인 중 오류가 발생했습니다"
+      set({ error: msg, isLoading: false })
     }
   },
 
@@ -80,9 +83,8 @@ export const useAuthStore = create<AuthState>((set) => ({
       await supabase.auth.signOut()
       set({ user: null, profile: null, isLoading: false })
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "로그아웃 중 오류가 발생했습니다"
-      set({ error: errorMessage, isLoading: false })
+      const msg = error instanceof Error ? error.message : "로그아웃 중 오류가 발생했습니다"
+      set({ error: msg, isLoading: false })
     }
   },
 
@@ -99,7 +101,6 @@ export const useAuthStore = create<AuthState>((set) => ({
         return
       }
       if (user) {
-        // 사용자 정보 확인 (타입 안전하게)
         const { data: userData, error: userError } = await supabase
           .from("users")
           .select("id, profile_circle_img")
@@ -112,7 +113,6 @@ export const useAuthStore = create<AuthState>((set) => ({
           return
         }
 
-        // 프로필 정보 확인 (타입 안전하게)
         const { data: profileData, error: profileError } = await supabase
           .from("profiles")
           .select("id, nickname, rating")
@@ -125,10 +125,9 @@ export const useAuthStore = create<AuthState>((set) => ({
           return
         }
 
-        // 타입 안전하게 set
         set({
-          user: userData as UserMinimal, // 타입 단언
-          profile: profileData as ProfileMinimal, // 타입 단언
+          user: userData as UserMinimal,
+          profile: profileData as ProfileMinimal,
           isLoading: false,
         })
       } else {
@@ -136,9 +135,8 @@ export const useAuthStore = create<AuthState>((set) => ({
       }
     } catch (error) {
       console.error("Error checking auth:", error)
-      const errorMessage =
-        error instanceof Error ? error.message : "인증 확인 중 오류가 발생했습니다"
-      set({ error: errorMessage, isLoading: false })
+      const msg = error instanceof Error ? error.message : "인증 확인 중 오류가 발생했습니다"
+      set({ error: msg, isLoading: false })
     }
   },
 }))

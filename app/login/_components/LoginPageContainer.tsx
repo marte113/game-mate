@@ -11,7 +11,7 @@ import ButtonGoogleLogin from "@/components/auth/ButtonGoogleLogin"
 import { useAuthStore } from "@/stores/authStore"
 
 interface Props {
-  // 서버에서 안전하게 파싱/검증된 next 경로(상대 경로만 허용)
+  // 서버에서 안전하게 파싱된 내부 경로
   nextParam?: string
 }
 
@@ -21,18 +21,13 @@ export default function LoginPageContainer({ nextParam }: Props) {
   const { loginWithKakao, loginWithGoogle, user, checkAuth } = useAuthStore()
   const router = useRouter()
 
-  // 이미 로그인한 경우: next가 있으면 next로, 없으면 대시보드로 리다이렉트
+  // 이미 로그인한 경우: next가 있으면 next로, 없으면 대시보드로
   useEffect(() => {
     checkAuth().then(() => {
       if (user) {
-        if (nextParam) {
-          router.push(nextParam)
-        } else {
-          router.push("/dashboard")
-        }
+        router.push(nextParam ?? "/dashboard")
       }
     })
-    // user, nextParam, router, checkAuth 의존성만 유지
   }, [user, nextParam, router, checkAuth])
 
   const handleKakaoLogin: MouseEventHandler<HTMLButtonElement> = (e) => {
@@ -63,7 +58,6 @@ export default function LoginPageContainer({ nextParam }: Props) {
           title="로그인"
           subtitle="회원 가입을 통해 게임 메이트를 찾아보세요!"
         />
-
         <div className="mt-8 space-y-4">
           <ButtonKakaoLogin
             isLoading={isLoading}
