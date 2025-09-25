@@ -1,43 +1,24 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServerClient } from "@supabase/ssr"
-import { z } from "zod"
+import { toSafeNextOrDefault } from "@/libs/url/safeNext"
 
-export const dynamic = "force-dynamic"
+export const dynamic = "force-dynamic" // 없어도 되지만, 명시해도 무방
 
-// OAuth provider redirect target
-// Handles code exchange, sets auth cookies, and redirects user
 export async function GET(request: NextRequest) {
   const url = new URL(request.url)
-
-  // Provider may return error params
-  const oauthError = url.searchParams.get("error")
-  const errorDescription = url.searchParams.get("error_description")
-  if (oauthError) {
-    const redirect = new URL(
-      `/login?error=${encodeURIComponent(oauthError)}${errorDescription ? `&desc=${encodeURIComponent(errorDescription)}` : ""}`,
-      request.url,
-    )
-    return NextResponse.redirect(redirect)
-  }
-
-  // Validate and sanitize 'next' to prevent open redirect (allow only internal paths)
-  const rawNext = url.searchParams.get("next")
-  const NextSchema = z
-    .string()
-    .startsWith("/")
-    .refine((v) => !v.startsWith("//"), { message: "invalid_next" })
-
-  const safeNext = (() => {
-    const parsed = NextSchema.safeParse(rawNext ?? "/dashboard")
-    return parsed.success ? parsed.data : "/dashboard"
-  })()
-
   const code = url.searchParams.get("code")
+  const cookieNext = request.cookies.get("return_to")?.value
+  // URLSearchParams.get() returns string | null, normalize null -> undefined for the util type
+  const safeNext = toSafeNextOrDefault(cookieNext ?? url.searchParams.get("next") ?? undefined)
 
   if (!code) {
-    return NextResponse.redirect(new URL("/login?error=missing_code", request.url))
+    const resp = NextResponse.redirect(new URL("/login?error=missing_code", request.url))
+    // 사용 후 보조 쿠키 제거
+    resp.cookies.set("return_to", "", { maxAge: 0, path: "/" })
+    return resp
   }
 
+  // 성공 시 돌려보낼 Redirect 응답 객체 (요청 origin 기준 동일 도메인)
   const res = NextResponse.redirect(new URL(safeNext, request.url))
 
   try {
@@ -60,14 +41,19 @@ export async function GET(request: NextRequest) {
 
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (error) {
-      return NextResponse.redirect(
+      const resp = NextResponse.redirect(
         new URL(`/login?error=${encodeURIComponent(error.message)}`, request.url),
       )
+      resp.cookies.set("return_to", "", { maxAge: 0, path: "/" })
+      return resp
     }
 
+    // 성공 시에도 보조 쿠키 제거
+    res.cookies.set("return_to", "", { maxAge: 0, path: "/" })
     return res
-  } catch (_) {
-    // 서버 콘솔 직접 로깅 금지: 실패 시 안전한 페이지로 리다이렉트
-    return NextResponse.redirect(new URL("/login?error=callback_error", request.url))
+  } catch {
+    const resp = NextResponse.redirect(new URL("/login?error=callback_error", request.url))
+    resp.cookies.set("return_to", "", { maxAge: 0, path: "/" })
+    return resp
   }
 }

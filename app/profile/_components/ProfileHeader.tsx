@@ -11,6 +11,7 @@ import Badge from "@/components/ui/Badge" // Badge 컴포넌트 경로 확인
 import { ProfileHeaderProps } from "@/app/profile/_types/profile.types"
 import { usePublicProfileQuery } from "@/hooks/api/profile/usePublicProfileQuery"
 import { useStartChat } from "@/hooks/chat/useStartChat"
+import { buildLoginUrl, getCurrentPathWithSearch } from "@/utils/navigation/loginRedirect"
 
 // --- 임시 Mock 데이터 (필요시 제거) ---
 const mockProfileDataExtras = {
@@ -210,7 +211,10 @@ export default function ProfileHeader({ profileId }: ProfileHeaderProps) {
                   // 로그인 안 한 경우
                   <button
                     className="btn btn-sm btn-primary rounded-full"
-                    onClick={() => router.push("/login")}
+                    onClick={() => {
+                      const nextPath = getCurrentPathWithSearch()
+                      router.push(buildLoginUrl(nextPath))
+                    }}
                   >
                     로그인 후 대화
                   </button>
