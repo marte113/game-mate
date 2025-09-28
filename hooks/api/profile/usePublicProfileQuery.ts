@@ -1,6 +1,6 @@
 "use client"
 
-import { useQuery, UseQueryOptions } from "@tanstack/react-query"
+import { useQuery, type UseQueryOptions } from "@tanstack/react-query"
 
 import { queryKeys } from "@/constants/queryKeys"
 import { getPublicProfile } from "@/app/apis/service/profile/publicProfile.service"

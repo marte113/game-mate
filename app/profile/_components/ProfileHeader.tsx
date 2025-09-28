@@ -13,6 +13,8 @@ import { usePublicProfileQuery } from "@/hooks/api/profile/usePublicProfileQuery
 import { useStartChat } from "@/hooks/chat/useStartChat"
 import { buildLoginUrl, getCurrentPathWithSearch } from "@/utils/navigation/loginRedirect"
 
+import ProfileHeaderSkeleton from "./skeletons/ProfileHeaderSkeleton"
+
 // --- 임시 Mock 데이터 (필요시 제거) ---
 const mockProfileDataExtras = {
   coverImage: "/profilebg/neonlaserbg.avif",
@@ -30,14 +32,8 @@ export default function ProfileHeader({ profileId }: ProfileHeaderProps) {
   const { startChatWithUser } = useStartChat()
 
   // Prefetch된 프로필 데이터 가져오기
-  const numericProfileId = Number(profileId)
-  const {
-    data: profileData,
-    isLoading,
-    error,
-  } = usePublicProfileQuery(numericProfileId, {
-    enabled: Number.isFinite(numericProfileId),
-    staleTime: 5 * 60 * 1000,
+  const { data: profileData, isLoading } = usePublicProfileQuery(profileId, {
+    enabled: Number.isFinite(profileId),
   })
 
   // --- 로딩 및 에러 처리 (헤더 부분에 간단히 표시하거나, page.tsx 레벨에서 처리) ---
@@ -75,40 +71,13 @@ export default function ProfileHeader({ profileId }: ProfileHeaderProps) {
   // 데이터 로딩 중이거나 에러 발생 시 기본적인 스켈레톤 또는 메시지 표시 고려
   if (isLoading && !profileData) {
     // 초기 로딩 상태 강화 (hydrate된 데이터가 없을 때만)
-    // 간단한 로딩 상태 표시 (옵션)
-    return (
-      <section className="relative">
-        <div className="relative w-full h-48 md:h-64 lg:h-80 bg-base-300 animate-pulse"></div>
-        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 -mt-16 md:-mt-20 relative z-10">
-          <div className="flex flex-col md:flex-row gap-6 items-start">
-            <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-base-100 bg-base-300 animate-pulse"></div>
-            <div className="flex-1 pt-2 md:pt-16">
-              <div className="h-8 bg-base-300 rounded w-1/2 mb-2 animate-pulse"></div>
-              <div className="h-4 bg-base-300 rounded w-3/4 animate-pulse"></div>
-            </div>
-          </div>
-        </div>
-      </section>
-    )
+    return <ProfileHeaderSkeleton />
   }
 
-  // 에러 상태 처리 (Refetch 실패 등)
-  if (error) {
-    return (
-      <section className="relative py-10 text-center">
-        <p className="text-error">프로필 헤더 정보를 불러오는 중 오류가 발생했습니다.</p>
-      </section>
-    )
-  }
+  // 에러 UI는 상위 QuerySectionBoundary에서 처리합니다.
 
-  // 데이터가 없는 경우 (fetch 결과가 null)
-  if (!profileData) {
-    return (
-      <section className="relative py-10 text-center">
-        <p>프로필 정보를 찾을 수 없습니다.</p>
-      </section>
-    )
-  }
+  // 데이터가 없는 경우: 렌더 보호용 가드 -> 실행되지는 않지만 진짜 혹시 모를 렌더링 가드.
+  if (!profileData) return null
 
   // --- 실제 UI 렌더링 ---
   return (
