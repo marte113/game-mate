@@ -1,8 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
-
-import type { ProfileMainContentProps } from "@/app/profile/_types/profile.types"
+import { type ProfileMainContentProps } from "@/app/profile/_types/profile.types"
 import { useAuthStore } from "@/stores/authStore" // isOwner 확인용
 import { usePublicProfileQuery } from "@/hooks/api/profile/usePublicProfileQuery"
 
@@ -16,23 +14,17 @@ import ProfileReviewSection from "./ProfileReviewSection"
 import QuerySectionBoundary from "@/components/query/QuerySectionBoundary"
 import { queryKeys } from "@/constants/queryKeys"
 
+import ProfileMainContentSkeleton from "./skeletons/ProfileMainContentSkeleton"
+
 // 탭 종류 정의
 export type ProfileTabType = "profile" // | 'videos' | 'reviews'; // 추후 확장
-
-// 클라이언트 직접 페칭 로직 제거 (API+Service+Hook 레이어 사용)
 
 export default function ProfileMainContent({ profileId }: ProfileMainContentProps) {
   const { user: loggedInUser } = useAuthStore() // isOwner 확인용
 
   // Prefetch된 프로필 데이터 가져오기 (하위 컴포넌트에 전달 목적)
-  const numericProfileId = useMemo(() => Number(profileId), [profileId])
-  const {
-    data: profileData,
-    isLoading,
-    error,
-  } = usePublicProfileQuery(numericProfileId, {
-    enabled: Number.isFinite(numericProfileId),
-    staleTime: 5 * 60 * 1000,
+  const { data: profileData, isLoading } = usePublicProfileQuery(profileId, {
+    enabled: Number.isFinite(profileId),
   })
 
   // isOwner 계산 (GameList 등에 전달)
@@ -42,44 +34,10 @@ export default function ProfileMainContent({ profileId }: ProfileMainContentProp
   // --- 로딩/에러 처리 ---
   // 기본적인 스켈레톤 또는 메시지 표시
   if (isLoading && !profileData) {
-    return (
-      <section className="py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="animate-pulse">
-            {/* Tab Nav Placeholder */}
-            <div className="h-10 bg-base-300 rounded w-1/4 mb-8"></div>
-            {/* Content Placeholder */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="md:col-span-1 space-y-6">
-                <div className="h-48 bg-base-300 rounded"></div>
-                <div className="h-24 bg-base-300 rounded"></div>
-                <div className="h-32 bg-base-300 rounded"></div>
-              </div>
-              <div className="md:col-span-2 space-y-8">
-                <div className="h-24 bg-base-300 rounded"></div>
-                <div className="h-48 bg-base-300 rounded"></div>
-                <div className="h-64 bg-base-300 rounded"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    )
+    return <ProfileMainContentSkeleton />
   }
-  if (error) {
-    return (
-      <section className="py-8 text-center">
-        <p className="text-error">프로필 컨텐츠를 불러오는 중 오류가 발생했습니다.</p>
-      </section>
-    )
-  }
-  if (!profileData) {
-    return (
-      <section className="py-8 text-center">
-        <p>프로필 컨텐츠를 찾을 수 없습니다.</p>
-      </section>
-    )
-  }
+  // 에러 UI는 상위 QuerySectionBoundary에서 처리합니다.
+  if (!profileData) return null
 
   return (
     <>

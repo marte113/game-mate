@@ -44,7 +44,6 @@ export type PrefetchedProfileData = Pick<
     | "selected_tags"
     | "youtube_urls"
     | "selected_games" // 게임 목록 생성에 필요
-    // 필요에 따라 RLS 고려하여 추가
   > & { public_id: number }
 
 // 앨범 이미지 타입 (ProfileAlbumCarousel)
@@ -70,20 +69,18 @@ export type ReviewInfo = Omit<ReviewsRow, "reviewer_id" | "reviewed_id" | "reque
 
 // ProfileHeader Props
 export interface ProfileHeaderProps {
-  profileId: string // public_id
+  profileId: number // public_id
 }
-
 // ProfileMainContent Props
 export interface ProfileMainContentProps {
-  profileId: string // public_id
+  profileId: number // public_id
 }
 
 // ProfileAlbumCarousel Props
 export interface ProfileAlbumCarouselProps {
-  userId: string // 실제 user_id
+  userId: string // 실제 user_id (UUID)
   profileNickname: string | null
 }
-
 // ProfileTags Props
 export interface ProfileTagsProps {
   tags: readonly string[] | null
@@ -111,5 +108,5 @@ export interface ProfileVideoSectionProps {
 
 // ProfileReviewSection Props
 export interface ProfileReviewSectionProps {
-  profileId: string // public_id
+  profileId: number // public_id
 }

@@ -47,7 +47,7 @@ export const queryKeys = {
       ["albumImagesPublic", String(publicUserId)] as const,
     publicById: (publicId: number) => ["profilePublic", publicId] as const,
     selectedGamesByUserId: (userId: string) => ["profile", "selectedGames", userId] as const,
-    reviewsByProfileId: (profileId: string) => ["profile", "reviews", profileId] as const,
+    reviewsByProfileId: (profileId: number) => ["profile", "reviews", profileId] as const,
   },
 
   search: {

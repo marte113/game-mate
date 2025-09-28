@@ -8,7 +8,7 @@ import type { PrefetchedProfileData } from "@/app/profile/_types/profile.types"
 
 // 컴포넌트 Props 타입 정의
 interface ProfilePageContainerProps {
-  profileId: string // 조회할 프로필의 ID
+  profileId: number // 조회할 프로필의 ID
   children: ReactNode
 }
 
@@ -17,14 +17,10 @@ export default async function ProfilePageContainer({
   children,
 }: ProfilePageContainerProps) {
   const queryClient = new QueryClient()
-  const numericProfileId = Number(profileId)
-  if (!Number.isFinite(numericProfileId)) {
-    notFound()
-  }
-  const key = queryKeys.profile.publicById(numericProfileId)
+  const key = queryKeys.profile.publicById(profileId)
 
   // 서버에서 단일 I/O로 데이터 조회 및 404 판정
-  const data = await svcGetPublicProfile(numericProfileId)
+  const data = await svcGetPublicProfile(profileId)
   if (!data) {
     notFound()
   }
