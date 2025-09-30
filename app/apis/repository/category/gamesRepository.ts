@@ -1,4 +1,4 @@
-"use server"
+import "server-only"
 import { getServerSupabase } from "@/app/apis/base"
 
 export async function listGames(offset: number, limit: number) {
