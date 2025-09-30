@@ -1,51 +1,41 @@
-import 'server-only'
-import { createServerClientComponent } from '@/supabase/functions/server'
+import "server-only"
+import { createServerClientComponent } from "@/supabase/functions/server"
+import type { ProfilesRow } from "@/types/database.table.types"
 
-export async function repoGetProfileUserIdByPublicId(publicId: number) {
-  const supabase = await createServerClientComponent()
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('user_id')
-    .eq('public_id', publicId)
-    .maybeSingle()
-
-  if (error) return { userId: null as string | null, error }
-  return { userId: data?.user_id ?? null, error: null as unknown as null }
-}
+// 프로필 공개 조회에 사용하는 컬럼 서브셋 타입
+type ProfilePublicProjection = Pick<
+  ProfilesRow,
+  | "user_id"
+  | "nickname"
+  | "follower_count"
+  | "description"
+  | "selected_tags"
+  | "youtube_urls"
+  | "selected_games"
+>
 
 // Fetch full public profile by publicId by joining profiles and users
 // Returns merged shape compatible with PrefetchedProfileData
-export async function repoGetPublicProfile(publicId: number) {
+export async function repoGetPublicProfile(
+  publicId: number,
+): Promise<{ data: ProfilePublicProjection | null; error: Error | null }> {
   const supabase = await createServerClientComponent()
 
   const { data: profileInfo, error: profileError } = await supabase
-    .from('profiles')
-    .select('user_id, nickname, follower_count, description, selected_tags, youtube_urls, selected_games')
-    .eq('public_id', publicId)
-    .single()
+    .from("profiles")
+    .select(
+      "user_id, nickname, follower_count, description, selected_tags, youtube_urls, selected_games",
+    )
+    .eq("public_id", publicId)
+    .maybeSingle()
 
-  if (profileError || !profileInfo || !profileInfo.user_id) {
-    return { data: null as null, error: profileError ?? new Error('Profile not found') }
+  // 프로필 조회 실패는 상향, 0행(없음) 또는 user_id 없음은 정상화(null)
+  if (profileError) {
+    return { data: null, error: profileError as Error }
   }
-
-  const { data: userInfo, error: userError } = await supabase
-    .from('users')
-    .select('id, name, profile_circle_img, is_online')
-    .eq('id', profileInfo.user_id)
-    .single()
-
-  if (userError || !userInfo) {
-    return { data: null as null, error: userError ?? new Error('User not found') }
+  if (!profileInfo || !profileInfo.user_id) {
+    return { data: null, error: null }
   }
-
-  const merged = {
-    ...userInfo,
-    ...profileInfo,
-    user_id: userInfo.id,
-    public_id: publicId,
-  }
-
-  return { data: merged, error: null as unknown as null }
+  // users 조회는 사용자 레포지토리로 분리하고, 서비스 레이어에서 조합합니다
+  return { data: profileInfo as ProfilePublicProjection, error: null }
 }
-
-

@@ -33,7 +33,7 @@ export default function LoginPageContainer({ nextParam }: Props) {
   const handleKakaoLogin: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault()
     setIsLoading(true)
-    void loginWithKakao(nextParam).catch((error) => {
+    void loginWithKakao().catch((error) => {
       console.error(error)
       toast.error("로그인 중 오류가 발생했습니다.")
       setIsLoading(false)
@@ -43,7 +43,7 @@ export default function LoginPageContainer({ nextParam }: Props) {
   const handleGoogleLogin: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault()
     setIsGoogleLoading(true)
-    void loginWithGoogle(nextParam).catch((error) => {
+    void loginWithGoogle().catch((error) => {
       console.error(error)
       toast.error("구글 로그인 중 오류가 발생했습니다.")
       setIsGoogleLoading(false)

@@ -13,8 +13,8 @@ interface AuthState {
   profile: ProfileMinimal | null
   isLoading: boolean
   error: string | null
-  loginWithKakao: (next?: string) => Promise<void>
-  loginWithGoogle: (next?: string) => Promise<void>
+  loginWithKakao: () => Promise<void>
+  loginWithGoogle: () => Promise<void>
   logout: () => Promise<void>
   checkAuth: () => Promise<void>
 }
@@ -25,19 +25,11 @@ export const useAuthStore = create<AuthState>((set) => ({
   isLoading: false,
   error: null,
 
-  loginWithKakao: async (next?: string) => {
+  loginWithKakao: async () => {
     try {
       set({ isLoading: true, error: null })
       const supabase = createClient()
       const origin = window.location.origin
-      // next는 쿠키로 전달 (redirectTo에는 동적 쿼리를 붙이지 않음)
-      if (typeof window !== "undefined") {
-        if (next) {
-          document.cookie = `return_to=${encodeURIComponent(next)}; Path=/; Max-Age=600; SameSite=Lax`
-        } else {
-          document.cookie = `return_to=; Path=/; Max-Age=0; SameSite=Lax`
-        }
-      }
       const redirectURL = `${origin}/api/auth/callback`
 
       await supabase.auth.signInWithOAuth({
@@ -51,19 +43,11 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  loginWithGoogle: async (next?: string) => {
+  loginWithGoogle: async () => {
     try {
       set({ isLoading: true, error: null })
       const supabase = createClient()
       const origin = window.location.origin
-      // next는 쿠키로 전달 (redirectTo에는 동적 쿼리를 붙이지 않음)
-      if (typeof window !== "undefined") {
-        if (next) {
-          document.cookie = `return_to=${encodeURIComponent(next)}; Path=/; Max-Age=600; SameSite=Lax`
-        } else {
-          document.cookie = `return_to=; Path=/; Max-Age=0; SameSite=Lax`
-        }
-      }
       const redirectURL = `${origin}/api/auth/callback`
 
       await supabase.auth.signInWithOAuth({
