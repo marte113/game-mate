@@ -1,5 +1,3 @@
-"use client"
-
 import React from "react"
 
 import GameCategorySlider from "@/app/category/_components/GameCategorySlider"
@@ -7,6 +5,7 @@ import MainCarousel from "@/app/(home)/_components/MainCarousel"
 import RecommendedMates from "@/components/ui/RecomendedMates"
 import QuerySectionBoundary from "@/components/query/QuerySectionBoundary"
 import { queryKeys } from "@/constants/queryKeys"
+import HomePageContainer from "@/app/(home)/_components/HomePageContainer"
 
 interface Slide {
   image: string
@@ -29,18 +28,14 @@ const slides: Slide[] = [
 
 export default function Home() {
   return (
-    <>
-      <main className="min-h-screen w-full bg-base-100">
-        <div className="container mx-auto px-4 pt-6">
-          <MainCarousel slides={slides} className="h-[370px]" />
-          <QuerySectionBoundary keys={queryKeys.category.popularGames()}>
-            <GameCategorySlider />
-          </QuerySectionBoundary>
-          <QuerySectionBoundary keys={queryKeys.category.recommendedThemes()}>
-            <RecommendedMates />
-          </QuerySectionBoundary>
-        </div>
-      </main>
-    </>
+    <HomePageContainer>
+      <MainCarousel slides={slides} className="h-[370px]" />
+      <QuerySectionBoundary keys={queryKeys.category.popularGames()}>
+        <GameCategorySlider />
+      </QuerySectionBoundary>
+      <QuerySectionBoundary keys={queryKeys.category.recommendedThemes()}>
+        <RecommendedMates />
+      </QuerySectionBoundary>
+    </HomePageContainer>
   )
 }

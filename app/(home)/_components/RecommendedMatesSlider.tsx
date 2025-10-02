@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useMemo, useRef } from "react"
+import React, { useRef } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ChevronLeft, ChevronRight, Star, UserRound } from "lucide-react"
@@ -92,15 +92,8 @@ interface RecommendedMatesSliderProps {
 // }
 
 const RecommendedMatesSlider = ({ theme, mates }: RecommendedMatesSliderProps) => {
-  console.log("props.mates", mates)
-
   // React ref로 DOM 요소 접근
   const carouselRef = useRef<HTMLDivElement>(null)
-
-  // 간단 랜덤 셔플
-  const shuffledMates = useMemo(() => {
-    return [...mates].sort(() => Math.random() - 0.5)
-  }, [mates])
 
   const scrollLeft = () => {
     carouselRef.current?.scrollBy({ left: -500, behavior: "smooth" })
@@ -142,7 +135,7 @@ const RecommendedMatesSlider = ({ theme, mates }: RecommendedMatesSliderProps) =
         >
           {/* 트랙: 콘텐츠는 가로로만 나열, 래핑 금지 + 콘텐츠 너비만큼 확장 */}
           <div className="flex w-max items-start flex-nowrap gap-4 pr-4">
-            {shuffledMates.map((mate) => (
+            {mates.map((mate) => (
               <MateCard key={mate.id} mate={mate} />
             ))}
           </div>
