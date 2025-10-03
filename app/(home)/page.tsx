@@ -1,5 +1,3 @@
-import React from "react"
-
 import GameCategorySlider from "@/app/category/_components/GameCategorySlider"
 import MainCarousel from "@/app/(home)/_components/MainCarousel"
 import RecommendedMates from "@/components/ui/RecomendedMates"

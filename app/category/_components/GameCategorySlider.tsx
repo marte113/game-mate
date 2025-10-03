@@ -4,6 +4,7 @@ import React, { useRef } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+
 import { usePopularGamesQuery } from "@/hooks/api/category/useCategoryQueries"
 
 interface GameCategoryItemProps {
