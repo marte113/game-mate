@@ -1,5 +1,6 @@
 import "server-only"
-import { createServerClientComponent } from "@/supabase/functions/server"
+
+import { createPublicClient } from "@/supabase/functions/server"
 import type { UsersRow } from "@/types/database.table.types"
 
 // users 테이블 단일 조회(없음은 null로 표준화)
@@ -13,7 +14,7 @@ export async function repoGetUserMinimalById(
     return { data: null, error: null }
   }
 
-  const supabase = await createServerClientComponent()
+  const supabase = createPublicClient() // ✅ 공개 클라이언트 사용 (cookies 불필요)
   const { data, error } = await supabase
     .from("users")
     .select("id, name, profile_circle_img, is_online")

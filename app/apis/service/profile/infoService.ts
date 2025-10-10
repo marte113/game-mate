@@ -60,6 +60,16 @@ export async function updateProfileInfo(requestData: unknown) {
   if (validated.is_mate !== undefined) patch.is_mate = validated.is_mate
   if (Object.keys(patch).length === 0) return { success: true, message: "No changes detected" }
   patch.updated_at = new Date().toISOString()
+
+  // DB 업데이트
   const data = await updateProfileByUserId(userId, patch)
+
+  // 🎯 공개 프로필 캐시 무효화 (다른 사용자들에게 즉시 반영)
+  // publicId는 profiles 테이블의 public_id 컬럼
+  if (current?.public_id) {
+    const { revalidateTag } = await import("next/cache")
+    revalidateTag(`profile-${current.public_id}`)
+  }
+
   return { success: true, data }
 }
