@@ -1,5 +1,6 @@
 import "server-only"
-import { createServerClientComponent } from "@/supabase/functions/server"
+
+import { createPublicClient } from "@/supabase/functions/server"
 import type { ProfilesRow } from "@/types/database.table.types"
 
 // 프로필 공개 조회에 사용하는 컬럼 서브셋 타입
@@ -19,7 +20,7 @@ type ProfilePublicProjection = Pick<
 export async function repoGetPublicProfile(
   publicId: number,
 ): Promise<{ data: ProfilePublicProjection | null; error: Error | null }> {
-  const supabase = await createServerClientComponent()
+  const supabase = createPublicClient() // ✅ 공개 클라이언트 사용 (cookies 불필요)
 
   const { data: profileInfo, error: profileError } = await supabase
     .from("profiles")
