@@ -2,7 +2,7 @@ import Link from "next/link"
 import Image from "next/image"
 
 import config from "@/config"
-import logo from "@/app/icon.png"
+import logo from "@/public/icons/icon.png"
 
 // 사업자 관련 정보
 
@@ -11,8 +11,8 @@ const companyInfo = {
   company_number: "101-23-45678",
   selling_number: "제2025-서울-01234호",
   owner: "홍길동",
-  address: "서울특별시 강남구 테헤란로 427 위워크타워 10층",
-  email: "contact@acetech.com",
+  address: "",
+  email: "",
 }
 
 const Footer = () => {
@@ -75,14 +75,7 @@ const Footer = () => {
                 LEGAL
               </div>
 
-              <div className="flex flex-col justify-center items-center md:items-start gap-2 mb-10 text-sm">
-                <Link href="/tos" className="link link-hover">
-                  이용약관
-                </Link>
-                <Link href="/privacy-policy" className="link link-hover">
-                  개인정보처리방침
-                </Link>
-              </div>
+              <div className="flex flex-col justify-center items-center md:items-start gap-2 mb-10 text-sm"></div>
             </div>
           </div>
         </div>
