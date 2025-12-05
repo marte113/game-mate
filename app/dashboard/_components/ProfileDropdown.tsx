@@ -1,54 +1,55 @@
-"use client";
+"use client"
 
-import { useState, useRef, useEffect, useCallback, memo } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { User, FileText, ClipboardList, LogOut, HandCoins } from "lucide-react";
+import { useState, useRef, useEffect, useCallback, memo } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { User, FileText, ClipboardList, LogOut, HandCoins } from "lucide-react"
 
-import { useAuthStore } from '@/stores/authStore';
+import { useUser, useAuthActions } from "@/stores/authStore"
 
-import ProfileDropdownInfo from "./ProfileDropdownInfo";
+import ProfileDropdownInfo from "./ProfileDropdownInfo"
 
 function ProfileMenu() {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
-  const { user, logout } = useAuthStore();
+  const [isOpen, setIsOpen] = useState<boolean>(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
+  const user = useUser()
+  const { logout } = useAuthActions()
 
-  const profileImage = user?.profile_circle_img || "/avatar/avatar_8.jpeg";
+  const profileImage = user?.profile_circle_img || "/avatar/avatar_8.jpeg"
 
   const toggleOpen = () => {
-    setIsOpen(prev => !prev);
-  };
+    setIsOpen((prev) => !prev)
+  }
 
   const close = useCallback(() => {
-    setIsOpen(false);
-  }, []);
+    setIsOpen(false)
+  }, [])
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) return
 
     function handleClickOutside(event: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
+        setIsOpen(false)
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside)
 
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen]);
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [isOpen])
 
   const handleLogout = useCallback(async () => {
-    await logout();
-    router.push('/');
-    setIsOpen(false);
-  }, [logout, router]);
+    await logout()
+    router.push("/")
+    setIsOpen(false)
+  }, [logout, router])
 
   return (
     <div className="relative" ref={containerRef}>
-      <button 
+      <button
         className="btn btn-ghost hover:bg-primary btn-circle avatar"
         onClick={toggleOpen}
         aria-haspopup="menu"
@@ -67,9 +68,7 @@ function ProfileMenu() {
       </button>
 
       {isOpen && (
-        <div
-          className="absolute right-2 top-16 w-48 bg-base-100 rounded-lg shadow-lg border border-base-300 py-2 z-50"
-        >
+        <div className="absolute right-2 top-16 w-48 bg-base-100 rounded-lg shadow-lg border border-base-300 py-2 z-50">
           <ProfileDropdownInfo />
 
           <div className="py-1">
@@ -117,7 +116,7 @@ function ProfileMenu() {
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default memo(ProfileMenu);
+export default memo(ProfileMenu)

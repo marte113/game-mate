@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react"
 import { toast } from "react-hot-toast"
 
-import { useAuthStore } from "@/stores/authStore"
+import { useUser } from "@/stores/authStore"
 import { useChatUiStore } from "@/stores/chatUiStore"
 import { useNotificationStore } from "@/stores/notificationStore"
 import { useChatMessages } from "@/hooks/api/chat/useChatQueries"
@@ -18,7 +18,8 @@ export default function ChatRoom() {
   const [isReservationOpen, setIsReservationOpen] = useState(false)
 
   // 전역 상태에서 사용자 ID만 가져오기 - 최적화
-  const userId = useAuthStore((state) => state.user?.id)
+  const user = useUser()
+  const userId = user?.id
 
   // UI 스토어에서 선택된 채팅방 가져오기
   const { selectedChat } = useChatUiStore()

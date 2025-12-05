@@ -3,14 +3,14 @@
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 
-import { useAuthStore } from "@/stores/authStore"
+import { useUser } from "@/stores/authStore"
 import { useChatUiStore } from "@/stores/chatUiStore"
 import { useCreateChatRoom } from "@/hooks/api/chat/useChatMutations"
 import { chatApi } from "@/app/dashboard/chat/_api/chatApi"
 
 export function useStartChat() {
   const router = useRouter()
-  const { user: loggedInUser } = useAuthStore()
+  const loggedInUser = useUser()
   const { setSelectedChat } = useChatUiStore()
   const setMobileView = useChatUiStore((s) => s.setMobileView)
 

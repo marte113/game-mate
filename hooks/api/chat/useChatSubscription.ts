@@ -6,7 +6,7 @@ import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js"
 
 import { createClient } from "@/supabase/functions/client"
 import { queryKeys } from "@/constants/queryKeys"
-import { useAuthStore } from "@/stores/authStore"
+import { useUser } from "@/stores/authStore"
 import type { Database } from "@/types/database.types"
 
 type MessageRow = Database["public"]["Tables"]["messages"]["Row"]
@@ -16,7 +16,7 @@ type MessageRow = Database["public"]["Tables"]["messages"]["Row"]
  */
 export function useChatMessageSubscription(currentRoomId?: string | null) {
   const queryClient = useQueryClient()
-  const { user } = useAuthStore()
+  const user = useUser()
 
   const handleNewMessage = useCallback(
     async (payload: RealtimePostgresChangesPayload<MessageRow>) => {
@@ -83,7 +83,7 @@ export function useChatMessageSubscription(currentRoomId?: string | null) {
  */
 export function useChatRoomSubscription() {
   const queryClient = useQueryClient()
-  const { user } = useAuthStore()
+  const user = useUser()
 
   useEffect(() => {
     if (!user?.id) return
@@ -130,7 +130,7 @@ export function useChatSubscriptions(currentRoomId?: string | null) {
  */
 export function useLegacyChatSubscription(currentRoomId?: string | null) {
   const queryClient = useQueryClient()
-  const { user } = useAuthStore()
+  const user = useUser()
 
   useEffect(() => {
     if (!user?.id) return

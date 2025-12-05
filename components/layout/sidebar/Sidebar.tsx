@@ -15,7 +15,7 @@ import {
 } from "lucide-react"
 
 import { useNotificationStore } from "@/stores/notificationStore"
-import { useAuthStore } from "@/stores/authStore"
+import { useUser } from "@/stores/authStore"
 import { useSidebarStore } from "@/stores/sidebarStore"
 import { Separator } from "@/components/ui/Separator"
 import { useBodyScrollLock } from "@/hooks/ui/useBodyScrollLock"
@@ -30,7 +30,7 @@ export default function Sidebar() {
   const isOpen = useSidebarStore((s) => s.isOpen)
   const close = useSidebarStore((s) => s.close)
   const pathname = usePathname()
-  const isLoggedIn = useAuthStore((state) => state.user)
+  const isLoggedIn = useUser()
   const { unreadCount, startNotificationSubscription } = useNotificationStore()
   //isopen에 의해 useNotificationStore가 재생성되더라도 zustand는 안정적인 참조를 제공하기 때문에,
   // 이전 참조를 계속 사용할 수 있습니다. 이 때문에 컴포넌트가 리렌더링되어도 useEffect의 의존성 배열은

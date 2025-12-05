@@ -1,7 +1,7 @@
 "use client"
 
 import { type ProfileMainContentProps } from "@/app/profile/_types/profile.types"
-import { useAuthStore } from "@/stores/authStore" // isOwner 확인용
+import { useUser } from "@/stores/authStore" // isOwner 확인용
 import { usePublicProfileQuery } from "@/hooks/api/profile/usePublicProfileQuery"
 
 import ProfileTabNav from "./ProfileTabNav"
@@ -20,7 +20,7 @@ import ProfileMainContentSkeleton from "./skeletons/ProfileMainContentSkeleton"
 export type ProfileTabType = "profile" // | 'videos' | 'reviews'; // 추후 확장
 
 export default function ProfileMainContent({ profileId }: ProfileMainContentProps) {
-  const { user: loggedInUser } = useAuthStore() // isOwner 확인용
+  const loggedInUser = useUser() // isOwner 확인용
 
   // Prefetch된 프로필 데이터 가져오기 (하위 컴포넌트에 전달 목적)
   const { data: profileData, isLoading } = usePublicProfileQuery(profileId, {

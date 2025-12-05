@@ -4,7 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import { Star, Sparkles } from "lucide-react"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
-import { useAuthStore } from "@/stores/authStore"
+import { useUser } from "@/stores/authStore"
 
 import ReservationModal from "@/app/dashboard/chat/_components/reserveModal/ReservationModal"
 
@@ -35,7 +35,7 @@ export default function GameCard({
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const { user } = useAuthStore()
+  const user = useUser()
 
   const handleOpenModal = () => {
     // 비로그인 상태면 모달을 열지 않고 로그인 페이지로 이동(next에 현재 경로 포함)

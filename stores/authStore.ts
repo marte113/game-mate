@@ -1,126 +1,160 @@
 import { create } from "zustand"
+import { devtools } from "zustand/middleware"
+import type { Session, Provider } from "@supabase/supabase-js"
+
 import { createClient } from "@/supabase/functions/client"
-import type { Database } from "@/types/database.types"
+import { getAuthenticatedUserData } from "@/app/actions/auth"
+import type { AuthUserProjection } from "@/app/apis/repository/user/user.repository.server"
+import type { AuthProfileProjection } from "@/app/apis/repository/profile/profile.repository.server"
 
-type UserMinimal = Pick<Database["public"]["Tables"]["users"]["Row"], "id" | "profile_circle_img">
-type ProfileMinimal = Pick<
-  Database["public"]["Tables"]["profiles"]["Row"],
-  "id" | "nickname" | "rating"
->
+// ─────────────────────────────────────────────────────────
+// State & Actions 타입 정의
+// ─────────────────────────────────────────────────────────
 
-interface AuthState {
-  user: UserMinimal | null
-  profile: ProfileMinimal | null
-  isLoading: boolean
-  error: string | null
-  loginWithKakao: () => Promise<void>
-  loginWithGoogle: () => Promise<void>
+type AuthActions = {
+  loginWithOAuth: (provider: Provider) => Promise<void>
   logout: () => Promise<void>
-  checkAuth: () => Promise<void>
+  syncUserProfile: (session: Session | null) => Promise<void>
+  initialize: () => () => void
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+type AuthState = {
+  session: Session | null
+  user: AuthUserProjection | null
+  profile: AuthProfileProjection | null
+  isLoaded: boolean
+  isLoading: boolean
+  error: string | null
+  actions: AuthActions
+}
+
+const initialState = {
+  session: null,
   user: null,
   profile: null,
+  isLoaded: false,
   isLoading: false,
   error: null,
+}
 
-  loginWithKakao: async () => {
-    try {
-      set({ isLoading: true, error: null })
-      const supabase = createClient()
-      const origin = window.location.origin
-      const redirectURL = `${origin}/api/auth/callback`
+// ─────────────────────────────────────────────────────────
+// Store 생성
+// ─────────────────────────────────────────────────────────
 
-      await supabase.auth.signInWithOAuth({
-        provider: "kakao",
-        options: { redirectTo: redirectURL },
-      })
-      // 이후는 리다이렉트되므로 상태 업데이트 불필요
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : "로그인 중 오류가 발생했습니다"
-      set({ error: msg, isLoading: false })
-    }
-  },
+const useAuthStore = create<AuthState>()(
+  devtools(
+    (set, get) => ({
+      ...initialState,
+      actions: {
+        /**
+         * 통합된 OAuth 로그인
+         * - provider: 'kakao' | 'google' | 'github' 등
+         */
+        loginWithOAuth: async (provider: Provider) => {
+          try {
+            set({ isLoading: true, error: null })
+            const supabase = createClient()
+            const redirectURL = `${window.location.origin}/api/auth/callback`
 
-  loginWithGoogle: async () => {
-    try {
-      set({ isLoading: true, error: null })
-      const supabase = createClient()
-      const origin = window.location.origin
-      const redirectURL = `${origin}/api/auth/callback`
+            await supabase.auth.signInWithOAuth({
+              provider,
+              options: { redirectTo: redirectURL },
+            })
+            // 이후는 리다이렉트되므로 상태 업데이트 불필요
+          } catch (error) {
+            const msg = error instanceof Error ? error.message : "로그인 중 오류가 발생했습니다"
+            set({ error: msg, isLoading: false })
+          }
+        },
 
-      await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: { redirectTo: redirectURL },
-      })
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : "구글 로그인 중 오류가 발생했습니다"
-      set({ error: msg, isLoading: false })
-    }
-  },
+        /**
+         * 로그아웃
+         */
+        logout: async () => {
+          try {
+            set({ isLoading: true, error: null })
+            const supabase = createClient()
+            await supabase.auth.signOut()
+            set({ ...initialState, isLoaded: true })
+          } catch (error) {
+            const msg = error instanceof Error ? error.message : "로그아웃 중 오류가 발생했습니다"
+            set({ error: msg, isLoading: false })
+          }
+        },
 
-  logout: async () => {
-    try {
-      set({ isLoading: true, error: null })
-      const supabase = createClient()
-      await supabase.auth.signOut()
-      set({ user: null, profile: null, isLoading: false })
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : "로그아웃 중 오류가 발생했습니다"
-      set({ error: msg, isLoading: false })
-    }
-  },
+        /**
+         * 세션 변경 시 user/profile 동기화
+         * - onAuthStateChange 콜백에서 호출
+         * - Server Action을 통해 DB 쿼리 실행 (Vault & Gateway 패턴)
+         */
+        syncUserProfile: async (session: Session | null) => {
+          set({ session, isLoading: true })
 
-  checkAuth: async () => {
-    try {
-      set({ isLoading: true, error: null })
-      const supabase = createClient()
-      const {
-        data: { user },
-        error: userAuthError,
-      } = await supabase.auth.getUser()
-      if (userAuthError) {
-        set({ error: "인증 정보를 확인하는 중 오류가 발생했습니다", isLoading: false })
-        return
-      }
-      if (user) {
-        const { data: userData, error: userError } = await supabase
-          .from("users")
-          .select("id, profile_circle_img")
-          .eq("id", user.id)
-          .single()
+          if (!session?.user) {
+            set({ user: null, profile: null, isLoading: false, isLoaded: true })
+            return
+          } //로그인은 하지 않았지만 앱은 로드된 상황을 처리하기 위함.
 
-        if (userError) {
-          console.error("Error fetching user:", userError)
-          set({ error: "사용자 정보를 가져오는 중 오류가 발생했습니다", isLoading: false })
-          return
-        }
+          // Server Action 호출 (DB 쿼리는 서버에서만 실행)
+          const { user, profile, error } = await getAuthenticatedUserData()
 
-        const { data: profileData, error: profileError } = await supabase
-          .from("profiles")
-          .select("id, nickname, rating")
-          .eq("user_id", user.id)
-          .single()
+          set({
+            user,
+            profile,
+            isLoading: false,
+            isLoaded: true,
+            error,
+          })
+        },
 
-        if (profileError) {
-          console.error("Error fetching profile:", profileError)
-          set({ error: "프로필 정보를 가져오는 중 오류가 발생했습니다", isLoading: false })
-          return
-        }
+        /**
+         * 초기화 (onAuthStateChange 구독)
+         * - LayoutClient에서 마운트 시 호출
+         * - 반환값: cleanup 함수 (구독 해제)
+         */
+        initialize: () => {
+          const supabase = createClient()
+          const { syncUserProfile } = get().actions //authStore의 actions 중에서 syncUserProfile을 가져오기 위함.
 
-        set({
-          user: userData as UserMinimal,
-          profile: profileData as ProfileMinimal,
-          isLoading: false,
-        })
-      } else {
-        set({ user: null, profile: null, isLoading: false })
-      }
-    } catch (error) {
-      console.error("Error checking auth:", error)
-      const msg = error instanceof Error ? error.message : "인증 확인 중 오류가 발생했습니다"
-      set({ error: msg, isLoading: false })
-    }
-  },
-}))
+          // 초기 세션 확인
+          supabase.auth.getSession().then(({ data: { session } }) => {
+            syncUserProfile(session)
+          })
+
+          // 세션 변경 구독 (TOKEN_REFRESHED, SIGNED_IN, SIGNED_OUT 등)
+          const {
+            data: { subscription },
+          } = supabase.auth.onAuthStateChange((_event, session) => {
+            syncUserProfile(session) //세션에 변동 사항이 발생한 경우, authStore의 state를 업데이트 하기 위한 onAuthStateChange 세팅
+          })
+
+          // cleanup 함수 반환 << 그런데, 여기서 cleanup이 실질적으로 동작하는 경우가 얼마나 될까?
+          return () => subscription.unsubscribe()
+        },
+      },
+    }),
+    { name: "authStore" },
+  ),
+)
+
+// ─────────────────────────────────────────────────────────
+// 개별 훅 export (외부에서는 이것만 사용)
+// ─────────────────────────────────────────────────────────
+
+// State 훅
+export const useSession = () => useAuthStore((s) => s.session)
+export const useUser = () => useAuthStore((s) => s.user)
+export const useProfile = () => useAuthStore((s) => s.profile)
+export const useAuthLoaded = () => useAuthStore((s) => s.isLoaded)
+export const useAuthLoading = () => useAuthStore((s) => s.isLoading)
+export const useAuthError = () => useAuthStore((s) => s.error)
+
+// Actions 훅
+export const useAuthActions = () => useAuthStore((s) => s.actions)
+
+// ─────────────────────────────────────────────────────────
+// 하위 호환성을 위한 기존 export (점진적 마이그레이션용)
+// TODO: 모든 컴포넌트 마이그레이션 후 제거
+// ─────────────────────────────────────────────────────────
+
+export { useAuthStore }

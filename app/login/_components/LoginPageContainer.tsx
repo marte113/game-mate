@@ -8,7 +8,7 @@ import { toast } from "react-hot-toast"
 import HeaderCenter from "@/components/layout/HeaderCenter"
 import ButtonKakaoLogin from "@/components/auth/ButtonKakaoLogin"
 import ButtonGoogleLogin from "@/components/auth/ButtonGoogleLogin"
-import { useAuthStore } from "@/stores/authStore"
+import { useUser, useAuthLoaded, useAuthActions } from "@/stores/authStore"
 
 interface Props {
   // 서버에서 안전하게 파싱된 내부 경로
@@ -18,22 +18,22 @@ interface Props {
 export default function LoginPageContainer({ nextParam }: Props) {
   const [isLoading, setIsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
-  const { loginWithKakao, loginWithGoogle, user, checkAuth } = useAuthStore()
+  const user = useUser()
+  const isLoaded = useAuthLoaded()
+  const { loginWithOAuth } = useAuthActions()
   const router = useRouter()
 
   // 이미 로그인한 경우: next가 있으면 next로, 없으면 대시보드로
   useEffect(() => {
-    checkAuth().then(() => {
-      if (user) {
-        router.push(nextParam ?? "/dashboard")
-      }
-    })
-  }, [user, nextParam, router, checkAuth])
+    if (isLoaded && user) {
+      router.push(nextParam ?? "/dashboard")
+    }
+  }, [user, isLoaded, nextParam, router])
 
   const handleKakaoLogin: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault()
     setIsLoading(true)
-    void loginWithKakao().catch((error) => {
+    void loginWithOAuth("kakao").catch((error) => {
       console.error(error)
       toast.error("로그인 중 오류가 발생했습니다.")
       setIsLoading(false)
@@ -43,7 +43,7 @@ export default function LoginPageContainer({ nextParam }: Props) {
   const handleGoogleLogin: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault()
     setIsGoogleLoading(true)
-    void loginWithGoogle().catch((error) => {
+    void loginWithOAuth("google").catch((error) => {
       console.error(error)
       toast.error("구글 로그인 중 오류가 발생했습니다.")
       setIsGoogleLoading(false)

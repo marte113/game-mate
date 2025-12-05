@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Star, MessageCircle, Heart, Share2 } from "lucide-react"
 import { toast } from "react-hot-toast"
 
-import { useAuthStore } from "@/stores/authStore"
+import { useUser } from "@/stores/authStore"
 import { useChatStore } from "@/stores/chatStore"
 import Badge from "@/components/ui/Badge" // Badge 컴포넌트 경로 확인
 import { ProfileHeaderProps } from "@/app/profile/_types/profile.types"
@@ -27,7 +27,7 @@ const mockProfileDataExtras = {
 
 export default function ProfileHeader({ profileId }: ProfileHeaderProps) {
   const router = useRouter()
-  const { user: loggedInUser } = useAuthStore() // 로그인한 사용자 정보
+  const loggedInUser = useUser() // 로그인한 사용자 정보
   const { isLoading: chatLoading } = useChatStore()
   const { startChatWithUser } = useStartChat()
 
