@@ -4,15 +4,14 @@ import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 
 import { useUser } from "@/stores/authStore"
-import { useChatUiStore } from "@/stores/chatUiStore"
+import { useChatUiActions } from "@/stores/chatUiStore"
 import { useCreateChatRoom } from "@/hooks/api/chat/useChatMutations"
 import { chatApi } from "@/app/dashboard/chat/_api/chatApi"
 
 export function useStartChat() {
   const router = useRouter()
   const loggedInUser = useUser()
-  const { setSelectedChat } = useChatUiStore()
-  const setMobileView = useChatUiStore((s) => s.setMobileView)
+  const { setSelectedChat, setMobileView } = useChatUiActions()
 
   // 새로운 React Query 훅들 사용
   const createChatRoomMutation = useCreateChatRoom()

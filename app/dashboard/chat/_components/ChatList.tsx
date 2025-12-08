@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 
 import { createClient } from "@/supabase/functions/client"
-import { useChatUiStore } from "@/stores/chatUiStore"
+import { useSelectedChat, useSearchTerm, useChatUiActions } from "@/stores/chatUiStore"
 import type { ChatRoom } from "@/app/dashboard/chat/_types"
 import { useChatRoomsLegacyQuery } from "@/hooks/api/chat/useChatQueries"
 import { useLegacyChatSubscription } from "@/hooks/api/chat/useChatSubscription"
@@ -35,8 +35,9 @@ function ChatSkeleton() {
 // 채팅방 목록 컴포넌트
 export default function ChatList() {
   // UI 상태는 chatUiStore에서 가져오기
-  const { selectedChat, setSelectedChat, searchTerm: globalSearchTerm } = useChatUiStore()
-  const setMobileView = useChatUiStore((s) => s.setMobileView)
+  const selectedChat = useSelectedChat()
+  const globalSearchTerm = useSearchTerm()
+  const { setSelectedChat, setMobileView } = useChatUiActions()
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
   // React Query로 채팅방 목록 가져오기 (새로운 훅 사용)

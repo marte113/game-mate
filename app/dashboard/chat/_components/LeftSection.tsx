@@ -3,12 +3,12 @@
 import type { ReactNode } from "react"
 import { useEffect } from "react"
 
-import { useChatUiStore } from "@/stores/chatUiStore"
+import { useMobileView, useChatUiActions } from "@/stores/chatUiStore"
 import { cn } from "@/utils/classname"
 
 export default function LeftSection({ children }: { children: ReactNode }) {
-  const setSearchTerm = useChatUiStore((s) => s.setSearchTerm)
-  const mobileView = useChatUiStore((s) => s.mobileView)
+  const mobileView = useMobileView()
+  const { setSearchTerm } = useChatUiActions()
 
   // 페이지 입장/이탈 시 검색어만 초기화 (선택된 채팅은 유지)
   useEffect(() => {

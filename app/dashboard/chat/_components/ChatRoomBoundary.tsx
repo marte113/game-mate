@@ -2,13 +2,13 @@
 
 import QuerySectionBoundary from "@/components/query/QuerySectionBoundary"
 import { queryKeys } from "@/constants/queryKeys"
-import { useChatUiStore } from "@/stores/chatUiStore"
+import { useSelectedChat } from "@/stores/chatUiStore"
 
 import ChatRoom from "./ChatRoom"
 import EmptyRoom from "./EmptyRoom"
 
 export default function ChatRoomBoundary() {
-  const { selectedChat } = useChatUiStore()
+  const selectedChat = useSelectedChat()
   const roomId = selectedChat?.id ?? ""
 
   if (!roomId) {

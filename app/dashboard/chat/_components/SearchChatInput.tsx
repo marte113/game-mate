@@ -3,11 +3,11 @@
 import { useEffect, useMemo, useState } from "react"
 import debounce from "lodash/debounce"
 
-import { useChatUiStore } from "@/stores/chatUiStore"
+import { useChatUiActions } from "@/stores/chatUiStore"
 
 export default function SearchChatInput() {
   const [value, setValue] = useState("")
-  const setSearchTerm = useChatUiStore((s) => s.setSearchTerm)
+  const { setSearchTerm } = useChatUiActions()
 
   // 디바운스된 업데이트 함수 (상태 없이 수행)
   const debouncedUpdate = useMemo(

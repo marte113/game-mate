@@ -1,8 +1,8 @@
 "use client"
 
+import { useEffect } from "react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
-import { useEffect } from "react"
 import {
   LayoutDashboard,
   ClipboardList,
@@ -19,11 +19,11 @@ import { useUser } from "@/stores/authStore"
 import { useSidebarStore } from "@/stores/sidebarStore"
 import { Separator } from "@/components/ui/Separator"
 import { useBodyScrollLock } from "@/hooks/ui/useBodyScrollLock"
+import QuerySectionBoundary from "@/components/query/QuerySectionBoundary"
+import { queryKeys } from "@/constants/queryKeys"
 
 import RecommendMate from "./RecommendMate"
 import PartnerMate from "./PartnerMate"
-import QuerySectionBoundary from "@/components/query/QuerySectionBoundary"
-import { queryKeys } from "@/constants/queryKeys"
 
 export default function Sidebar() {
   // 개별 selector 사용으로 불필요한 렌더 최소화
@@ -31,31 +31,8 @@ export default function Sidebar() {
   const close = useSidebarStore((s) => s.close)
   const pathname = usePathname()
   const isLoggedIn = useUser()
-  const { unreadCount, startNotificationSubscription } = useNotificationStore()
-  //isopen에 의해 useNotificationStore가 재생성되더라도 zustand는 안정적인 참조를 제공하기 때문에,
-  // 이전 참조를 계속 사용할 수 있습니다. 이 때문에 컴포넌트가 리렌더링되어도 useEffect의 의존성 배열은
-  // 변경되지 않기 때문에, useEffect가 재실행되지 않음.
-
-  // 알림 실시간 구독 시작(스토어가 SUBSCRIBED 시 초기 동기화를 수행)
-  useEffect(() => {
-    let stop: (() => void) | undefined
-
-    if (isLoggedIn) {
-      console.log("Sidebar Effect: 로그인됨. 알림 실시간 구독 시작.")
-      stop = startNotificationSubscription()
-    } else {
-      console.log("Sidebar Effect: 로그아웃됨. 알림 관련 작업 건너뜀.")
-    }
-
-    return () => {
-      if (stop) {
-        console.log("Sidebar Effect Cleanup: 알림 구독 해제.")
-        stop()
-      } else {
-        console.log("Sidebar Effect Cleanup: 해제할 구독 없음.")
-      }
-    }
-  }, [isLoggedIn, startNotificationSubscription])
+  // 알림 구독은 LayoutClient에서 수행, 여기서는 unreadCount만 구독
+  const unreadCount = useNotificationStore((s) => s.unreadCount)
 
   // 라우트 변경 시(모바일 뷰) 사이드바 자동 닫기
   useEffect(() => {

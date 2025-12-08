@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback, useEffect, useRef } from "react"
 import { toast } from "react-hot-toast"
 
 import { useUser } from "@/stores/authStore"
-import { useChatUiStore } from "@/stores/chatUiStore"
+import { useSelectedChat } from "@/stores/chatUiStore"
 import { useNotificationStore } from "@/stores/notificationStore"
 import { useChatMessages } from "@/hooks/api/chat/useChatQueries"
 import { useOptimisticSendMessage, useMarkAsRead } from "@/hooks/api/chat/useChatMutations"
@@ -22,7 +22,7 @@ export default function ChatRoom() {
   const userId = user?.id
 
   // UI 스토어에서 선택된 채팅방 가져오기
-  const { selectedChat } = useChatUiStore()
+  const selectedChat = useSelectedChat()
 
   // 현재 채팅방 ID - 참조 안정성 확보
   console.log("ChatRoom / selectedChat", selectedChat)
@@ -47,16 +47,11 @@ export default function ChatRoom() {
     if (lastMarkedRoomIdRef.current === selectedChat.id) return
     lastMarkedRoomIdRef.current = selectedChat.id
 
-    console.log("selectedChat?.id 통과")
     // 알림 읽음 처리 (에러는 내부에서 처리)
     void markChatNotificationsAsRead(selectedChat.id)
 
-    // 채팅방 읽음 처리 (뮤테이션 상태 변경으로 인한 재실행 방지를 위해 의존성에서 제외)
+    // 채팅방 읽음 처리
     markAsRead(selectedChat.id)
-
-    // 디버깅 로그 추가
-    console.log("읽음 처리 시도:", selectedChat.id)
-    console.log("접속한 유저 ID", userId)
   }, [selectedChat?.id, userId, markChatNotificationsAsRead, markAsRead])
 
   // 메시지 전송 핸들러 - 참조 안정성 확보

@@ -30,26 +30,20 @@ export function useChatMessageSubscription(currentRoomId?: string | null) {
       const newMessage = rawNew as MessageRow
       const messageRoomId = newMessage.chat_room_id
 
-      // 현재 보고 있는 채팅방의 메시지인 경우
+      // 현재 보고 있는 채팅방의 메시지인 경우 메시지 목록 갱신
       if (currentRoomId && currentRoomId === messageRoomId) {
-        // 메시지 목록 무효화하여 새로고침
         queryClient.invalidateQueries({
           queryKey: queryKeys.chat.messages(currentRoomId),
         })
-
-        // 받은 메시지인 경우 자동 읽음 처리 (별도 API 호출 필요)
-        if (newMessage.receiver_id === user.id) {
-          // 읽음 처리는 별도 mutation을 통해 처리하도록 함
-        }
-      } else {
-        // 다른 채팅방의 메시지인 경우 채팅방 목록만 업데이트
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.chat.rooms(),
-        })
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.chat.chatRooms(),
-        })
       }
+
+      // 항상 채팅방 목록 갱신 (last_message 업데이트 반영 - 발신자/수신자 모두)
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.chat.rooms(),
+      })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.chat.chatRooms(),
+      })
     },
     [queryClient, user?.id, currentRoomId],
   )
@@ -154,22 +148,17 @@ export function useLegacyChatSubscription(currentRoomId?: string | null) {
           const newMessage = rawNew as MessageRow
           const messageRoomId = newMessage.chat_room_id
 
+          // 현재 채팅방의 메시지인 경우 메시지 목록 갱신
           if (currentRoomId && currentRoomId === messageRoomId) {
-            // 현재 채팅방의 메시지 목록 새로고침
             queryClient.invalidateQueries({
               queryKey: queryKeys.chat.messages(currentRoomId),
             })
-
-            // 받은 메시지인 경우 읽음 처리 (기존 로직 유지)
-            if (newMessage.receiver_id === user.id) {
-              // 읽음 처리는 컴포넌트에서 별도로 처리하도록 함
-            }
-          } else {
-            // 다른 채팅방의 메시지인 경우 채팅방 목록 업데이트
-            queryClient.invalidateQueries({
-              queryKey: queryKeys.chat.chatRooms(),
-            })
           }
+
+          // 항상 채팅방 목록 갱신 (last_message 업데이트 반영 - 발신자/수신자 모두)
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.chat.chatRooms(),
+          })
         },
       )
       .subscribe()
