@@ -1,9 +1,31 @@
 // stores/notificationStore.ts
+/**
+ * @deprecated React Query 기반 알림 시스템으로 마이그레이션됨
+ * 새로운 훅 사용:
+ * - useNotifications, useUnreadCount, useNotificationList: hooks/api/notification/useNotificationQueries.ts
+ * - useNotificationSubscription: hooks/api/notification/useNotificationSubscription.ts
+ * - Server Actions: app/actions/notification.ts
+ *
+ * 이 스토어는 하위 호환성을 위해 유지되며, 추후 제거 예정
+ */
 "use client"
 
 import { create } from "zustand"
+import type { RealtimeChannel, RealtimePostgresChangesPayload } from "@supabase/supabase-js"
+
 import { createClient } from "@/supabase/functions/client"
-import type { RealtimeChannel } from "@supabase/supabase-js"
+import type { Database } from "@/types/database.types"
+import { useChatUiStore } from "@/stores/chatUiStore"
+import {
+  getNotifications as fetchNotificationsAction,
+  markNotificationAsRead as markNotificationAsReadAction,
+  markAllNotificationsAsRead as markAllNotificationsAsReadAction,
+  markChatNotificationsAsRead as markChatNotificationsAsReadAction,
+  markTaskNotificationsAsRead as markTaskNotificationsAsReadAction,
+  markHeaderNotificationsAsRead as markHeaderNotificationsAsReadAction,
+} from "@/app/actions/notification"
+
+type NotificationRow = Database["public"]["Tables"]["notifications"]["Row"]
 
 export type Notification = {
   id: string
@@ -42,6 +64,36 @@ export const useNotificationStore = create<NotificationState>((set, get) => {
   // 이벤트 폭주 방지용 디바운스 타이머
   let timer: ReturnType<typeof setTimeout> | null = null
 
+  // 알림 INSERT 이벤트 핸들러 (채팅 중 알림 억제 로직 포함)
+  const handleNotificationInsert = (payload: RealtimePostgresChangesPayload<NotificationRow>) => {
+    if (unsubscribed) return
+
+    const rawNew = payload.new
+    if (!rawNew || typeof rawNew !== "object" || !("type" in rawNew)) {
+      scheduleFetch()
+      return
+    }
+
+    const notification = rawNew as NotificationRow
+    // chatUiStore에서 현재 선택된 채팅방 직접 참조
+    const selectedChat = useChatUiStore.getState().selectedChat
+    const activeChatRoomId = selectedChat?.id ?? null
+
+    // 현재 보고 있는 채팅방의 메시지 알림이면 즉시 읽음 처리 (알림 카운트 증가 안 함)
+    if (
+      notification.type === "message" &&
+      activeChatRoomId &&
+      notification.related_id === activeChatRoomId
+    ) {
+      // 백그라운드로 읽음 처리 후 갱신
+      void get().markChatNotificationsAsRead(activeChatRoomId)
+      return
+    }
+
+    // 그 외는 정상적으로 알림 갱신
+    scheduleFetch()
+  }
+
   const scheduleFetch = () => {
     if (unsubscribed) return
     if (timer) clearTimeout(timer)
@@ -69,7 +121,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => {
           table: "notifications",
           filter: `user_id=eq.${userId}`,
         },
-        scheduleFetch,
+        handleNotificationInsert,
       )
       .on(
         "postgres_changes",
@@ -97,20 +149,9 @@ export const useNotificationStore = create<NotificationState>((set, get) => {
       request: 0,
       follow: 0,
     },
-
     fetchNotifications: async () => {
       try {
-        const response = await fetch("/api/notifications", {
-          credentials: "include",
-        })
-
-        if (!response.ok) {
-          console.error("알림 조회 실패:", response.statusText)
-          return
-        }
-
-        const data = await response.json()
-
+        const data = await fetchNotificationsAction()
         set({
           notifications: data.notifications,
           unreadCount: data.unreadCount,
@@ -122,20 +163,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => {
 
     markAsRead: async (id) => {
       try {
-        const response = await fetch("/api/notifications/mark-read", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({ notificationId: id }),
-        })
-
-        if (!response.ok) {
-          console.error("알림 읽음 처리 실패:", response.statusText)
-          return
-        }
-
+        await markNotificationAsReadAction(id)
         await get().fetchNotifications()
       } catch (error) {
         console.error("알림 읽음 처리 중 에러:", error)
@@ -144,16 +172,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => {
 
     markAllAsRead: async () => {
       try {
-        const response = await fetch("/api/notifications/mark-all-read", {
-          method: "POST",
-          credentials: "include",
-        })
-
-        if (!response.ok) {
-          console.error("모든 알림 읽음 처리 실패:", response.statusText)
-          return
-        }
-
+        await markAllNotificationsAsReadAction()
         await get().fetchNotifications()
       } catch (error) {
         console.error("모든 알림 읽음 처리 중 에러:", error)
@@ -162,20 +181,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => {
 
     markChatNotificationsAsRead: async (chatRoomId: string) => {
       try {
-        const response = await fetch("/api/notifications/mark-chat-read", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({ chatRoomId }),
-        })
-
-        if (!response.ok) {
-          console.error("채팅 알림 읽음 처리 실패:", response.statusText)
-          return
-        }
-
+        await markChatNotificationsAsReadAction(chatRoomId)
         await get().fetchNotifications()
       } catch (error) {
         console.error("채팅 알림 읽음 처리 중 에러:", error)
@@ -184,16 +190,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => {
 
     markTaskNotificationsAsRead: async () => {
       try {
-        const response = await fetch("/api/notifications/mark-task-read", {
-          method: "POST",
-          credentials: "include",
-        })
-
-        if (!response.ok) {
-          console.error("태스크 알림 읽음 처리 실패:", response.statusText)
-          return
-        }
-
+        await markTaskNotificationsAsReadAction()
         await get().fetchNotifications()
       } catch (error) {
         console.error("태스크 알림 읽음 처리 중 에러:", error)
@@ -202,16 +199,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => {
 
     markHeaderNotificationsAsRead: async () => {
       try {
-        const response = await fetch("/api/notifications/mark-header-read", {
-          method: "POST",
-          credentials: "include",
-        })
-
-        if (!response.ok) {
-          console.error("헤더 알림 읽음 처리 실패:", response.statusText)
-          return
-        }
-
+        await markHeaderNotificationsAsReadAction()
         await get().fetchNotifications()
       } catch (error) {
         console.error("헤더 알림 읽음 처리 중 에러:", error)

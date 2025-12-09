@@ -2,12 +2,14 @@
 
 import { useState, useMemo, useCallback, useEffect, useRef } from "react"
 import { toast } from "react-hot-toast"
+import { useQueryClient } from "@tanstack/react-query"
 
-import { useAuthStore } from "@/stores/authStore"
-import { useChatUiStore } from "@/stores/chatUiStore"
-import { useNotificationStore } from "@/stores/notificationStore"
+import { useUser } from "@/stores/authStore"
+import { useSelectedChat } from "@/stores/chatUiStore"
 import { useChatMessages } from "@/hooks/api/chat/useChatQueries"
 import { useOptimisticSendMessage, useMarkAsRead } from "@/hooks/api/chat/useChatMutations"
+import { markChatNotificationsAsRead } from "@/app/actions/notification"
+import { queryKeys } from "@/constants/queryKeys"
 
 import ReservationModal from "./reserveModal/ReservationModal"
 import ChatHeader from "./ChatHeader"
@@ -18,10 +20,11 @@ export default function ChatRoom() {
   const [isReservationOpen, setIsReservationOpen] = useState(false)
 
   // 전역 상태에서 사용자 ID만 가져오기 - 최적화
-  const userId = useAuthStore((state) => state.user?.id)
+  const user = useUser()
+  const userId = user?.id
 
   // UI 스토어에서 선택된 채팅방 가져오기
-  const { selectedChat } = useChatUiStore()
+  const selectedChat = useSelectedChat()
 
   // 현재 채팅방 ID - 참조 안정성 확보
   console.log("ChatRoom / selectedChat", selectedChat)
@@ -32,8 +35,7 @@ export default function ChatRoom() {
   const optimisticSendMessage = useOptimisticSendMessage()
   const { mutate: markAsRead } = useMarkAsRead()
 
-  // 알림 스토어는 필요한 액션만 셀렉터로 구독하여 불필요 리렌더 방지
-  const markChatNotificationsAsRead = useNotificationStore((s) => s.markChatNotificationsAsRead)
+  const queryClient = useQueryClient()
 
   // 동일 채팅방 중복 읽음 처리 방지용 ref
   const lastMarkedRoomIdRef = useRef<string | null>(null)
@@ -46,17 +48,14 @@ export default function ChatRoom() {
     if (lastMarkedRoomIdRef.current === selectedChat.id) return
     lastMarkedRoomIdRef.current = selectedChat.id
 
-    console.log("selectedChat?.id 통과")
-    // 알림 읽음 처리 (에러는 내부에서 처리)
-    void markChatNotificationsAsRead(selectedChat.id)
+    // 알림 읽음 처리 (Server Action + React Query 캐시 무효화)
+    markChatNotificationsAsRead(selectedChat.id).then(() => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all() })
+    })
 
-    // 채팅방 읽음 처리 (뮤테이션 상태 변경으로 인한 재실행 방지를 위해 의존성에서 제외)
+    // 채팅방 읽음 처리
     markAsRead(selectedChat.id)
-
-    // 디버깅 로그 추가
-    console.log("읽음 처리 시도:", selectedChat.id)
-    console.log("접속한 유저 ID", userId)
-  }, [selectedChat?.id, userId, markChatNotificationsAsRead, markAsRead])
+  }, [selectedChat?.id, userId, markAsRead, queryClient])
 
   // 메시지 전송 핸들러 - 참조 안정성 확보
   const handleSendMessage = useCallback(

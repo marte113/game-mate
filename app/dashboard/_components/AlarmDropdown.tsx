@@ -5,29 +5,25 @@ import { useState, useRef, useEffect, memo } from "react"
 import Link from "next/link"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
+import { useQueryClient } from "@tanstack/react-query"
 
-import { useNotificationStore } from "@/stores/notificationStore"
+import { useNotifications, useUnreadCount, useNotificationList } from "@/hooks/api/notification"
+import {
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
+  markHeaderNotificationsAsRead,
+} from "@/app/actions/notification"
+import { queryKeys } from "@/constants/queryKeys"
 
 export default memo(function AlarmDropdown() {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const queryClient = useQueryClient()
 
-  const {
-    notifications,
-    unreadCount,
-    markAsRead,
-    markAllAsRead,
-    markHeaderNotificationsAsRead,
-    startNotificationSubscription,
-  } = useNotificationStore()
-
-  // 실시간 구독 시작(스토어가 SUBSCRIBED 시 초기 fetch 수행)
-  useEffect(() => {
-    const stop = startNotificationSubscription()
-    return () => {
-      stop()
-    }
-  }, [startNotificationSubscription])
+  // React Query 기반 알림 데이터
+  useNotifications() // 데이터 프리페칭용
+  const unreadCount = useUnreadCount()
+  const notifications = useNotificationList()
 
   // 드롭다운 외부 클릭 감지
   useEffect(() => {
@@ -42,8 +38,13 @@ export default memo(function AlarmDropdown() {
   }, [])
 
   // 알림 클릭 처리
-  const handleNotificationClick = (id: string, _type: string | null, _relatedId: string | null) => {
-    markAsRead(id)
+  const handleNotificationClick = async (
+    id: string,
+    _type: string | null,
+    _relatedId: string | null,
+  ) => {
+    await markNotificationAsRead(id)
+    queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all() })
     setIsOpen(false)
   }
 
@@ -79,12 +80,20 @@ export default memo(function AlarmDropdown() {
     }
   }
 
+  // 모두 읽음 처리
+  const handleMarkAllAsRead = async () => {
+    await markAllNotificationsAsRead()
+    queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all() })
+  }
+
   // isOpen 상태 변경 시 헤더 알림만 읽음 처리
   useEffect(() => {
     if (isOpen) {
-      markHeaderNotificationsAsRead()
+      markHeaderNotificationsAsRead().then(() => {
+        queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all() })
+      })
     }
-  }, [isOpen, markHeaderNotificationsAsRead])
+  }, [isOpen, queryClient])
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -108,7 +117,7 @@ export default memo(function AlarmDropdown() {
                 {unreadCount.total > 0 && (
                   <button
                     className="text-xs text-blue-500 hover:underline"
-                    onClick={() => markAllAsRead()}
+                    onClick={handleMarkAllAsRead}
                   >
                     모두 읽음으로 표시
                   </button>

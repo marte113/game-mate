@@ -2,12 +2,12 @@
 
 import QuerySectionBoundary from "@/components/query/QuerySectionBoundary"
 import { queryKeys } from "@/constants/queryKeys"
-import { useAuthStore } from "@/stores/authStore"
+import { useUser } from "@/stores/authStore"
 
 import TokenSummaryCard from "./TokenSummaryCard"
 
 export default function TokenSummaryBoundary() {
-  const { user } = useAuthStore()
+  const user = useUser()
   const userId = user?.id
 
   if (!userId) return <TokenSummaryCard />

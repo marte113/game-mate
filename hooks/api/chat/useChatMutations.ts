@@ -6,7 +6,7 @@ import { toast } from "react-hot-toast"
 import { queryKeys } from "@/constants/queryKeys"
 import { chatApi } from "@/app/dashboard/chat/_api/chatApi"
 import type { Database } from "@/types/database.types"
-import { useAuthStore } from "@/stores/authStore"
+import { useUser } from "@/stores/authStore"
 
 type MessageRow = Database["public"]["Tables"]["messages"]["Row"]
 
@@ -87,7 +87,8 @@ export function useCreateChatRoomMutation() {
  */
 export function useOptimisticSendMessage() {
   const queryClient = useQueryClient()
-  const currentUserId = useAuthStore((s) => s.user?.id)
+  const user = useUser()
+  const currentUserId = user?.id
 
   return useMutation({
     mutationFn: ({ content, receiverId, chatRoomId }: SendMessageData) =>

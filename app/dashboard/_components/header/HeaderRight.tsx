@@ -2,7 +2,7 @@
 
 import { Suspense } from "react"
 
-import { useAuthStore } from "@/stores/authStore"
+import { useUser, useAuthLoaded } from "@/stores/authStore"
 
 import SearchBar from "./SearchBar"
 import TokenDisplay from "./TokenDisplay"
@@ -10,13 +10,14 @@ import UserProfile from "./UserProfile"
 import LoginButton from "./LoginButton"
 
 export default function HeaderRight() {
-  const { user, isLoading } = useAuthStore()
+  const user = useUser()
+  const isLoaded = useAuthLoaded()
 
-  // 로딩 중일 때 표시할 UI
-  if (isLoading) {
+  // 초기 로드 전 또는 로딩 중일 때 스켈레톤 표시
+  if (!isLoaded) {
     return (
       <div className="flex items-center gap-2 md:gap-4">
-        <span className="loading loading-spinner loading-sm w-5 h-5 flex items-center justify-center"></span>
+        <span className="loading loading-spinner loading-sm flex items-center justify-center" />
       </div>
     )
   }

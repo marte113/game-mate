@@ -7,7 +7,7 @@ import type { RealtimeChannel, RealtimePostgresChangesPayload } from "@supabase/
 
 import { createClient } from "@/supabase/functions/client"
 import type { Database } from "@/types/database.types"
-import { useAuthStore } from "@/stores/authStore"
+import { useUser } from "@/stores/authStore"
 
 // (선택) 모듈 스코프 싱글턴 참조로 만들어두면 deps 경고도 자연 해소됩니다.
 const supabase = createClient()
@@ -16,7 +16,8 @@ type RequestRow = Database["public"]["Tables"]["requests"]["Row"]
 
 export function useTaskSubscription(): void {
   const queryClient = useQueryClient()
-  const userId = useAuthStore((s) => s.user?.id)
+  const user = useUser()
+  const userId = user?.id
   const isCleaningUpRef = useRef(false)
 
   useEffect(() => {

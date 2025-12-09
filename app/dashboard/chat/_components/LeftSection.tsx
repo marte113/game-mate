@@ -3,18 +3,22 @@
 import type { ReactNode } from "react"
 import { useEffect } from "react"
 
-import { useChatUiStore } from "@/stores/chatUiStore"
+import { useMobileView, useChatUiActions } from "@/stores/chatUiStore"
 import { cn } from "@/utils/classname"
 
 export default function LeftSection({ children }: { children: ReactNode }) {
-  const setSearchTerm = useChatUiStore((s) => s.setSearchTerm)
-  const mobileView = useChatUiStore((s) => s.mobileView)
+  const mobileView = useMobileView()
+  const { setSearchTerm, setSelectedChat } = useChatUiActions()
 
-  // 페이지 입장/이탈 시 검색어만 초기화 (선택된 채팅은 유지)
+  // 페이지 이탈 시 검색어 및 선택된 채팅방 초기화
+  // (selectedChat이 남아있으면 다른 페이지에서도 알림이 자동 읽음 처리됨)
   useEffect(() => {
     setSearchTerm("")
-    return () => setSearchTerm("")
-  }, [setSearchTerm])
+    return () => {
+      setSearchTerm("")
+      setSelectedChat(null)
+    }
+  }, [setSearchTerm, setSelectedChat])
 
   return (
     <div

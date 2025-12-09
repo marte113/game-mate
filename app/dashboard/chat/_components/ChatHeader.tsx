@@ -4,7 +4,7 @@
 import { ArrowLeftToLine } from "lucide-react"
 import Image from "next/image"
 
-import { useChatUiStore } from "@/stores/chatUiStore"
+import { useChatUiActions } from "@/stores/chatUiStore"
 
 import { getAvatarUrl } from "../_utils/avatar"
 
@@ -19,7 +19,7 @@ interface ChatHeaderProps {
 }
 
 export default function ChatHeader({ otherUser, onReservationClick }: ChatHeaderProps) {
-  const setMobileView = useChatUiStore((s) => s.setMobileView)
+  const { setMobileView } = useChatUiActions()
 
   return (
     <div className="md:p-4 p-2 border-b flex items-center gap-3">

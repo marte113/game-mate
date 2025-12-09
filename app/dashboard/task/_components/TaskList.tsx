@@ -3,7 +3,10 @@
 import { useCallback, useEffect, useMemo, useRef } from "react"
 import { useSearchParams } from "next/navigation"
 
-import { useNotificationStore } from "@/stores/notificationStore"
+import { useQueryClient } from "@tanstack/react-query"
+
+import { markTaskNotificationsAsRead } from "@/app/actions/notification"
+import { queryKeys } from "@/constants/queryKeys"
 import {
   useReceivedOrdersQuery,
   useRequestedOrdersQuery,
@@ -23,12 +26,15 @@ export default function TaskList() {
   const activeTab: "received" | "requested" =
     searchParams.get("tab") === "requested" ? "requested" : "received"
   const idParam = searchParams.get("id")
-  const { markTaskNotificationsAsRead } = useNotificationStore()
+  const queryClient = useQueryClient()
 
+  // 의뢰 페이지 진입 시 의뢰 관련 알림 읽음 처리
   useEffect(() => {
     console.log("[TaskList useEffect - Notification] Marking task notifications as read")
-    markTaskNotificationsAsRead()
-  }, [markTaskNotificationsAsRead])
+    markTaskNotificationsAsRead().then(() => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all() })
+    })
+  }, [queryClient])
 
   useTaskSubscription()
 

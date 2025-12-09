@@ -5,12 +5,12 @@ import { useState } from "react"
 import TokenChargeModal from "../modals/TokenChargeModal"
 import TokenChargeButton from "./TokenChargeButton"
 import { useTokenBalanceQuery, useTokenUsageQuery } from "@/hooks/api/token/useTokenBalanceQuery"
-import { useAuthStore } from "@/stores/authStore"
+import { useUser } from "@/stores/authStore"
 
 export default function TokenSummaryCard() {
   const [isChargeModalOpen, setIsChargeModalOpen] = useState<boolean>(false)
 
-  const { user } = useAuthStore()
+  const user = useUser()
   const { data: balance, error: balanceError } = useTokenBalanceQuery(user?.id)
   const { data: usageData, error: usageError } = useTokenUsageQuery()
 

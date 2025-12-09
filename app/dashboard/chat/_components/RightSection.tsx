@@ -1,10 +1,10 @@
 "use client"
 
-import { useChatUiStore } from "@/stores/chatUiStore"
+import { useMobileView } from "@/stores/chatUiStore"
 import { cn } from "@/utils/classname"
 
 export default function RightSection({ children }: { children: React.ReactNode }) {
-  const mobileView = useChatUiStore((s) => s.mobileView)
+  const mobileView = useMobileView()
 
   return (
     <div

@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation"
 import * as PortOne from "@portone/browser-sdk/v2"
 import { toast } from "react-hot-toast"
 import { v4 as uuidv4 } from "uuid"
-import { useAuthStore } from "@/stores/authStore"
+import { useUser } from "@/stores/authStore"
 
 type TokenOption = {
   orderName: string
@@ -16,7 +16,7 @@ type TokenOption = {
 export default function usePayment() {
   const [processing, setProcessing] = useState<boolean>(false)
   const router = useRouter()
-  const { user } = useAuthStore()
+  const user = useUser()
 
   const processPayment = async (selectedOption: TokenOption) => {
     try {

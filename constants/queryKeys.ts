@@ -53,6 +53,12 @@ export const queryKeys = {
   search: {
     users: (q: string) => ["search", "users", q] as const,
   },
+
+  notifications: {
+    all: () => ["notifications"] as const,
+    list: () => ["notifications", "list"] as const,
+    unreadCount: () => ["notifications", "unreadCount"] as const,
+  },
 } as const
 
 export type QueryKey = ReturnType<
@@ -86,6 +92,9 @@ export type QueryKey = ReturnType<
   | typeof queryKeys.profile.selectedGamesByUserId
   | typeof queryKeys.profile.reviewsByProfileId
   | typeof queryKeys.search.users
+  | typeof queryKeys.notifications.all
+  | typeof queryKeys.notifications.list
+  | typeof queryKeys.notifications.unreadCount
 >
 
 export const legacyQueryKeys = {
