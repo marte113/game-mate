@@ -1,4 +1,13 @@
 // stores/notificationStore.ts
+/**
+ * @deprecated React Query 기반 알림 시스템으로 마이그레이션됨
+ * 새로운 훅 사용:
+ * - useNotifications, useUnreadCount, useNotificationList: hooks/api/notification/useNotificationQueries.ts
+ * - useNotificationSubscription: hooks/api/notification/useNotificationSubscription.ts
+ * - Server Actions: app/actions/notification.ts
+ *
+ * 이 스토어는 하위 호환성을 위해 유지되며, 추후 제거 예정
+ */
 "use client"
 
 import { create } from "zustand"

@@ -1,11 +1,12 @@
 "use client"
 
 import NextTopLoader from "nextjs-toploader"
-import { ReactNode, useEffect } from "react"
+import type { ReactNode } from "react"
+import { useEffect } from "react"
 import { Toaster } from "react-hot-toast"
 
 import { useAuthActions, useUser } from "@/stores/authStore"
-import { useNotificationStore } from "@/stores/notificationStore"
+import { useNotificationSubscription } from "@/hooks/api/notification"
 import config from "@/config"
 
 /**
@@ -15,7 +16,7 @@ import config from "@/config"
  * 1. NextTopLoader - 페이지 이동시 상단에 로딩 프로그레스바를 표시
  * 2. Toaster - 토스트 메시지 표시 기능 제공
  * 3. Auth 초기화 - onAuthStateChange 구독으로 세션 변경 감지
- * 4. 알림 구독 - 로그인 시 실시간 알림 구독 시작
+ * 4. 알림 구독 - 로그인 시 실시간 알림 구독 시작 (React Query 기반)
  *
  * 사용 위치:
  * - app/layout.js에서 전체 앱을 감싸는 레이아웃으로 사용됨
@@ -27,7 +28,6 @@ import config from "@/config"
 const ClientLayout = ({ children }: { children: ReactNode }) => {
   const { initialize } = useAuthActions()
   const user = useUser()
-  const startNotificationSubscription = useNotificationStore((s) => s.startNotificationSubscription)
 
   // 인증 상태 초기화 및 onAuthStateChange 구독
   useEffect(() => {
@@ -35,13 +35,8 @@ const ClientLayout = ({ children }: { children: ReactNode }) => {
     return unsubscribe
   }, [initialize])
 
-  // 알림 실시간 구독 (로그인 상태일 때만)
-  useEffect(() => {
-    if (!user) return
-
-    const unsubscribe = startNotificationSubscription()
-    return unsubscribe
-  }, [user, startNotificationSubscription])
+  // 알림 실시간 구독 (React Query 기반)
+  useNotificationSubscription(user?.id)
 
   return (
     <>

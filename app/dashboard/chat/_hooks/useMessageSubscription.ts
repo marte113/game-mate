@@ -6,10 +6,10 @@ import { createClient } from "@/supabase/functions/client"
 import { useQueryClient } from "@tanstack/react-query"
 import { RealtimeChannel, RealtimePostgresChangesPayload } from "@supabase/supabase-js"
 
-import { Database } from "@/types/database.types"
-import { Message } from "@/app/dashboard/chat/_types/chatTypes"
+import type { Database } from "@/types/database.types"
+import type { Message } from "@/app/dashboard/chat/_types/chatTypes"
 import { queryKeys } from "@/constants/queryKeys"
-import { useNotificationStore } from "@/stores/notificationStore"
+import { markChatNotificationsAsRead } from "@/app/actions/notification"
 
 export const useMessageSubscription = (currentChatRoomId: string | null) => {
   const queryClient = useQueryClient()
@@ -43,14 +43,9 @@ export const useMessageSubscription = (currentChatRoomId: string | null) => {
             if (newMessage.receiver_id === userId) {
               try {
                 await fetch(`/api/chat/rooms/${currentChatRoomId}/read`, { method: "POST" })
-                await fetch("/api/notifications/mark-chat-read", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  credentials: "include",
-                  body: JSON.stringify({ chatRoomId: currentChatRoomId }),
-                })
-                // 헤더 카운트/목록 동기화
-                useNotificationStore.getState().fetchNotifications()
+                // Server Action으로 알림 읽음 처리 + React Query 캐시 무효화
+                await markChatNotificationsAsRead(currentChatRoomId)
+                queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all() })
               } catch (e) {
                 // noop: 네트워크 일시 오류는 다음 이벤트 시 재시도됨
               }

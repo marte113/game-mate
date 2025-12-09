@@ -12,7 +12,10 @@ import {
   repoMarkTaskNotificationsAsRead,
 } from "@/app/apis/repository/notification/notification.repository.server"
 import { repoResetUnreadCountForChatParticipant } from "@/app/apis/repository/chat/chatRoomParticipants.repository.server"
-import { fetchMessageIdsByChatRoomAndReceiver } from "@/app/apis/repository/chat/messageRepository"
+import {
+  fetchMessageIdsByChatRoomAndReceiver,
+  fetchChatRoomIdByMessageId,
+} from "@/app/apis/repository/chat/messageRepository"
 
 export type UnreadCount = {
   total: number
@@ -88,5 +91,31 @@ export async function svcMarkChatNotificationsAsReadForCurrentUser(
     if (!messageIds.length) return
 
     await repoMarkMessageNotificationsAsReadForMessages(userId, messageIds)
+  })
+}
+
+/**
+ * 메시지 알림이 현재 보고 있는 채팅방의 것인지 확인하고, 맞다면 읽음 처리
+ * @returns suppressed: true면 알림 억제됨 (UI 갱신 불필요)
+ */
+export async function svcMarkMessageNotificationIfInRoom(
+  notificationId: string,
+  messageId: string,
+  currentChatRoomId: string,
+): Promise<{ suppressed: boolean }> {
+  return wrapService("notification.svcMarkMessageNotificationIfInRoom", async () => {
+    const userId = await getCurrentUserId()
+
+    // 메시지의 채팅방 ID 조회
+    const messageChatRoomId = await fetchChatRoomIdByMessageId(messageId)
+
+    // 현재 보고 있는 채팅방과 일치하지 않으면 억제하지 않음
+    if (messageChatRoomId !== currentChatRoomId) {
+      return { suppressed: false }
+    }
+
+    // 일치하면 해당 알림을 읽음 처리
+    await repoMarkNotificationAsRead(userId, notificationId)
+    return { suppressed: true }
   })
 }

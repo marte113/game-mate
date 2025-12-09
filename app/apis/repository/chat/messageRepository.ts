@@ -40,3 +40,24 @@ export async function fetchMessageIdsByChatRoomAndReceiver(
     return (data ?? []).map((row) => String((row as { id: unknown }).id))
   })
 }
+
+/**
+ * 메시지 ID로 해당 메시지의 채팅방 ID를 조회
+ */
+export async function fetchChatRoomIdByMessageId(messageId: string): Promise<string | null> {
+  return wrapRepo("chat.fetchChatRoomIdByMessageId", async () => {
+    const supabase = await getServerSupabase()
+    const { data, error } = await supabase
+      .from("messages")
+      .select("chat_room_id")
+      .eq("id", messageId)
+      .single()
+
+    if (error) {
+      // 메시지를 찾지 못한 경우 null 반환
+      if (error.code === "PGRST116") return null
+      throw error
+    }
+    return data?.chat_room_id ?? null
+  })
+}

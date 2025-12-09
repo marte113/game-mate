@@ -7,6 +7,7 @@ import {
   svcMarkTaskNotificationsAsReadForCurrentUser,
   svcMarkHeaderNotificationsAsReadForCurrentUser,
   svcMarkChatNotificationsAsReadForCurrentUser,
+  svcMarkMessageNotificationIfInRoom,
   type NotificationsWithUnreadCount,
 } from "@/app/apis/service/notification/notification.service.server"
 
@@ -50,4 +51,16 @@ export async function markHeaderNotificationsAsRead(): Promise<void> {
  */
 export async function markChatNotificationsAsRead(chatRoomId: string): Promise<void> {
   return svcMarkChatNotificationsAsReadForCurrentUser(chatRoomId)
+}
+
+/**
+ * 메시지 알림이 현재 보고 있는 채팅방의 것인지 확인하고, 맞다면 읽음 처리
+ * @returns suppressed: true면 알림 억제됨 (UI 갱신 불필요)
+ */
+export async function markMessageNotificationIfInRoom(
+  notificationId: string,
+  messageId: string,
+  currentChatRoomId: string,
+): Promise<{ suppressed: boolean }> {
+  return svcMarkMessageNotificationIfInRoom(notificationId, messageId, currentChatRoomId)
 }

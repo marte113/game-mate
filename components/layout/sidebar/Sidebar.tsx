@@ -14,7 +14,7 @@ import {
   Hand,
 } from "lucide-react"
 
-import { useNotificationStore } from "@/stores/notificationStore"
+import { useUnreadCount } from "@/hooks/api/notification"
 import { useUser } from "@/stores/authStore"
 import { useSidebarStore } from "@/stores/sidebarStore"
 import { Separator } from "@/components/ui/Separator"
@@ -31,8 +31,8 @@ export default function Sidebar() {
   const close = useSidebarStore((s) => s.close)
   const pathname = usePathname()
   const isLoggedIn = useUser()
-  // 알림 구독은 LayoutClient에서 수행, 여기서는 unreadCount만 구독
-  const unreadCount = useNotificationStore((s) => s.unreadCount)
+  // 알림 구독은 LayoutClient에서 수행, 여기서는 unreadCount만 구독 (React Query)
+  const unreadCount = useUnreadCount()
 
   // 라우트 변경 시(모바일 뷰) 사이드바 자동 닫기
   useEffect(() => {
