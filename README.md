@@ -37,15 +37,13 @@
 - 언어/프레임워크: `typescript` `nextjs@15_app_router`
 - UI 라이브러리/프레임워크: `tailwind` `daisyUI`
 - 상태 관리 라이브러리: `zustand` `tanstack@react-query`
-- 테스트 도구: `vitest`
+- 테스트 도구: `vitest` `cypress`
 - 데이터 검증: `zod`
 - 패키지 매니저: `npm`
 - DB: `supabase`
 - 배포: `vercel`
 
 ## 🏗️ Architecture
-
-프로덕션 규칙: Next.js 15 App Router, React 19, TypeScript(strict) 기반. Server Component 우선, 상호작용이 필요한 경우에만 Client로 전환합니다.
 
 - 📁 `app/`
   - 앱 라우팅 루트. App Router 기반 페이지 구성. 섹션별 Server Component 우선, 컨테이너/프리패치 패턴 사용.
